@@ -43,6 +43,7 @@ public class Notification extends TimeBaseEntity {
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "question_post_id",
+		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private QuestionPost questionPost;
 	// TODO: 7/20/24 생성자 추가
