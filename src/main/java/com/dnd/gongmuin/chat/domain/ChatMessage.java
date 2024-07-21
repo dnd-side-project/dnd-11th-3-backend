@@ -34,7 +34,7 @@ public class ChatMessage extends TimeBaseEntity {
 	private String content;
 
 	@Column(name = "is_read", nullable = false)
-	private Boolean isRead = false;
+	private Boolean isRead;
 
 	@Column(name = "media_url", nullable = false)
 	private String mediaUrl;

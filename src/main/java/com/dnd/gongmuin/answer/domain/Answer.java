@@ -33,7 +33,7 @@ public class Answer extends TimeBaseEntity {
 	private String content;
 
 	@Column(name = "is_chosen", nullable = false)
-	private boolean isChosen = false;
+	private Boolean isChosen;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "question_post_id",

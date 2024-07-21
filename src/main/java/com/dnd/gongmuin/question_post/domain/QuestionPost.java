@@ -49,13 +49,7 @@ public class QuestionPost extends TimeBaseEntity {
 	QuestionCategory category;
 
 	@Column(name = "is_chosen", nullable = false)
-	private boolean isChosen = false;
-
-	@Column(name = "recommend_count", nullable = false)
-	private int recommendCount = 0;
-
-	@Column(name = "save_count", nullable = false)
-	private int saveCount = 0;
+	private Boolean isChosen;
 
 	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
 	private List<QuestionPostImage> images = new ArrayList<>();
