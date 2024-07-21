@@ -9,6 +9,8 @@ import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,22 +31,22 @@ public class Notification extends TimeBaseEntity {
 	@Column(name = "notification_id", nullable = false)
 	private Long id;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
 	private NotificationType type;
 
 	@Column(name = "is_read", nullable = false)
-	private boolean isRead = false;
+	private Boolean isRead;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT)) // TODO: 7/19/24 자세히 조사해보기
+		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "question_post_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private QuestionPost questionPost;
-	// TODO: 7/20/24 생성자 추가
+	@Column(name = "question_post_id")
+	private Long questionPostId;
+
+	@Column(name = "chat_room_id")
+	private Long chatRoomId;
 }
