@@ -22,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -59,4 +60,16 @@ public class QuestionPost extends TimeBaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
+
+	@Builder
+	public QuestionPost(String title, String content, int reward, QuestionCategory category,
+		List<QuestionPostImage> images, Member member) {
+		this.isChosen = false;
+		this.title = title;
+		this.content = content;
+		this.reward = reward;
+		this.category = category;
+		this.images = images;
+		this.member = member;
+	}
 }

@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -44,4 +45,11 @@ public class ChatRoom extends TimeBaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private QuestionPost questionPost;
+
+	@Builder
+	public ChatRoom(Member questioner, Member answerer, QuestionPost questionPost) {
+		this.questioner = questioner;
+		this.answerer = answerer;
+		this.questionPost = questionPost;
+	}
 }

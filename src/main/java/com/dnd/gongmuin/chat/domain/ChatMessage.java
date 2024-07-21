@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -54,4 +55,15 @@ public class ChatMessage extends TimeBaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private ChatRoom chatRoom;
+
+	@Builder
+	public ChatMessage(String content, String mediaUrl, MessageType type, Member member,
+		ChatRoom chatRoom) {
+		this.isRead = false;
+		this.content = content;
+		this.mediaUrl = mediaUrl;
+		this.type = type;
+		this.member = member;
+		this.chatRoom = chatRoom;
+	}
 }

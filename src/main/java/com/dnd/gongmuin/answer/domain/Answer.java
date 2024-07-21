@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,4 +48,11 @@ public class Answer extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
+	@Builder
+	public Answer(String content, QuestionPost questionPost, Member member) {
+		this.isChosen = false;
+		this.content = content;
+		this.questionPost = questionPost;
+		this.member = member;
+	}
 }

@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,10 @@ public class PostInteractionCount extends TimeBaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private QuestionPost questionPost;
+
+	@Builder
+	public PostInteractionCount(InteractionType type, QuestionPost questionPost) {
+		this.type = type;
+		this.questionPost = questionPost;
+	}
 }

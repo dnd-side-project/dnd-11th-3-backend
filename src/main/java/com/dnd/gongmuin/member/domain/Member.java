@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,4 +47,16 @@ public class Member extends TimeBaseEntity {
 
 	@Column(name = "credit", nullable = false)
 	private int credit;
+
+	@Builder
+	public Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
+		String officialEmail, int credit) {
+		this.nickname = nickname;
+		this.socialName = socialName;
+		this.jobGroup = jobGroup;
+		this.jobCategory = jobCategory;
+		this.socialEmail = socialEmail;
+		this.officialEmail = officialEmail;
+		this.credit = credit;
+	}
 }
