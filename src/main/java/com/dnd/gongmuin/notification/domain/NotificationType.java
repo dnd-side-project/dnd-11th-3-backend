@@ -11,5 +11,5 @@ public enum NotificationType {
 	CHOSEN("채택"),
 	CHAT("채팅");
 
-	private final String msg;
+	private final String label;
 }
