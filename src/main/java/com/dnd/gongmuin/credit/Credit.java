@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,10 +33,22 @@ public class Credit extends TimeBaseEntity {
 	@Column(name = "type", nullable = false)
 	private CreditType type;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "detail", nullable = false)
+	private CreditDetail detail;
+
 	@Column(name = "amount", nullable = false)
 	private int amount;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id", nullable = false) // 정합성 중요
 	private Member member;
+
+	@Builder
+	public Credit(CreditType type, CreditDetail detail, int amount, Member member) {
+		this.type = type;
+		this.detail = detail;
+		this.amount = amount;
+		this.member = member;
+	}
 }

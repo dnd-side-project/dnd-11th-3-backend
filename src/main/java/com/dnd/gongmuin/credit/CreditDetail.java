@@ -7,18 +7,16 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum CreditType {
+public enum CreditDetail {
 
-	CHOOSE("채택하기"),
-	CHOSEN("채택받기"),
-	CHAT_REQUEST("채팅신청"),
-	CHAT_ACCEPT("채팅받기");
+	DEPOSIT("입금"),
+	WITHDRAWAL("출금");
 
 	private final String label;
 
-	public static CreditType of(String input) {
+	public static CreditDetail of(String input) {
 		return Arrays.stream(values())
-			.filter(type -> type.isEqual(input))
+			.filter(detail -> detail.isEqual(input))
 			.findAny()
 			.orElseThrow(IllegalArgumentException::new);
 	}
