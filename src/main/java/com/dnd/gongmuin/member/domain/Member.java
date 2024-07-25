@@ -59,4 +59,9 @@ public class Member extends TimeBaseEntity {
 		this.officialEmail = officialEmail;
 		this.credit = credit;
 	}
+
+	public void updateSocialEmail(String socialEmail) {
+		this.socialEmail = socialEmail;
+	}
+
 }
