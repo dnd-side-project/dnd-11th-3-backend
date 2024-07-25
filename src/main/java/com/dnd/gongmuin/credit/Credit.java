@@ -1,6 +1,5 @@
-package com.dnd.gongmuin.notification.domain;
+package com.dnd.gongmuin.credit;
 
-import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.FetchType.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
@@ -10,48 +9,33 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends TimeBaseEntity {
+public class Credit extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "notification_id", nullable = false)
+	@Column(name = "credit_id", nullable = false)
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
-	private NotificationType type;
+	private CreditType type;
 
-	@Column(name = "is_read", nullable = false)
-	private Boolean isRead;
-
-	@Column(name = "target_url")
-	private String targetUrl;
+	@Column(name = "amount", nullable = false)
+	private int amount;
 
 	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "member_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
+	@JoinColumn(name = "member_id", nullable = false) // 정합성 중요
 	private Member member;
-
-	@Builder
-	public Notification(NotificationType type, Boolean isRead, String targetUrl, Member member) {
-		this.type = type;
-		this.isRead = isRead;
-		this.targetUrl = targetUrl;
-		this.member = member;
-	}
 }

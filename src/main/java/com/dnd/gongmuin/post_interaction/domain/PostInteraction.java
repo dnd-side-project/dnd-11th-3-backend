@@ -5,7 +5,6 @@ import static jakarta.persistence.FetchType.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
