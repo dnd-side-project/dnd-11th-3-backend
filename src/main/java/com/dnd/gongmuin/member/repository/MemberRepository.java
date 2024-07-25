@@ -7,4 +7,5 @@ import com.dnd.gongmuin.member.domain.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
+	Member findBySocialEmail(String socialEmail);
 }
