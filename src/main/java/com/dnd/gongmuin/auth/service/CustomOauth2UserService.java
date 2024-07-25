@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.dnd.gongmuin.auth.dto.AuthMemberDto;
+import com.dnd.gongmuin.auth.dto.AuthDto;
 import com.dnd.gongmuin.auth.dto.CustomOauth2User;
 import com.dnd.gongmuin.auth.dto.KakaoResponse;
 import com.dnd.gongmuin.auth.dto.Oauth2Response;
@@ -46,7 +46,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
 		String socialName = createSocialName(oauth2Response);
 		Member findMember = memberRepository.findBySocialEmail(oauth2Response.getEmail());
-		AuthMemberDto authMemberDto = new AuthMemberDto();
+		AuthDto authDto = new AuthDto();
 
 		if (Objects.isNull(findMember)) {
 			// TODO : 신규 회원 추가 정보 필드(nickname, officialEmail ...) 어떻게 처리할지 의논
@@ -61,19 +61,19 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 				.build();
 			Member savedMember = memberRepository.save(newMember);
 
-			authMemberDto = createAuthMembmerDto(savedMember);
+			authDto = createAuthMembmerDto(savedMember);
 		} else if (!equalsSocialEmail(findMember, oauth2Response.getEmail())) {
 			findMember.updateSocialEmail(oauth2Response.getEmail());
 			Member savedMember = memberRepository.save(findMember);
 
-			authMemberDto = createAuthMembmerDto(savedMember);
+			authDto = createAuthMembmerDto(savedMember);
 		}
 
-		return new CustomOauth2User(authMemberDto);
+		return new CustomOauth2User(authDto);
 	}
 
-	private static AuthMemberDto createAuthMembmerDto(Member savedMember) {
-		return AuthMemberDto.builder()
+	private static AuthDto createAuthMembmerDto(Member savedMember) {
+		return AuthDto.builder()
 			.socialEmail(savedMember.getSocialEmail())
 			.socialName(savedMember.getSocialName())
 			.build();
