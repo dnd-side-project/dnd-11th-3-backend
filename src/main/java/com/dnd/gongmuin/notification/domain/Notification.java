@@ -39,24 +39,20 @@ public class Notification extends TimeBaseEntity {
 	@Column(name = "is_read", nullable = false)
 	private Boolean isRead;
 
+	@Column(name = "target_url")
+	private String targetUrl;
+
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
-	@Column(name = "question_post_id")
-	private Long questionPostId;
-
-	@Column(name = "chat_room_id")
-	private Long chatRoomId;
-
 	@Builder
-	public Notification(NotificationType type, Member member, Long questionPostId, Long chatRoomId) {
-		this.isRead = false;
+	public Notification(NotificationType type, Boolean isRead, String targetUrl, Member member) {
 		this.type = type;
+		this.isRead = isRead;
+		this.targetUrl = targetUrl;
 		this.member = member;
-		this.questionPostId = questionPostId;
-		this.chatRoomId = chatRoomId;
 	}
 }
