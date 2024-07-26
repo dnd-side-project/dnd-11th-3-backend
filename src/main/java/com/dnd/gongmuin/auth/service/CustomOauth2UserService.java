@@ -1,8 +1,6 @@
 package com.dnd.gongmuin.auth.service;
 
 import static com.dnd.gongmuin.auth.exception.AuthErrorCode.*;
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 
 import java.util.Objects;
 
@@ -12,6 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.dto.AuthDto;
 import com.dnd.gongmuin.auth.dto.CustomOauth2User;
@@ -19,6 +18,7 @@ import com.dnd.gongmuin.auth.dto.KakaoResponse;
 import com.dnd.gongmuin.auth.dto.Oauth2Response;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
 	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 
+	@Transactional
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -44,50 +46,20 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 			);
 		}
 
-		String socialName = createSocialName(oauth2Response);
-		Member findMember = memberRepository.findBySocialEmail(oauth2Response.getEmail());
-		AuthDto authDto = new AuthDto();
-
-		if (Objects.isNull(findMember)) {
-			// TODO : 신규 회원 추가 정보 필드(nickname, officialEmail ...) 어떻게 처리할지 의논
-			Member newMember = Member.builder()
-				.nickname("dummy")
-				.socialName(socialName)
-				.socialEmail(oauth2Response.getEmail())
-				.officialEmail("dummy")
-				.jobGroup(ENGINEERING)
-				.jobCategory(GAS)
-				.credit(10000)
-				.build();
-			Member savedMember = memberRepository.save(newMember);
-
-			authDto = createAuthMembmerDto(savedMember);
-		} else if (!equalsSocialEmail(findMember, oauth2Response.getEmail())) {
-			findMember.updateSocialEmail(oauth2Response.getEmail());
-			Member savedMember = memberRepository.save(findMember);
-
-			authDto = createAuthMembmerDto(savedMember);
-		}
-
-		return new CustomOauth2User(authDto);
-	}
-
-	private static AuthDto createAuthMembmerDto(Member savedMember) {
-		return AuthDto.builder()
+		Member savedMember = saveOrUpdate(oauth2Response);
+		AuthDto authDto = AuthDto.builder()
 			.socialEmail(savedMember.getSocialEmail())
 			.socialName(savedMember.getSocialName())
 			.build();
+		return new CustomOauth2User(authDto);
 	}
 
-	private String createSocialName(Oauth2Response oauth2Response) {
-		return oauth2Response.getProvider() + oauth2Response.getProviderId() + "/" + oauth2Response.getName();
-	}
+	private Member saveOrUpdate(Oauth2Response oauth2Response) {
+		Member findedOrCreatedMember = memberRepository.findBySocialEmail(oauth2Response.getEmail())
+			.map(m -> m.updateSocialEmail(oauth2Response.getEmail()))
+			.orElse(memberService.createMemberFromOauth2Response(oauth2Response));
 
-	private boolean equalsSocialEmail(Member findMember, String socialEmail) {
-		if (Objects.equals(findMember.getSocialEmail(), socialEmail)) {
-			return true;
-		}
-		return false;
+		return memberRepository.save(findedOrCreatedMember);
 	}
 
 }

@@ -31,4 +31,14 @@ public class KakaoResponse implements Oauth2Response {
 	public String getName() {
 		return ((Map<String, Object>)attribute.get("profile")).get("nickname").toString();
 	}
+
+	@Override
+	public String createSocialName() {
+		return String.format("%s%s/$s",
+			this.getProvider(),
+			this.getProviderId(),
+			this.getName()
+		);
+	}
+
 }
