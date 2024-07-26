@@ -1,14 +1,17 @@
 package com.dnd.gongmuin.auth.dto;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class CustomOauth2User implements OAuth2User {
 
 	private final AuthDto authDto;
+	private Map<String, Object> attributes;
 
 	public CustomOauth2User(AuthDto authDto) {
 		this.authDto = authDto;
@@ -16,16 +19,21 @@ public class CustomOauth2User implements OAuth2User {
 
 	@Override
 	public Map<String, Object> getAttributes() {
-		return null;
+		return attributes;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		String role = "ROLE_USER";
+		return Collections.singletonList(new SimpleGrantedAuthority(role));
 	}
 
 	@Override
 	public String getName() {
-		return null;
+		return authDto.getSocialName();
+	}
+
+	public String getEmail() {
+		return authDto.getSocialEmail();
 	}
 }
