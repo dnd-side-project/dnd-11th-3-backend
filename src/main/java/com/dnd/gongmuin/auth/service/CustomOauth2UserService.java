@@ -28,6 +28,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
 	private final MemberRepository memberRepository;
 	private final MemberService memberService;
+	private final AuthService authService;
 
 	@Transactional
 	@Override
@@ -47,6 +48,8 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		}
 
 		Member savedMember = saveOrUpdate(oauth2Response);
+		authService.saveOrUpdate(savedMember);
+
 		AuthDto authDto = AuthDto.builder()
 			.socialEmail(savedMember.getSocialEmail())
 			.socialName(savedMember.getSocialName())
@@ -55,11 +58,11 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 	}
 
 	private Member saveOrUpdate(Oauth2Response oauth2Response) {
-		Member findedOrCreatedMember = memberRepository.findBySocialEmail(oauth2Response.getEmail())
+		Member member = memberRepository.findBySocialEmail(oauth2Response.getEmail())
 			.map(m -> m.updateSocialEmail(oauth2Response.getEmail()))
 			.orElse(memberService.createMemberFromOauth2Response(oauth2Response));
 
-		return memberRepository.save(findedOrCreatedMember);
+		return memberRepository.save(member);
 	}
 
 }
