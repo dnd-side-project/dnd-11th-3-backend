@@ -27,7 +27,7 @@ class MemberRepositoryTest {
 		Member savedMember = memberRepository.save(공무인1);
 
 		// when
-		Member findMember = memberRepository.findBySocialEmail("gongmuin@nate.com");
+		Member findMember = memberRepository.findBySocialEmail("gongmuin@nate.com").get();
 
 		// then
 		assertThat(findMember.getNickname()).isEqualTo("공무인1");
