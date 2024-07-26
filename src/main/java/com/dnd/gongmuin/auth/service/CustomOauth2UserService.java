@@ -47,7 +47,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 			);
 		}
 
-		Member savedMember = saveOrUpdate(oauth2Response);
+		Member savedMember = memberService.saveOrUpdate(oauth2Response);
 		authService.saveOrUpdate(savedMember);
 
 		AuthDto authDto = AuthDto.builder()
@@ -56,14 +56,5 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 			.build();
 		return new CustomOauth2User(authDto);
 	}
-
-	private Member saveOrUpdate(Oauth2Response oauth2Response) {
-		Member member = memberRepository.findBySocialEmail(oauth2Response.getEmail())
-			.map(m -> m.updateSocialEmail(oauth2Response.getEmail()))
-			.orElse(memberService.createMemberFromOauth2Response(oauth2Response));
-
-		return memberRepository.save(member);
-	}
-
 }
 
