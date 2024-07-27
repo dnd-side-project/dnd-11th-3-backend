@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Provider {
 
-	KAKAO("카카오"),
-	NAVER("네이버");
+	KAKAO("kakao"),
+	NAVER("naver");
 
 	private final String provider;
 
