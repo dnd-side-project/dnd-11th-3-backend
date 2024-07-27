@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-	@GetMapping("/login/kakao")
+	@GetMapping("/api/auth/signin/kakao")
 	public ResponseEntity<?> kakaoLoginRedirect() {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		// 카카오 로그인 페이지로 리다이렉트
