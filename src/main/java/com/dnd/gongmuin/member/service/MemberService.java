@@ -30,7 +30,7 @@ public class MemberService {
 	public String parseProviderFromSocialName(Member member) {
 		String socialName = member.getSocialName().toUpperCase();
 		if (socialName.contains("KAKAO")) {
-			return "KAKKAO";
+			return "KAKAO";
 		} else if (socialName.contains("NAVER")) {
 			return "NAVER";
 		}
