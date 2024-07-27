@@ -1,10 +1,13 @@
 package com.dnd.gongmuin.auth.domain;
 
 import static com.dnd.gongmuin.auth.domain.AuthStatus.*;
+import static jakarta.persistence.EnumType.*;
 
 import com.dnd.gongmuin.member.domain.Member;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,8 +26,12 @@ public class Auth {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Enumerated(STRING)
+	@Column(name = "provider", nullable = false)
 	private Provider provider;
 
+	@Enumerated(STRING)
+	@Column(name = "status", nullable = false)
 	private AuthStatus status;
 
 	@OneToOne
