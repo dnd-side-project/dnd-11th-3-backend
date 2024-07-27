@@ -45,6 +45,7 @@ public class AuthService {
 		return Auth.builder()
 			.status(NEW)
 			.provider(provider)
+			.member(savedMember)
 			.build();
 	}
 
