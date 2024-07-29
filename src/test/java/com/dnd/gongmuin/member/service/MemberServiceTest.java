@@ -39,6 +39,20 @@ class MemberServiceTest {
 		assertThat(naverProvider).isEqualToIgnoringCase("naver");
 	}
 
+	@DisplayName("공무원 이메일이 존재하는지 체크한다.")
+	@Test
+	void isOfficialEmail() {
+		// given
+		Member kakaoMember = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
+
+		// when
+		boolean result = memberService.isOfficialEmail(kakaoMember);
+
+		// then
+		assertThat(result).isFalse();
+
+	}
+
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
 		return Member.builder()
 			.nickname(nickname)

@@ -25,22 +25,6 @@ class AuthServiceTest {
 	@Autowired
 	MemberRepository memberRepository;
 
-	@DisplayName("회원가입 이후 신규 회원의 Auth 상태는 Old로 업데이트 된다.")
-	@Test
-	void saveOrUpdate() {
-		// given
-		Member member = createMember();
-		Member savedMember = memberRepository.save(member);
-		Auth newAuth = authService.saveOrUpdate(savedMember);
-		Member reLoginMember = newAuth.getMember();
-
-		// when
-		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
-
-		// then
-		assertThat(oldAuth.getStatus()).isEqualTo(OLD);
-	}
-
 	@DisplayName("신규 회원의 상태는 Old가 아니다.")
 	@Test
 	void isAuthStatusOld() {
@@ -56,11 +40,47 @@ class AuthServiceTest {
 		assertThat(result).isFalse();
 	}
 
+	@DisplayName("신규 회원의 공무원 이메일 값이 있다면 Auth 상태는 OLD로 업데이트된다.")
+	@Test
+	void updateStatusWithOfficialEmail() {
+		// given
+		Member member = createMember();
+		Member savedMember = memberRepository.save(member);
+		Auth newAuth = authService.saveOrUpdate(savedMember);
+		Member reLoginMember = newAuth.getMember();
+
+		// when
+		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
+
+		// then
+		assertThat(oldAuth.getStatus()).isEqualTo(OLD);
+	}
+
+	@DisplayName("신규 회원의 공무원 이메일 값이 없다면 Auth 상태는 NEW로 유지된다.")
+	@Test
+	void maintainStatusWithOfficialEmail() {
+		// given
+		Member member = Member.builder()
+			.socialName("김신규")
+			.socialEmail("KAKAO123/newMember@member.com")
+			.credit(1000)
+			.build();
+		Member savedMember = memberRepository.save(member);
+		Auth newAuth = authService.saveOrUpdate(savedMember);
+		Member reLoginMember = newAuth.getMember();
+
+		// when
+		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
+
+		// then
+		assertThat(oldAuth.getStatus()).isEqualTo(NEW);
+	}
+
 	private Member createMember() {
 		return Member.builder()
 			.nickname("김철수")
-			.socialName("KAKAO123/철수")
-			.socialEmail("abc@naver.com")
+			.socialName("철수")
+			.socialEmail("KAKAO123/abc@naver.com")
 			.officialEmail("abc123@korea.com")
 			.jobCategory(GAS)
 			.jobGroup(ENGINEERING)
