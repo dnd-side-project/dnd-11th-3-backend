@@ -39,7 +39,7 @@ public class AuthService {
 	}
 
 	private Auth createAuth(Member savedMember) {
-		String providerName = memberService.parseProviderFromSocialName(savedMember);
+		String providerName = memberService.parseProviderFromSocialEmail(savedMember);
 		Provider provider = Provider.fromProviderName(providerName);
 
 		return Auth.builder()

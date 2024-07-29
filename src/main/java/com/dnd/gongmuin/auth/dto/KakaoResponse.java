@@ -33,11 +33,11 @@ public class KakaoResponse implements Oauth2Response {
 	}
 
 	@Override
-	public String createSocialName() {
+	public String createSocialEmail() {
 		return String.format("%s%s/%s",
 			this.getProvider(),
 			this.getProviderId(),
-			this.getName()
+			this.getEmail()
 		);
 	}
 

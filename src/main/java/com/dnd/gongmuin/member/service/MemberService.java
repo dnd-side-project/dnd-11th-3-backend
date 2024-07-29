@@ -20,18 +20,18 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 
 	public Member saveOrUpdate(Oauth2Response oauth2Response) {
-		Member member = memberRepository.findBySocialEmail(oauth2Response.getEmail())
-			.map(m -> m.updateSocialEmail(oauth2Response.getEmail()))
+		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
+			.map(m -> m.updateSocialEmail(oauth2Response.createSocialEmail()))
 			.orElse(createMemberFromOauth2Response(oauth2Response));
 
 		return memberRepository.save(member);
 	}
 
-	public String parseProviderFromSocialName(Member member) {
-		String socialName = member.getSocialName().toUpperCase();
-		if (socialName.contains("KAKAO")) {
+	public String parseProviderFromSocialEmail(Member member) {
+		String socialEmail = member.getSocialEmail().toUpperCase();
+		if (socialEmail.contains("KAKAO")) {
 			return "KAKAO";
-		} else if (socialName.contains("NAVER")) {
+		} else if (socialEmail.contains("NAVER")) {
 			return "NAVER";
 		}
 		throw new NotFoundException(AuthErrorCode.NOT_FOUND_PROVIDER);
@@ -40,8 +40,8 @@ public class MemberService {
 	private Member createMemberFromOauth2Response(Oauth2Response oauth2Response) {
 		return Member.builder()
 			.nickname("dummy")
-			.socialName(oauth2Response.createSocialName())
-			.socialEmail(oauth2Response.getEmail())
+			.socialName(oauth2Response.getName())
+			.socialEmail(oauth2Response.createSocialEmail())
 			.officialEmail("dummy")
 			.jobGroup(ENGINEERING)
 			.jobCategory(GAS)
