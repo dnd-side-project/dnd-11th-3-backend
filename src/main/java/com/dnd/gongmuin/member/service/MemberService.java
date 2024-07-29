@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.member.service;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 import com.dnd.gongmuin.auth.dto.Oauth2Response;
@@ -40,6 +42,10 @@ public class MemberService {
 			.socialEmail(oauth2Response.createSocialEmail())
 			.credit(10000)
 			.build();
+	}
+
+	public boolean isOfficialEmail(Member member) {
+		return Objects.isNull(member.getOfficialEmail());
 	}
 
 }

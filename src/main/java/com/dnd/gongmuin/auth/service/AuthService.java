@@ -25,7 +25,12 @@ public class AuthService {
 
 	public Auth saveOrUpdate(Member savedMember) {
 		Auth findedOrCreatedAuth = authRepository.findByMember(savedMember)
-			.map(a -> a.updateStatus())
+			.map(auth -> {
+				if (!memberService.isOfficialEmail(savedMember)) {
+					return auth.updateStatus();
+				}
+				return auth;
+			})
 			.orElse(createAuth(savedMember));
 
 		return authRepository.save(findedOrCreatedAuth);
