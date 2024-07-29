@@ -65,4 +65,14 @@ public class Member extends TimeBaseEntity {
 		return this;
 	}
 
+	public Member updateAdditionalInfo(String nickname, String officialEmail,
+		JobGroup jobGroup, JobCategory jobCategory) {
+		this.nickname = nickname;
+		this.officialEmail = officialEmail;
+		this.jobGroup = jobGroup;
+		this.jobCategory = jobCategory;
+
+		return this;
+	}
+
 }
