@@ -8,10 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
+@Transactional
 @SpringBootTest
 class MemberServiceTest {
 
@@ -21,16 +23,16 @@ class MemberServiceTest {
 	@Autowired
 	MemberRepository memberRepository;
 
-	@DisplayName("조합된 소셜 이름 부분 중 공급자 부분을 얻을 수 있다.")
+	@DisplayName("조합된 소셜 이메일 부분 중 공급자 부분을 얻을 수 있다.")
 	@Test
-	void parseProviderFromSocialName() {
+	void parseProviderFromSocialEmail() {
 		// given
-		Member kakaoMember = createMember("김철수", "kakao123/철수", "kakao123@daum.net", "abc123@korea.com");
-		Member naverMember = createMember("김철수", "naver123/철수", "naver123@naver.com", "abc321@korea.com");
+		Member kakaoMember = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
+		Member naverMember = createMember("김철수", "철수", "naver123/naver123@naver.com", "abc321@korea.com");
 
 		// when
-		String kakaoProvider = memberService.parseProviderFromSocialName(kakaoMember);
-		String naverProvider = memberService.parseProviderFromSocialName(naverMember);
+		String kakaoProvider = memberService.parseProviderFromSocialEmail(kakaoMember);
+		String naverProvider = memberService.parseProviderFromSocialEmail(naverMember);
 
 		// then
 		assertThat(kakaoProvider).isEqualToIgnoringCase("kakao");

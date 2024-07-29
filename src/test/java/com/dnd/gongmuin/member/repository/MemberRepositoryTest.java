@@ -23,11 +23,11 @@ class MemberRepositoryTest {
 	@Test
 	void test() {
 		// given
-		Member 공무인1 = createMember("공무인1", "kakao1234/영태", "gongmuin@nate.com", "gongumin@korea.kr");
+		Member 공무인1 = createMember("공무인1", "영태", "kakao1234/gongmuin@nate.com", "gongumin@korea.kr");
 		Member savedMember = memberRepository.save(공무인1);
 
 		// when
-		Member findMember = memberRepository.findBySocialEmail("gongmuin@nate.com").get();
+		Member findMember = memberRepository.findBySocialEmail("kakao1234/gongmuin@nate.com").get();
 
 		// then
 		assertThat(findMember.getNickname()).isEqualTo("공무인1");

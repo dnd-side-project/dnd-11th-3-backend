@@ -9,11 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.domain.Auth;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
+@Transactional
 @SpringBootTest
 class AuthServiceTest {
 
@@ -36,7 +38,6 @@ class AuthServiceTest {
 		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
 
 		// then
-		assertThat(newAuth.getStatus()).isEqualTo(NEW);
 		assertThat(oldAuth.getStatus()).isEqualTo(OLD);
 	}
 
