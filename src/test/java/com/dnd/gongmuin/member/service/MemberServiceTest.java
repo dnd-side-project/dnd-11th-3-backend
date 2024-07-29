@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
@@ -69,6 +71,30 @@ class MemberServiceTest {
 
 		// then
 		assertThat(duplicatedNickname.isDuplicate()).isTrue();
+	}
+
+	@DisplayName("신규 회원은 추가 정보가 업데이트 된다.")
+	@Test
+	void signUp() {
+		// given
+		Member member1 = createMember(null, "철수", "kakao123/kakao123@daum.net", null);
+		memberRepository.save(member1);
+
+		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "가스");
+
+		// when
+		SignUpResponse response = memberService.signUp(request, "kakao123/kakao123@daum.net");
+
+		// then
+		assertThat(response.memberId()).isEqualTo(1L);
+		assertThat(member1).extracting("officialEmail", "nickname", "jobGroup", "jobCategory")
+			.containsExactlyInAnyOrder(
+				"abc123@korea.com",
+				"김신규",
+				GAS,
+				ENGINEERING
+			);
+
 	}
 
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
