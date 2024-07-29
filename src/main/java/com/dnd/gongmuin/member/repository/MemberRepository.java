@@ -10,4 +10,6 @@ import com.dnd.gongmuin.member.domain.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findBySocialEmail(String socialEmail);
+
+	boolean existsByNickname(String nickname);
 }

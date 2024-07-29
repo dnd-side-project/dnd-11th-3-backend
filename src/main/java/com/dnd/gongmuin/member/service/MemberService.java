@@ -8,6 +8,8 @@ import com.dnd.gongmuin.auth.dto.Oauth2Response;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -48,4 +50,9 @@ public class MemberService {
 		return Objects.isNull(member.getOfficialEmail());
 	}
 
+	public ValidNickNameResponse isDuplicatedNickname(ValidNickNameRequest request) {
+		boolean isDuplicate = memberRepository.existsByNickname(request.nickname());
+
+		return new ValidNickNameResponse(isDuplicate);
+	}
 }
