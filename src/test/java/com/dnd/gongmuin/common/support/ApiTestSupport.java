@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.common;
+package com.dnd.gongmuin.common.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

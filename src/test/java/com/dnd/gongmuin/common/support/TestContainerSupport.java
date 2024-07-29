@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.common;
+package com.dnd.gongmuin.common.support;
 
 import static lombok.AccessLevel.*;
 

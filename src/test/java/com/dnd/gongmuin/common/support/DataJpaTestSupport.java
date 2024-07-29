@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.common;
+package com.dnd.gongmuin.common.support;
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -10,5 +10,5 @@ import com.dnd.gongmuin.config.TestAuditingConfig;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(TestAuditingConfig.class)
-public abstract class DataJpaTestSupport extends TestContainerSupport{
+public abstract class DataJpaTestSupport extends TestContainerSupport {
 }
