@@ -56,6 +56,7 @@ public class MemberService {
 		return Objects.isNull(member.getOfficialEmail());
 	}
 
+	@Transactional(readOnly = true)
 	public ValidNickNameResponse isDuplicatedNickname(ValidNickNameRequest request) {
 		boolean isDuplicate = memberRepository.existsByNickname(request.nickname());
 
