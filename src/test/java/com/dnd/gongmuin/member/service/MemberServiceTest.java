@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
 @Transactional
@@ -51,6 +53,22 @@ class MemberServiceTest {
 		// then
 		assertThat(result).isFalse();
 
+	}
+
+	@DisplayName("중복 닉네임이 존재하는지 체크한다.")
+	@Test
+	void isDuplicatedNickname() {
+		// given
+		Member member1 = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
+		memberRepository.save(member1);
+
+		ValidNickNameRequest request = new ValidNickNameRequest("김철수");
+
+		// when
+		ValidNickNameResponse duplicatedNickname = memberService.isDuplicatedNickname(request);
+
+		// then
+		assertThat(duplicatedNickname.isDuplicate()).isTrue();
 	}
 
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
