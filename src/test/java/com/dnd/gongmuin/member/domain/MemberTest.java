@@ -13,7 +13,7 @@ class MemberTest {
 
 	@DisplayName("소셜 이메일을 변경할 수 있다.")
 	@Test
-	void test() {
+	void updateSocialEmail() {
 		// given
 		Member 공무인1 = createMember("공무인1", "kakao1234/영태", "gongmuin@nate.com", "gongmuin@korea.kr");
 
@@ -22,6 +22,24 @@ class MemberTest {
 
 		// then
 		assertThat(공무인1.getSocialEmail()).isEqualTo("gongmuin2@daum.net");
+
+	}
+
+	@DisplayName("추가 정보를 업데이트 할 수 있다.")
+	@Test
+	void updateAdditionalInfo() {
+		// given
+		Member member = createMember("김신규", "kakao1234/영태", "gongmuin@nate.com", "gongmuin@korea.kr");
+
+		// when
+		member.updateAdditionalInfo("김회원", "abcd@korea.kr", ENGINEERING, GAS);
+
+		// then
+		assertThat(member).extracting("nickname", "officialEmail")
+			.containsExactlyInAnyOrder(
+				"김회원",
+				"abcd@korea.kr"
+			);
 
 	}
 
