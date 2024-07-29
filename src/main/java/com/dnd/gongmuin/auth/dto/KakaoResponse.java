@@ -34,7 +34,7 @@ public class KakaoResponse implements Oauth2Response {
 
 	@Override
 	public String createSocialName() {
-		return String.format("%s%s/$s",
+		return String.format("%s%s/%s",
 			this.getProvider(),
 			this.getProviderId(),
 			this.getName()
