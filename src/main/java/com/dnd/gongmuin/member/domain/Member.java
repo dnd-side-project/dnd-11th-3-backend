@@ -25,24 +25,24 @@ public class Member extends TimeBaseEntity {
 	@Column(name = "member_id")
 	private Long id;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(name = "nickname")
 	private String nickname;
 
 	@Column(name = "social_name", nullable = false)
 	private String socialName;
 
 	@Enumerated(STRING)
-	@Column(name = "job_group", nullable = false)
+	@Column(name = "job_group")
 	private JobGroup jobGroup;
 
 	@Enumerated(STRING)
-	@Column(name = "job_category", nullable = false)
+	@Column(name = "job_category")
 	private JobCategory jobCategory;
 
 	@Column(name = "social_email", nullable = false)
 	private String socialEmail;
 
-	@Column(name = "official_email", nullable = false)
+	@Column(name = "official_email")
 	private String officialEmail;
 
 	@Column(name = "credit", nullable = false)
