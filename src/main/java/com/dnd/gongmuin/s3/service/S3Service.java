@@ -25,7 +25,7 @@ public class S3Service {
 
 	private static final String IMAGE_FOLDER_NAME = "images";
 	private static final String VIDEO_FOLDER_NAME = "videos";
-	private static final Set<String> ALLOWED_FILE_EXTENSIONS = Set.of("jpg", "jpeg", "png", "mp4", "avi", "mov");
+	private static final Set<String> ALLOWED_FILE_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".mp4", ".avi", ".mov");
 	private final AmazonS3 amazonS3;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -72,6 +72,7 @@ public class S3Service {
 			throw new ValidationException(S3ErrorCode.EMPTY_FILE_NAME);
 		}
 		String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+		System.out.println("extension = " + extension);
 		if (!ALLOWED_FILE_EXTENSIONS.contains(extension)){
 			throw new ValidationException(S3ErrorCode.INVALID_FILE_EXTENSION);
 		}
