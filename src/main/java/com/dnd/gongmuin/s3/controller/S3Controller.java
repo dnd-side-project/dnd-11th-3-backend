@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/files")
 public class S3Controller {
+
 	private final S3Service s3Service;
 
 	@PostMapping("/images")
@@ -34,7 +35,7 @@ public class S3Controller {
 	@PostMapping("/videos")
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
 		@ModelAttribute @Valid VideoUploadRequest request
-	){
+	) {
 		String videoUrl = s3Service.uploadVideo(request.videoFile());
 		return ResponseEntity.ok(VideoUploadResponse.from(videoUrl));
 	}
