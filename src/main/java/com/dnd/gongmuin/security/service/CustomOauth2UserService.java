@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.service;
+package com.dnd.gongmuin.security.service;
 
 import static com.dnd.gongmuin.auth.exception.AuthErrorCode.*;
 
@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.dto.AuthDto;
-import com.dnd.gongmuin.auth.dto.CustomOauth2User;
-import com.dnd.gongmuin.auth.dto.KakaoResponse;
-import com.dnd.gongmuin.auth.dto.Oauth2Response;
+import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.security.dto.CustomOauth2User;
+import com.dnd.gongmuin.security.dto.KakaoResponse;
+import com.dnd.gongmuin.security.dto.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
 

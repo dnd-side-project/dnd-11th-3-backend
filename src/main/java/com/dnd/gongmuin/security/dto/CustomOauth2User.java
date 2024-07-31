@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.dto;
+package com.dnd.gongmuin.security.dto;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import com.dnd.gongmuin.auth.dto.AuthDto;
 
 public class CustomOauth2User implements OAuth2User {
 

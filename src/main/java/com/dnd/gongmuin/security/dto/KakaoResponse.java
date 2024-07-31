@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.dto;
+package com.dnd.gongmuin.security.dto;
 
 import java.util.Map;
 
