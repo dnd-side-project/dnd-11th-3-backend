@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.gongmuin.auth.dto.CustomOauth2User;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.security.dto.CustomOauth2User;
 
 import lombok.RequiredArgsConstructor;
 

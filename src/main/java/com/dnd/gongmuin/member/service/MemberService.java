@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.auth.dto.Oauth2Response;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.JobCategory;
@@ -17,6 +16,7 @@ import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.security.dto.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
 
