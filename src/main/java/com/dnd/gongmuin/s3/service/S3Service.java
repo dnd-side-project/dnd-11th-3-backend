@@ -72,7 +72,6 @@ public class S3Service {
 			throw new ValidationException(S3ErrorCode.EMPTY_FILE_NAME);
 		}
 		String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
-		System.out.println("extension = " + extension);
 		if (!ALLOWED_FILE_EXTENSIONS.contains(extension)) {
 			throw new ValidationException(S3ErrorCode.INVALID_FILE_EXTENSION);
 		}
