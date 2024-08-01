@@ -68,11 +68,7 @@ class TokenProviderTest {
 
 		// when
 		String accessToken = tokenProvider.generateAccessToken(authentication, now);
-		Claims claims = Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(accessToken)
-			.getPayload();
+		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
 
 		Date expiration = claims.getExpiration();
 
@@ -93,11 +89,7 @@ class TokenProviderTest {
 
 		// when
 		String accessToken = tokenProvider.generateRefreshToken(authentication, now);
-		Claims claims = Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(accessToken)
-			.getPayload();
+		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
 
 		Date expiration = claims.getExpiration();
 
@@ -144,4 +136,3 @@ class TokenProviderTest {
 		assertThat(result).isFalse();
 	}
 }
-
