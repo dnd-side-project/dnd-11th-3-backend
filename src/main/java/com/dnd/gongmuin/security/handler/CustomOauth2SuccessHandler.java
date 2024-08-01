@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.security.handler;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -12,6 +13,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.security.dto.CustomOauth2User;
+import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,27 +22,28 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class CustomOauth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler {
 
 	private final AuthService authService;
 	private final MemberRepository memberRepository;
+	private final TokenProvider tokenProvider;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
 
 		CustomOauth2User customOauth2User = (CustomOauth2User)authentication.getPrincipal();
-		System.out.println("customOauth2User.getName() = " + customOauth2User.getName());
 
 		String socialEmail = customOauth2User.getEmail();
 		Member findmember = memberRepository.findBySocialEmail(socialEmail)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
+		String token = tokenProvider.generateSignUpToken(customOauth2User, new Date());
+		response.setHeader("Authorization", token);
+
 		if (!isAuthStatusOld(findmember)) {
-			// TODO : 임시 JWT 토큰 발급 구현
 			response.sendRedirect("/additional-info");
 		} else {
-			// TODO : 기존회원 JWT 발급 및 페이지 리다이렉션 구현
 			response.sendRedirect("/");
 		}
 	}
