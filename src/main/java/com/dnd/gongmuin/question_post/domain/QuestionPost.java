@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
+import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 
 import jakarta.persistence.CascadeType;
@@ -46,8 +47,8 @@ public class QuestionPost extends TimeBaseEntity {
 	private int reward;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "category", nullable = false)
-	QuestionCategory category;
+	@Column(name = "job_group", nullable = false)
+	JobGroup jobGroup;
 
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
@@ -62,13 +63,13 @@ public class QuestionPost extends TimeBaseEntity {
 	private Member member;
 
 	@Builder
-	public QuestionPost(String title, String content, int reward, QuestionCategory category,
+	public QuestionPost(String title, String content, int reward, JobGroup jobGroup,
 		List<QuestionPostImage> images, Member member) {
 		this.isChosen = false;
 		this.title = title;
 		this.content = content;
 		this.reward = reward;
-		this.category = category;
+		this.jobGroup = jobGroup;
 		this.images = images;
 		this.member = member;
 	}
