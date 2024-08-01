@@ -38,7 +38,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		Member findmember = memberRepository.findBySocialEmail(socialEmail)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-		String token = tokenProvider.generateSignUpToken(customOauth2User, new Date());
+		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
 		response.setHeader("Authorization", token);
 
 		if (!isAuthStatusOld(findmember)) {

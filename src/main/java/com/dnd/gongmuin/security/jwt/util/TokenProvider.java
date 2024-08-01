@@ -38,7 +38,6 @@ public class TokenProvider {
 	private String key;
 	private SecretKey secretKey;
 	private static final String ROLE_KEY = "ROLE";
-	private static final long SIGNUP_TOKEN_EXPIRE_TIME = 1000 * 60 * 15L;
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final TokenService tokenService;
@@ -56,10 +55,6 @@ public class TokenProvider {
 		String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
 		// TODO : RedisRepo refreshToken SAVE
 		return refreshToken;
-	}
-
-	public String generateSignUpToken(CustomOauth2User authentication, Date now) {
-		return generateToken(authentication, SIGNUP_TOKEN_EXPIRE_TIME, now);
 	}
 
 	private String generateToken(CustomOauth2User authentication, long tokenExpireTime, Date now) {
