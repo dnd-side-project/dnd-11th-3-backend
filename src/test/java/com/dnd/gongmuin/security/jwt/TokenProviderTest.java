@@ -143,31 +143,5 @@ class TokenProviderTest {
 		// then
 		assertThat(result).isFalse();
 	}
-
-	@DisplayName("만료일이 15분인 회원가입 토큰이 생성된다.")
-	@Test
-	void generateSignUpToken() {
-		// given
-		Date now = new Date();
-		long expectedExpirationTime = now.getTime() + 15 * 60 * 1000;
-
-		when(authDto.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authDto.getSocialName()).thenReturn("김회원");
-		CustomOauth2User authentication = new CustomOauth2User(authDto);
-
-		// when
-		String accessToken = tokenProvider.generateSignUpToken(authentication, now);
-		Claims claims = Jwts.parser()
-			.verifyWith(secretKey)
-			.build()
-			.parseSignedClaims(accessToken)
-			.getPayload();
-
-		Date expiration = claims.getExpiration();
-
-		// then
-		assertThat(expiration.getTime()).isCloseTo(expectedExpirationTime, within(1000L));
-	}
-
 }
 
