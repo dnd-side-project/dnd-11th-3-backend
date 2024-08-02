@@ -17,8 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.dnd.gongmuin.common.exception.runtime.CustomJwtException;
+import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.security.jwt.exception.JwtErrorCode;
-import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.service.TokenService;
 
@@ -41,6 +42,7 @@ public class TokenProvider {
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final TokenService tokenService;
+	private final MemberService memberService;
 
 	@PostConstruct
 	private void initSecretKey() {
@@ -84,8 +86,8 @@ public class TokenProvider {
 		Claims claims = parseToken(token);
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-		AuthInfo authInfo = AuthInfo.fromSocialEmail(claims.getSubject());
-		CustomOauth2User principal = new CustomOauth2User(authInfo);
+		String socialEmail = claims.getSubject();
+		Member principal = memberService.getMemberBySocialEmail(socialEmail);
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
