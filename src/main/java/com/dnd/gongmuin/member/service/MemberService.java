@@ -11,9 +11,9 @@ import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
+import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
-import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
+import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
@@ -56,10 +56,10 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public ValidNickNameResponse isDuplicatedNickname(ValidNickNameRequest request) {
+	public ValidateNickNameResponse isDuplicatedNickname(ValidateNickNameRequest request) {
 		boolean isDuplicate = memberRepository.existsByNickname(request.nickname());
 
-		return new ValidNickNameResponse(isDuplicate);
+		return new ValidateNickNameResponse(isDuplicate);
 	}
 
 	@Transactional

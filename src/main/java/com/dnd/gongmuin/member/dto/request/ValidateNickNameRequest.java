@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.member.dto.request;
 
-public record ValidNickNameRequest(
+public record ValidateNickNameRequest(
 	String nickname
 ) {
 
