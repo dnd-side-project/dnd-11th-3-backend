@@ -50,6 +50,7 @@ public class SecurityConfig {
 					.requestMatchers("/api/auth/signin/kakao").permitAll()
 					.requestMatchers("/api/auth/member").permitAll()
 					.requestMatchers("/api/auth/check-email").permitAll()
+					.requestMatchers("/additional-info").permitAll()
 					.anyRequest().authenticated()
 			)
 			.oauth2Login((oauth2) -> oauth2
