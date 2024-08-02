@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.domain.Auth;
+import com.dnd.gongmuin.auth.repository.AuthRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
@@ -24,6 +25,9 @@ class AuthServiceTest {
 
 	@Autowired
 	MemberRepository memberRepository;
+
+	@Autowired
+	AuthRepository authRepository;
 
 	@DisplayName("신규 회원의 상태는 Old가 아니다.")
 	@Test
@@ -46,14 +50,14 @@ class AuthServiceTest {
 		// given
 		Member member = createMember();
 		Member savedMember = memberRepository.save(member);
-		Auth newAuth = authService.saveOrUpdate(savedMember);
-		Member reLoginMember = newAuth.getMember();
+		authService.saveOrUpdate(savedMember);
+		authService.saveOrUpdate(savedMember);
 
 		// when
-		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
+		Auth findAuth = authRepository.findByMember(savedMember).get();
 
 		// then
-		assertThat(oldAuth.getStatus()).isEqualTo(OLD);
+		assertThat(findAuth.getStatus()).isEqualTo(OLD);
 	}
 
 	@DisplayName("신규 회원의 공무원 이메일 값이 없다면 Auth 상태는 NEW로 유지된다.")
@@ -62,14 +66,14 @@ class AuthServiceTest {
 		// given
 		Member member = Member.of("김신규", "KAKAO123/newMember@member.com", 1000);
 		Member savedMember = memberRepository.save(member);
-		Auth newAuth = authService.saveOrUpdate(savedMember);
-		Member reLoginMember = newAuth.getMember();
+		authService.saveOrUpdate(savedMember);
+		authService.saveOrUpdate(savedMember);
 
 		// when
-		Auth oldAuth = authService.saveOrUpdate(reLoginMember);
+		Auth findAuth = authRepository.findByMember(savedMember).get();
 
 		// then
-		assertThat(oldAuth.getStatus()).isEqualTo(NEW);
+		assertThat(findAuth.getStatus()).isEqualTo(NEW);
 	}
 
 	private Member createMember() {
