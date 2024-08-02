@@ -23,17 +23,17 @@ public class AuthService {
 	private final AuthRepository authRepository;
 	private final MemberService memberService;
 
-	public Auth saveOrUpdate(Member savedMember) {
+	public void saveOrUpdate(Member savedMember) {
 		Auth findedOrCreatedAuth = authRepository.findByMember(savedMember)
 			.map(auth -> {
 				if (!memberService.isOfficialEmail(savedMember)) {
-					return auth.updateStatus();
+					auth.updateStatus();
 				}
 				return auth;
 			})
 			.orElse(createAuth(savedMember));
 
-		return authRepository.save(findedOrCreatedAuth);
+		authRepository.save(findedOrCreatedAuth);
 	}
 
 	public boolean isAuthStatusOld(Member member) {
