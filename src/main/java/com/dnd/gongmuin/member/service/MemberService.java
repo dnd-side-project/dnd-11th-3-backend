@@ -28,7 +28,10 @@ public class MemberService {
 
 	public Member saveOrUpdate(Oauth2Response oauth2Response) {
 		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
-			.map(m -> m.updateSocialEmail(oauth2Response.createSocialEmail()))
+			.map(m -> {
+				m.updateSocialEmail(oauth2Response.createSocialEmail());
+				return m;
+			})
 			.orElse(createMemberFromOauth2Response(oauth2Response));
 
 		return memberRepository.save(member);
@@ -68,9 +71,9 @@ public class MemberService {
 			new NotFoundException(MemberErrorCode.NOT_FOUND_NEWMEMBER);
 		}
 
-		Member savedMember = updateAdditionalInfo(request, findMember);
+		Member signUpMember = updateAdditionalInfo(request, findMember);
 
-		return new SignUpResponse(savedMember.getId());
+		return new SignUpResponse(signUpMember.getNickname());
 	}
 
 	private Member updateAdditionalInfo(AdditionalInfoRequest request, Member findMember) {
