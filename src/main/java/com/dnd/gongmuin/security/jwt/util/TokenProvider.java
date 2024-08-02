@@ -84,9 +84,7 @@ public class TokenProvider {
 		Claims claims = parseToken(token);
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-		AuthDto authDto = AuthDto.builder()
-			.socialEmail(claims.getSubject())
-			.build();
+		AuthDto authDto = AuthDto.fromSocialEmail(claims.getSubject());
 		CustomOauth2User principal = new CustomOauth2User(authDto);
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);

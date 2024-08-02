@@ -45,11 +45,7 @@ public class MemberService {
 	}
 
 	private Member createMemberFromOauth2Response(Oauth2Response oauth2Response) {
-		return Member.builder()
-			.socialName(oauth2Response.getName())
-			.socialEmail(oauth2Response.createSocialEmail())
-			.credit(10000)
-			.build();
+		return Member.of(oauth2Response.getName(), oauth2Response.createSocialEmail(), 10000);
 	}
 
 	public boolean isOfficialEmail(Member member) {

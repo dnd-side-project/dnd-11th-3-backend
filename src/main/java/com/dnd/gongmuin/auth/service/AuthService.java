@@ -47,11 +47,7 @@ public class AuthService {
 		String providerName = memberService.parseProviderFromSocialEmail(savedMember);
 		Provider provider = Provider.fromProviderName(providerName);
 
-		return Auth.builder()
-			.status(NEW)
-			.provider(provider)
-			.member(savedMember)
-			.build();
+		return Auth.of(provider, NEW, savedMember);
 	}
 
 }

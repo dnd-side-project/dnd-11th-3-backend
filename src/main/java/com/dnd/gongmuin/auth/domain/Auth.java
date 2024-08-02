@@ -44,6 +44,14 @@ public class Auth {
 		this.member = member;
 	}
 
+	public static Auth of(Provider provider, AuthStatus status, Member member) {
+		return Auth.builder()
+			.provider(provider)
+			.status(status)
+			.member(member)
+			.build();
+	}
+
 	public Auth updateStatus() {
 		this.status = OLD;
 		return this;

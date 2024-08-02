@@ -16,4 +16,15 @@ public class AuthDto {
 		this.socialName = socialName;
 		this.socialEmail = socialEmail;
 	}
+
+	public static AuthDto fromSocialEmail(String socialEmail) {
+		return AuthDto.builder()
+			.socialEmail(socialEmail)
+			.build();
+	}
+
+	public static AuthDto of(String socialName, String socialEmail) {
+		return new AuthDto(socialName, socialEmail);
+	}
+
 }

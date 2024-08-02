@@ -49,7 +49,7 @@ public class Member extends TimeBaseEntity {
 	private int credit;
 
 	@Builder
-	public Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
+	private Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
 		String officialEmail, int credit) {
 		this.nickname = nickname;
 		this.socialName = socialName;
@@ -58,6 +58,14 @@ public class Member extends TimeBaseEntity {
 		this.socialEmail = socialEmail;
 		this.officialEmail = officialEmail;
 		this.credit = credit;
+	}
+
+	public static Member of(String socialName, String socialEmail, int credit) {
+		return Member.builder()
+			.socialName(socialName)
+			.socialEmail(socialEmail)
+			.credit(credit)
+			.build();
 	}
 
 	public Member updateSocialEmail(String socialEmail) {

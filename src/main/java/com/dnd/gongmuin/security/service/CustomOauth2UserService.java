@@ -51,10 +51,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		Member savedMember = memberService.saveOrUpdate(oauth2Response);
 		authService.saveOrUpdate(savedMember);
 
-		AuthDto authDto = AuthDto.builder()
-			.socialEmail(savedMember.getSocialEmail())
-			.socialName(savedMember.getSocialName())
-			.build();
+		AuthDto authDto = AuthDto.of(savedMember.getSocialName(), savedMember.getSocialEmail());
 		return new CustomOauth2User(authDto);
 	}
 }
