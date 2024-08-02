@@ -23,7 +23,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,13 +47,13 @@ public class QuestionPost extends TimeBaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "job_group", nullable = false)
-	JobGroup jobGroup;
+	private JobGroup jobGroup;
 
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
 
 	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
-	private List<QuestionPostImage> images = new ArrayList<>();
+	private final List<QuestionPostImage> images = new ArrayList<>();
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
@@ -62,15 +61,27 @@ public class QuestionPost extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
-	@Builder
-	public QuestionPost(String title, String content, int reward, JobGroup jobGroup,
+	private QuestionPost(String title, String content, int reward, JobGroup jobGroup,
 		List<QuestionPostImage> images, Member member) {
 		this.isChosen = false;
 		this.title = title;
 		this.content = content;
 		this.reward = reward;
 		this.jobGroup = jobGroup;
-		this.images = images;
 		this.member = member;
+		addImages(images);
+	}
+
+	public static QuestionPost of(String title, String content, int reward, JobGroup jobGroup,
+		List<QuestionPostImage> images, Member member) {
+		return new QuestionPost(title, content, reward, jobGroup, images, member);
+	}
+
+	//==양방향 편의 메서드==//
+	private void addImages(List<QuestionPostImage> images) {
+		images.forEach(image -> {
+			this.images.add(image);
+			image.addQuestionPost(this);
+		});
 	}
 }
