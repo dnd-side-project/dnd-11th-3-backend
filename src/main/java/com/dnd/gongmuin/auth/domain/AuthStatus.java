@@ -10,5 +10,5 @@ public enum AuthStatus {
 	NEW("신규"),
 	OLD("기존");
 
-	private final String status;
+	private final String label;
 }
