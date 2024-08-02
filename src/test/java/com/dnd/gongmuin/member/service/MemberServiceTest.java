@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
-import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
@@ -83,10 +82,9 @@ class MemberServiceTest {
 		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "가스");
 
 		// when
-		SignUpResponse response = memberService.signUp(request, "kakao123/kakao123@daum.net");
+		memberService.signUp(request, "kakao123/kakao123@daum.net");
 
 		// then
-		assertThat(response.memberId()).isEqualTo(1L);
 		assertThat(member1).extracting("officialEmail", "nickname", "jobGroup", "jobCategory")
 			.containsExactlyInAnyOrder(
 				"abc123@korea.com",
