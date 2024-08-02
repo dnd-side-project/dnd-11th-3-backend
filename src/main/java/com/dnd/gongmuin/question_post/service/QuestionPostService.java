@@ -24,12 +24,12 @@ public class QuestionPostService {
 	@Transactional
 	public QuestionPostDetailResponse registerQuestionPost(RegisterQuestionPostRequest request) {
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, getTempMember());
-		return QuestionPostMapper.toQuestionPostDetailResponse(questionPost);
+		return QuestionPostMapper.toQuestionPostDetailResponse(questionPostRepository.save(questionPost));
 	}
 
 	// TODO: 시큐리티 인증 객체로 대체
 	public Member getTempMember(){
-		return memberRepository.findById(1L).orElseThrow(ValidationException::new);
+		return memberRepository.findById(3L).orElseThrow(ValidationException::new);
 	}
 
 
