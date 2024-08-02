@@ -68,7 +68,7 @@ public class MemberService {
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 		if (!isOfficialEmail(findMember)) {
-			new NotFoundException(MemberErrorCode.NOT_FOUND_NEWMEMBER);
+			new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
 
 		Member signUpMember = updateAdditionalInfo(request, findMember);
