@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.auth.domain;
 
-import static com.dnd.gongmuin.auth.domain.AuthStatus.*;
 import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.EnumType.*;
 
@@ -59,6 +58,6 @@ public class Auth {
 	}
 
 	public void updateStatus() {
-		this.status = OLD;
+		this.status = AuthStatus.OLD;
 	}
 }
