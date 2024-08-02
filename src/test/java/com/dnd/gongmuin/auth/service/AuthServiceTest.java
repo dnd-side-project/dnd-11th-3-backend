@@ -1,8 +1,5 @@
 package com.dnd.gongmuin.auth.service;
 
-import static com.dnd.gongmuin.auth.domain.AuthStatus.*;
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.domain.Auth;
+import com.dnd.gongmuin.auth.domain.AuthStatus;
 import com.dnd.gongmuin.auth.repository.AuthRepository;
+import com.dnd.gongmuin.member.domain.JobCategory;
+import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
@@ -57,7 +57,7 @@ class AuthServiceTest {
 		Auth findAuth = authRepository.findByMember(savedMember).get();
 
 		// then
-		assertThat(findAuth.getStatus()).isEqualTo(OLD);
+		assertThat(findAuth.getStatus()).isEqualTo(AuthStatus.OLD);
 	}
 
 	@DisplayName("신규 회원의 공무원 이메일 값이 없다면 Auth 상태는 NEW로 유지된다.")
@@ -73,7 +73,7 @@ class AuthServiceTest {
 		Auth findAuth = authRepository.findByMember(savedMember).get();
 
 		// then
-		assertThat(findAuth.getStatus()).isEqualTo(NEW);
+		assertThat(findAuth.getStatus()).isEqualTo(AuthStatus.NEW);
 	}
 
 	private Member createMember() {
@@ -82,8 +82,8 @@ class AuthServiceTest {
 			.socialName("철수")
 			.socialEmail("KAKAO123/abc@naver.com")
 			.officialEmail("abc123@korea.com")
-			.jobCategory(GAS)
-			.jobGroup(ENGINEERING)
+			.jobCategory(JobCategory.GAS)
+			.jobGroup(JobGroup.ENGINEERING)
 			.credit(10000)
 			.build();
 
