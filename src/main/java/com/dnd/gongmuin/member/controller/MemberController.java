@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
@@ -17,17 +18,18 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/auth")
 public class MemberController {
 
 	private final MemberService memberService;
 
-	@PostMapping("/api/auth/check-nickname")
+	@PostMapping("/check-nickname")
 	public ResponseEntity<ValidateNickNameResponse> checkNickName(
 		@RequestBody ValidateNickNameRequest validateNickNameRequest) {
 		return ResponseEntity.ok(memberService.isDuplicatedNickname(validateNickNameRequest));
 	}
 
-	@PostMapping("/api/auth/member")
+	@PostMapping("/member")
 	public ResponseEntity<SignUpResponse> signUp(@RequestBody AdditionalInfoRequest request,
 		@AuthenticationPrincipal CustomOauth2User loginMember) {
 		SignUpResponse response = memberService.signUp(request, loginMember.getEmail());
