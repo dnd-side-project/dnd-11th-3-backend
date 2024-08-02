@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
+import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
-import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
+import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
@@ -22,8 +22,9 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping("/api/auth/check-nickname")
-	public ResponseEntity<ValidNickNameResponse> checkNickName(@RequestBody ValidNickNameRequest validNickNameRequest) {
-		return ResponseEntity.ok(memberService.isDuplicatedNickname(validNickNameRequest));
+	public ResponseEntity<ValidateNickNameResponse> checkNickName(
+		@RequestBody ValidateNickNameRequest validateNickNameRequest) {
+		return ResponseEntity.ok(memberService.isDuplicatedNickname(validateNickNameRequest));
 	}
 
 	@PostMapping("/api/auth/member")
