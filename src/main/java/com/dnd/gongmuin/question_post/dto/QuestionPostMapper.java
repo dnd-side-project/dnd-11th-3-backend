@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class QuestionPostMapper {
 
 	public static QuestionPost toQuestionPost(RegisterQuestionPostRequest request, Member member) {
-		JobGroup jobGroup = JobGroup.of(request.jobGroup());
+		JobGroup jobGroup = JobGroup.of(request.targetJobGroup());
 		List<QuestionPostImage> images =request.imageUrls().stream()
 			.map(QuestionPostImage::from)
 			.toList();

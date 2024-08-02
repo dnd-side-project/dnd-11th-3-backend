@@ -7,17 +7,17 @@ public record RegisterQuestionPostRequest(
 	String content,
 	List<String> imageUrls,
 	int reward,
-	String jobGroup
+	String targetJobGroup
 ) {
 	public static RegisterQuestionPostRequest of(
 		String title,
 		String content,
 		List<String> imageUrls,
 		int reward,
-		String jobGroup
+		String targetJobGroup
 	) {
 		return new RegisterQuestionPostRequest(
-			title, content, imageUrls, reward, jobGroup
+			title, content, imageUrls, reward, targetJobGroup
 		);
 	}
 }
