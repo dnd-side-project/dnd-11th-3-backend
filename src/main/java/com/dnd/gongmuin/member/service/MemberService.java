@@ -16,7 +16,7 @@ import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.security.dto.Oauth2Response;
+import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
 

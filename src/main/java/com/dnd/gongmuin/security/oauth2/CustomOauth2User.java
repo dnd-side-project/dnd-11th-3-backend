@@ -8,15 +8,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.dnd.gongmuin.auth.dto.AuthDto;
-
 public class CustomOauth2User implements OAuth2User {
 
-	private final AuthDto authDto;
+	private final AuthInfo authInfo;
 	private Map<String, Object> attributes;
 
-	public CustomOauth2User(AuthDto authDto) {
-		this.authDto = authDto;
+	public CustomOauth2User(AuthInfo authInfo) {
+		this.authInfo = authInfo;
 	}
 
 	@Override
@@ -32,10 +30,10 @@ public class CustomOauth2User implements OAuth2User {
 
 	@Override
 	public String getName() {
-		return authDto.getSocialName();
+		return authInfo.getSocialName();
 	}
 
 	public String getEmail() {
-		return authDto.getSocialEmail();
+		return authInfo.getSocialEmail();
 	}
 }

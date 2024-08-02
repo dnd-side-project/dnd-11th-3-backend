@@ -12,14 +12,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.auth.dto.AuthDto;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.member.service.MemberService;
-import com.dnd.gongmuin.security.dto.CustomOauth2User;
-import com.dnd.gongmuin.security.dto.KakaoResponse;
-import com.dnd.gongmuin.security.dto.Oauth2Response;
+import com.dnd.gongmuin.security.oauth2.AuthInfo;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
+import com.dnd.gongmuin.security.oauth2.KakaoResponse;
+import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,8 +51,8 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		Member savedMember = memberService.saveOrUpdate(oauth2Response);
 		authService.saveOrUpdate(savedMember);
 
-		AuthDto authDto = AuthDto.of(savedMember.getSocialName(), savedMember.getSocialEmail());
-		return new CustomOauth2User(authDto);
+		AuthInfo authInfo = AuthInfo.of(savedMember.getSocialName(), savedMember.getSocialEmail());
+		return new CustomOauth2User(authInfo);
 	}
 }
 

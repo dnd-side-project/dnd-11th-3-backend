@@ -11,7 +11,7 @@ import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
-import com.dnd.gongmuin.security.dto.CustomOauth2User;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import lombok.RequiredArgsConstructor;
 

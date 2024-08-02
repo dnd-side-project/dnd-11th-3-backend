@@ -16,10 +16,10 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.dnd.gongmuin.auth.dto.AuthDto;
 import com.dnd.gongmuin.common.exception.runtime.CustomJwtException;
-import com.dnd.gongmuin.security.dto.CustomOauth2User;
 import com.dnd.gongmuin.security.jwt.exception.JwtErrorCode;
+import com.dnd.gongmuin.security.oauth2.AuthInfo;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.service.TokenService;
 
 import io.jsonwebtoken.Claims;
@@ -84,8 +84,8 @@ public class TokenProvider {
 		Claims claims = parseToken(token);
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-		AuthDto authDto = AuthDto.fromSocialEmail(claims.getSubject());
-		CustomOauth2User principal = new CustomOauth2User(authDto);
+		AuthInfo authInfo = AuthInfo.fromSocialEmail(claims.getSubject());
+		CustomOauth2User principal = new CustomOauth2User(authInfo);
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}

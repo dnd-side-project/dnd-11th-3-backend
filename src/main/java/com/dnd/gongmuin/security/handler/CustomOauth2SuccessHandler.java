@@ -12,8 +12,8 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.security.dto.CustomOauth2User;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
