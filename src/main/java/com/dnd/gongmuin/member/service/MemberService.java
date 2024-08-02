@@ -76,6 +76,11 @@ public class MemberService {
 		return new SignUpResponse(signUpMember.getNickname());
 	}
 
+	public Member getMemberBySocialEmail(String socialEmail) {
+		return memberRepository.findBySocialEmail(socialEmail)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+	}
+
 	private Member updateAdditionalInfo(AdditionalInfoRequest request, Member findMember) {
 		findMember.updateAdditionalInfo(
 			request.nickname(),
