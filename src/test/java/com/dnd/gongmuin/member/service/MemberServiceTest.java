@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.member.dto.request.ValidNickNameRequest;
-import com.dnd.gongmuin.member.dto.response.ValidNickNameResponse;
+import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
 @Transactional
@@ -63,13 +63,13 @@ class MemberServiceTest {
 		Member member1 = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
 		memberRepository.save(member1);
 
-		ValidNickNameRequest request = new ValidNickNameRequest("김철수");
+		ValidateNickNameRequest request = new ValidateNickNameRequest("김철수");
 
 		// when
-		ValidNickNameResponse duplicatedNickname = memberService.isDuplicatedNickname(request);
+		ValidateNickNameResponse duplicatedNickname = memberService.isDuplicatedNickname(request);
 
 		// then
-		assertThat(duplicatedNickname.isDuplicate()).isTrue();
+		assertThat(duplicatedNickname.isDuplicated()).isTrue();
 	}
 
 	@DisplayName("신규 회원은 추가 정보가 업데이트 된다.")
