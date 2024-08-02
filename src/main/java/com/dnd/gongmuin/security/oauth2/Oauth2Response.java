@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.security.dto;
+package com.dnd.gongmuin.security.oauth2;
 
 public interface Oauth2Response {
 	String getProvider();
