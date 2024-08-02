@@ -19,9 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.auth.dto.AuthDto;
-import com.dnd.gongmuin.security.dto.CustomOauth2User;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
+import com.dnd.gongmuin.security.oauth2.AuthInfo;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.service.TokenService;
 
 import io.jsonwebtoken.Claims;
@@ -41,7 +41,7 @@ class TokenProviderTest {
 	private SecretKey secretKey;
 
 	@Mock
-	private AuthDto authDto;
+	private AuthInfo authInfo;
 
 	@Value("${spring.jwt.key}")
 	private String key;
@@ -62,9 +62,9 @@ class TokenProviderTest {
 		Date now = new Date();
 		long expectedExpirationTime = now.getTime() + 30 * 60 * 1000;
 
-		when(authDto.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authDto.getSocialName()).thenReturn("김회원");
-		CustomOauth2User authentication = new CustomOauth2User(authDto);
+		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
+		when(authInfo.getSocialName()).thenReturn("김회원");
+		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
 		String accessToken = tokenProvider.generateAccessToken(authentication, now);
@@ -83,9 +83,9 @@ class TokenProviderTest {
 		Date now = new Date();
 		long expectedExpirationTime = now.getTime() + 1000 * 60 * 60 * 24;
 
-		when(authDto.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authDto.getSocialName()).thenReturn("김회원");
-		CustomOauth2User authentication = new CustomOauth2User(authDto);
+		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
+		when(authInfo.getSocialName()).thenReturn("김회원");
+		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
 		String accessToken = tokenProvider.generateRefreshToken(authentication, now);
@@ -104,9 +104,9 @@ class TokenProviderTest {
 		Date now = new Date();
 		long expectedExpirationTime = now.getTime() + 1000 * 60 * 60 * 24;
 
-		when(authDto.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authDto.getSocialName()).thenReturn("김회원");
-		CustomOauth2User customOauth2User = new CustomOauth2User(authDto);
+		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
+		when(authInfo.getSocialName()).thenReturn("김회원");
+		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 		String accessToken = tokenProvider.generateRefreshToken(customOauth2User, now);
 
 		// when
@@ -124,9 +124,9 @@ class TokenProviderTest {
 		// given
 		Date past = new Date(124, 6, 30, 16, 0, 0);
 
-		when(authDto.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authDto.getSocialName()).thenReturn("김회원");
-		CustomOauth2User customOauth2User = new CustomOauth2User(authDto);
+		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
+		when(authInfo.getSocialName()).thenReturn("김회원");
+		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 		String accessToken = tokenProvider.generateRefreshToken(customOauth2User, past);
 
 		// when

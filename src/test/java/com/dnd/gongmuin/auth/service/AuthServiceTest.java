@@ -60,11 +60,7 @@ class AuthServiceTest {
 	@Test
 	void maintainStatusWithOfficialEmail() {
 		// given
-		Member member = Member.builder()
-			.socialName("김신규")
-			.socialEmail("KAKAO123/newMember@member.com")
-			.credit(1000)
-			.build();
+		Member member = Member.of("김신규", "KAKAO123/newMember@member.com", 1000);
 		Member savedMember = memberRepository.save(member);
 		Auth newAuth = authService.saveOrUpdate(savedMember);
 		Member reLoginMember = newAuth.getMember();
