@@ -1,0 +1,61 @@
+name: CI Backend
+
+on:
+  pull_request:
+    branches: ["main", "dev"]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TZ: 'Asia/Seoul'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check the timezone
+        run: date
+
+      # 자바 버전 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # gradle 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      # 빌드 시 캐시 적용
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 빌드
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      # 테스트 결과 PR 코멘트에 등록
+      - name: Register the test results as PR comments
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      # 테스트 실패시 코드 라인에 대한 체크 추가
+      - name: If test fail, add check comment on failed code line
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.html'
