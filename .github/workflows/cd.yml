@@ -21,11 +21,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # yml 파일 생성
+      # main 경로 application.yml 파일 생성
       - name: Generate application.yml
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_YML }}" | base64 -d > ./src/main/resources/application.yml
+          echo "${{ secrets.MAIN_APPLICATION_YML }}" | base64 -d > ./src/main/resources/application.yml
 
       # gradle 권한 부여
       - name: Grant execute permission for gradlew
