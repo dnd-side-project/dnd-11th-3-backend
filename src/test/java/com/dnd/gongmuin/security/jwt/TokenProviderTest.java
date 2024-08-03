@@ -34,6 +34,9 @@ import io.jsonwebtoken.security.Keys;
 @Disabled
 class TokenProviderTest {
 
+	@Value("${spring.jwt.key}")
+	private String key;
+
 	@InjectMocks
 	private TokenProvider tokenProvider;
 
@@ -44,9 +47,6 @@ class TokenProviderTest {
 
 	@Mock
 	private AuthInfo authInfo;
-
-	@Value("${spring.jwt.key}")
-	private String key;
 
 	@BeforeEach
 	void setUp() {
@@ -104,7 +104,6 @@ class TokenProviderTest {
 	void getAuthentication() {
 		// given
 		Date now = new Date();
-		long expectedExpirationTime = now.getTime() + 1000 * 60 * 60 * 24;
 
 		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
 		when(authInfo.getSocialName()).thenReturn("김회원");
