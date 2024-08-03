@@ -31,8 +31,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuestionPost extends TimeBaseEntity {
 
-	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
-	private final List<QuestionPostImage> images = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "question_post_id", nullable = false)
@@ -48,6 +46,9 @@ public class QuestionPost extends TimeBaseEntity {
 	private JobGroup jobGroup;
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
+
+	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
+	private final List<QuestionPostImage> images = new ArrayList<>();
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,
