@@ -24,7 +24,10 @@ public class AuthInfo {
 	}
 
 	public static AuthInfo of(String socialName, String socialEmail) {
-		return new AuthInfo(socialName, socialEmail);
+		return AuthInfo.builder()
+			.socialName(socialName)
+			.socialEmail(socialEmail)
+			.build();
 	}
 
 }
