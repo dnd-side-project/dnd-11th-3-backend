@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,6 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 @ExtendWith(MockitoExtension.class)
 class QuestionPostServiceTest {
 
-	private QuestionPost questionPost = QuestionPostFixture.questionPost();
 	private final Member member = MemberFixture.member();
 
 	@Mock
@@ -44,6 +44,7 @@ class QuestionPostServiceTest {
 	@Test
 	void registerQuestionPost() {
 		//given
+		QuestionPost questionPost = QuestionPostFixture.questionPost();
 		RegisterQuestionPostRequest request =
 			RegisterQuestionPostRequest.of(
 				"제목",
@@ -68,6 +69,20 @@ class QuestionPostServiceTest {
 			() -> assertThat(response.reward()).isEqualTo(request.reward()),
 			() -> assertThat(response.targetJobGroup()).isEqualTo(request.targetJobGroup())
 		);
+	}
+
+	@DisplayName("[질문글 아이디로 질문글을 상세 조회할 수 있다.]")
+	@Test
+	void getQuestionPostById() {
+		//given
+		QuestionPost questionPost = QuestionPostFixture.questionPost();
+		given(questionPostRepository.findById(1L))
+			.willReturn(Optional.of(questionPost));
+		//when
+		QuestionPostDetailResponse response = questionPostService.getQuestionPostById(questionPost.getId());
+
+		//then
+		assertThat(response.questionPostId()).isEqualTo(questionPost.getId());
 	}
 
 }
