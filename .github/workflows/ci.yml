@@ -26,6 +26,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # test 경로 application.yml 파일 생성
+      - name: Generate application.yml
+        run: |
+          mkdir -p ./src/test/resources
+          echo "${{ secrets.TEST_APPLICATION_YML }}" | base64 -d > ./src/test/resources/application.yml
+
       # gradle 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
