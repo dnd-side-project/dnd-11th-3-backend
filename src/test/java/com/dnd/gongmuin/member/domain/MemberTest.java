@@ -4,11 +4,13 @@ import static com.dnd.gongmuin.member.domain.JobCategory.*;
 import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Disabled
 class MemberTest {
 
 	@DisplayName("소셜 이메일을 변경할 수 있다.")

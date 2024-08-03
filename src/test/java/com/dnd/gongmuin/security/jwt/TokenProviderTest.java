@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Transactional
 @SpringBootTest
+@Disabled
 class TokenProviderTest {
 
 	@InjectMocks

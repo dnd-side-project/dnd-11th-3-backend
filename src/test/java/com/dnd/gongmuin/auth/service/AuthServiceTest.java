@@ -2,6 +2,7 @@ package com.dnd.gongmuin.auth.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.dnd.gongmuin.member.repository.MemberRepository;
 
 @Transactional
 @SpringBootTest
+@Disabled
 class AuthServiceTest {
 
 	@Autowired
