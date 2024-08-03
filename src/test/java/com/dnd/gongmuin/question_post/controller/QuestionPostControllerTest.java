@@ -13,15 +13,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dnd.gongmuin.common.fixture.MemberFixture;
+import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @Disabled
 @DisplayName("[QuestionPost 통합 테스트]")
-public class QuestionPostControllerTest extends ApiTestSupport {
+class QuestionPostControllerTest extends ApiTestSupport {
 
 	private Member member;
 
@@ -60,7 +63,28 @@ public class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.memberId").value(member.getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(member.getNickname()))
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(member.getJobGroup())
-		);
+			);
+	}
 
+	@DisplayName("[질문글을 조회할 수 있다.]")
+	@Test
+	void getQuestionPostById() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost());
+
+		List<String> imageUrls = questionPost.getImages().stream()
+			.map(QuestionPostImage::getImageUrl)
+			.toList();
+
+		mockMvc.perform(get("/api/question-posts/{questionPostId}", questionPost.getId()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
+			.andExpect(jsonPath("$.content").value(questionPost.getContent()))
+			.andExpect(jsonPath("$.imageUrls").value(imageUrls))
+			.andExpect(jsonPath("$.reward").value(questionPost.getReward()))
+			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup()))
+			.andExpect(jsonPath("$.memberInfo.memberId").value(questionPost.getMember().getId()))
+			.andExpect(jsonPath("$.memberInfo.nickname").value(questionPost.getMember().getNickname()))
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup())
+			);
 	}
 }
