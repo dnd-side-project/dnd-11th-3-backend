@@ -72,9 +72,26 @@ public class QuestionPost extends TimeBaseEntity {
 		addImages(images);
 	}
 
+	private QuestionPost(Long id, String title, String content, int reward, JobGroup jobGroup,
+		List<QuestionPostImage> images, Member member) {
+		this.id = id;
+		this.isChosen = false;
+		this.title = title;
+		this.content = content;
+		this.reward = reward;
+		this.jobGroup = jobGroup;
+		this.member = member;
+		addImages(images);
+	}
+
 	public static QuestionPost of(String title, String content, int reward, JobGroup jobGroup,
 		List<QuestionPostImage> images, Member member) {
 		return new QuestionPost(title, content, reward, jobGroup, images, member);
+	}
+
+	public static QuestionPost of(Long id, String title, String content, int reward, JobGroup jobGroup,
+		List<QuestionPostImage> images, Member member) {
+		return new QuestionPost(id, title, content, reward, jobGroup, images, member);
 	}
 
 	//==양방향 편의 메서드==//
