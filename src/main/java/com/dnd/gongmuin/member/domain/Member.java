@@ -68,6 +68,19 @@ public class Member extends TimeBaseEntity {
 			.build();
 	}
 
+	public static Member of(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory,
+		String socialEmail, String officialEmail, int credit) {
+		return Member.builder()
+			.nickname(nickname)
+			.socialName(socialName)
+			.jobGroup(jobGroup)
+			.jobCategory(jobCategory)
+			.socialEmail(socialEmail)
+			.officialEmail(officialEmail)
+			.credit(credit)
+			.build();
+	}
+
 	public void updateSocialEmail(String socialEmail) {
 		this.socialEmail = socialEmail;
 	}
