@@ -15,7 +15,7 @@ public class QuestionPostMapper {
 
 	public static QuestionPost toQuestionPost(RegisterQuestionPostRequest request, Member member) {
 		JobGroup jobGroup = JobGroup.of(request.targetJobGroup());
-		List<QuestionPostImage> images =request.imageUrls().stream()
+		List<QuestionPostImage> images = request.imageUrls().stream()
 			.map(QuestionPostImage::from)
 			.toList();
 		return QuestionPost.of(request.title(), request.content(), 1000, jobGroup, images, member);

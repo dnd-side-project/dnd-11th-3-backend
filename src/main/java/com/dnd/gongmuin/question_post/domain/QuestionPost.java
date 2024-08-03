@@ -31,30 +31,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuestionPost extends TimeBaseEntity {
 
+	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
+	private final List<QuestionPostImage> images = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "question_post_id", nullable = false)
 	private Long id;
-
 	@Column(name = "title", nullable = false)
 	private String title;
-
 	@Column(name = "content", nullable = false)
 	private String content;
-
 	@Column(name = "reward", nullable = false)
 	private int reward;
-
 	@Enumerated(EnumType.STRING)
 	@Column(name = "job_group", nullable = false)
 	private JobGroup jobGroup;
-
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
-
-	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
-	private final List<QuestionPostImage> images = new ArrayList<>();
-
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,

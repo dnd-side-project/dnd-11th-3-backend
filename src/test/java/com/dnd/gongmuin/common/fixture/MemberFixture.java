@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class MemberFixture {
 
-	public static Member member(){
+	public static Member member() {
 		return Member.builder()
 			.nickname("test")
 			.socialName("test")

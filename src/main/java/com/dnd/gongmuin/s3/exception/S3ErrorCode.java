@@ -13,7 +13,6 @@ public enum S3ErrorCode implements ErrorCode {
 
 	FAILED_TO_UPLOAD("파일을 업로드하는데 실패했습니다.", "S3_003");
 
-
 	private final String message;
 	private final String code;
 }
