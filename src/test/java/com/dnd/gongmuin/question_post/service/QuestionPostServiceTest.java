@@ -53,13 +53,11 @@ class QuestionPostServiceTest {
 				"공업"
 			);
 
-		given(memberRepository.findById(3L))
-			.willReturn(Optional.of(member));
 		given(questionPostRepository.save(any(QuestionPost.class)))
 			.willReturn(questionPost);
 
 		//when
-		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request);
+		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request, member);
 
 		//then
 		assertAll(

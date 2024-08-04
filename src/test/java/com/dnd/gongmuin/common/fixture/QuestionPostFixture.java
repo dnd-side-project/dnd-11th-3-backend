@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class QuestionPostFixture {
 
-	public static QuestionPost questionPost() {
+	public static QuestionPost questionPost(Member member) {
 		return QuestionPost.of(
 			"제목",
 			"내용",
@@ -26,7 +27,7 @@ public class QuestionPostFixture {
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
 			),
-			MemberFixture.member()
+			member
 		);
 	}
 
