@@ -5,16 +5,4 @@ public record MemberInfo(
 	String nickname,
 	String memberJobGroup
 	// TODO: 추후 프로필 이미지 타입 추가
-) {
-	public static MemberInfo of(
-		Long memberId,
-		String nickname,
-		String memberJobGroup
-	) {
-		return new MemberInfo(
-			memberId,
-			nickname,
-			memberJobGroup
-		);
-	}
-}
+) {}

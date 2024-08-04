@@ -25,7 +25,7 @@ public class QuestionPostMapper {
 	public static QuestionPostDetailResponse toQuestionPostDetailResponse(QuestionPost questionPost) {
 		Member member = questionPost.getMember();
 
-		return QuestionPostDetailResponse.of(
+		return new QuestionPostDetailResponse(
 			questionPost.getId(),
 			questionPost.getTitle(),
 			questionPost.getContent(),
@@ -33,9 +33,12 @@ public class QuestionPostMapper {
 				.map(QuestionPostImage::getImageUrl).toList(),
 			questionPost.getReward(),
 			questionPost.getJobGroup().getLabel(),
-			member.getId(),
-			member.getNickname(),
-			member.getJobGroup().getLabel()
+			new MemberInfo(
+				member.getId(),
+				member.getNickname(),
+				member.getJobGroup().getLabel()
+			),
+			questionPost.getCreatedAt().toString()
 		);
 	}
 }
