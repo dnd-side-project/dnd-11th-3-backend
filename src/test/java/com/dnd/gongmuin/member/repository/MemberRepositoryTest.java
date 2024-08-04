@@ -8,15 +8,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.common.support.DataJpaTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 
-@Transactional
-@SpringBootTest
 @Disabled
-class MemberRepositoryTest {
+class MemberRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	MemberRepository memberRepository;

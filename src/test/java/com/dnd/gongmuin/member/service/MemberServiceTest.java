@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
@@ -18,9 +18,8 @@ import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
 @Transactional
-@SpringBootTest
 @Disabled
-class MemberServiceTest {
+class MemberServiceTest extends ApiTestSupport {
 
 	@Autowired
 	MemberService memberService;
