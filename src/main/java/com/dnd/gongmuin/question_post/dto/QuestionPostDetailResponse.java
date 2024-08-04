@@ -11,4 +11,4 @@ public record QuestionPostDetailResponse(
 	String targetJobGroup,
 	MemberInfo memberInfo,
 	String createdAt
-){}
+) { }

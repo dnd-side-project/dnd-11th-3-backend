@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class QuestionPostFixture {
 
 	public static QuestionPost questionPost() {
-		QuestionPost questionPost = QuestionPost.of(
+		return QuestionPost.of(
 			"제목",
 			"내용",
 			1000,
@@ -28,9 +28,9 @@ public class QuestionPostFixture {
 			),
 			MemberFixture.member()
 		);
-		return questionPost;
 	}
 
+	// 단위 테스트용
 	public static QuestionPost questionPost(Long id) {
 		QuestionPost questionPost = QuestionPost.of(
 			"제목",

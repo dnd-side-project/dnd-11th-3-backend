@@ -5,4 +5,4 @@ public record MemberInfo(
 	String nickname,
 	String memberJobGroup
 	// TODO: 추후 프로필 이미지 타입 추가
-) {}
+) { }
