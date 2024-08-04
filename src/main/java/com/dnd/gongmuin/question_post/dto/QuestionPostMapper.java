@@ -18,11 +18,13 @@ public class QuestionPostMapper {
 		List<QuestionPostImage> images = request.imageUrls().stream()
 			.map(QuestionPostImage::from)
 			.toList();
-		return QuestionPost.of(request.title(), request.content(), 1000, jobGroup, images, member);
+
+		return QuestionPost.of(request.title(), request.content(), request.reward(), jobGroup, images, member);
 	}
 
 	public static QuestionPostDetailResponse toQuestionPostDetailResponse(QuestionPost questionPost) {
 		Member member = questionPost.getMember();
+
 		return QuestionPostDetailResponse.of(
 			questionPost.getId(),
 			questionPost.getTitle(),
