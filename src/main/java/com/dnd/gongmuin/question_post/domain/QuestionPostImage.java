@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,9 +36,16 @@ public class QuestionPostImage extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private QuestionPost questionPost;
 
-	@Builder
-	public QuestionPostImage(String imageUrl, QuestionPost questionPost) {
+	private QuestionPostImage(String imageUrl, QuestionPost questionPost) {
 		this.imageUrl = imageUrl;
+		this.questionPost = questionPost;
+	}
+
+	public static QuestionPostImage from(String imageUrl) {
+		return new QuestionPostImage(imageUrl, null);
+	}
+
+	public void addQuestionPost(QuestionPost questionPost) {
 		this.questionPost = questionPost;
 	}
 }

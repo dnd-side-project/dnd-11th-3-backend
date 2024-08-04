@@ -26,14 +26,13 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	protected Member loginMember;
 	protected String accessToken;
 	@Autowired
-	private TokenProvider tokenProvider;
-	@Autowired
-	private MemberRepository memberRepository;
+	protected MemberRepository memberRepository;
 	@Autowired
 	protected MockMvc mockMvc;
-
 	@Autowired
 	protected ObjectMapper objectMapper;
+	@Autowired
+	private TokenProvider tokenProvider;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);
@@ -45,7 +44,7 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 		if (loginMember != null) {
 			return;
 		}
-		Member savedMember = memberRepository.save(MemberFixture.getMemberFixture());
+		Member savedMember = memberRepository.save(MemberFixture.member());
 		AuthInfo authInfo = AuthInfo.of(savedMember.getSocialName(), savedMember.getSocialEmail());
 		String token = tokenProvider.generateAccessToken(new CustomOauth2User(authInfo), new Date());
 

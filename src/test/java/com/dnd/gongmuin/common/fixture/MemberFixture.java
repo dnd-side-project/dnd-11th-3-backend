@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberFixture {
 
-	public static Member getMemberFixture() {
+	public static Member member() {
 		return Member.of(
 			"김회원",
 			"회원123",
@@ -21,5 +21,4 @@ public class MemberFixture {
 			10000
 		);
 	}
-
 }
