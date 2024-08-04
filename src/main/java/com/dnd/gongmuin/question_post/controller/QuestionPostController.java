@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.question_post.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
@@ -23,13 +25,14 @@ public class QuestionPostController {
 
 	@PostMapping
 	public ResponseEntity<QuestionPostDetailResponse> registerQuestionPost(
-		@RequestBody RegisterQuestionPostRequest request
+		@RequestBody RegisterQuestionPostRequest request,
+		@AuthenticationPrincipal Member member
 	) {
-		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request);
+		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request, member);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("{/questionPostId}")
+	@GetMapping("/{questionPostId}")
 	public ResponseEntity<QuestionPostDetailResponse> getQuestionPostById(
 		@PathVariable("questionPostId") Long questionPostId
 	) {
