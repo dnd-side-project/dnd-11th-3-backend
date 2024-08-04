@@ -25,31 +25,31 @@ public class Member extends TimeBaseEntity {
 	@Column(name = "member_id")
 	private Long id;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(name = "nickname")
 	private String nickname;
 
 	@Column(name = "social_name", nullable = false)
 	private String socialName;
 
 	@Enumerated(STRING)
-	@Column(name = "job_group", nullable = false)
+	@Column(name = "job_group")
 	private JobGroup jobGroup;
 
 	@Enumerated(STRING)
-	@Column(name = "job_category", nullable = false)
+	@Column(name = "job_category")
 	private JobCategory jobCategory;
 
 	@Column(name = "social_email", nullable = false)
 	private String socialEmail;
 
-	@Column(name = "official_email", nullable = false)
+	@Column(name = "official_email")
 	private String officialEmail;
 
 	@Column(name = "credit", nullable = false)
 	private int credit;
 
 	@Builder
-	public Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
+	private Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
 		String officialEmail, int credit) {
 		this.nickname = nickname;
 		this.socialName = socialName;
@@ -59,4 +59,38 @@ public class Member extends TimeBaseEntity {
 		this.officialEmail = officialEmail;
 		this.credit = credit;
 	}
+
+	public static Member of(String socialName, String socialEmail, int credit) {
+		return Member.builder()
+			.socialName(socialName)
+			.socialEmail(socialEmail)
+			.credit(credit)
+			.build();
+	}
+
+	public static Member of(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory,
+		String socialEmail, String officialEmail, int credit) {
+		return Member.builder()
+			.nickname(nickname)
+			.socialName(socialName)
+			.jobGroup(jobGroup)
+			.jobCategory(jobCategory)
+			.socialEmail(socialEmail)
+			.officialEmail(officialEmail)
+			.credit(credit)
+			.build();
+	}
+
+	public void updateSocialEmail(String socialEmail) {
+		this.socialEmail = socialEmail;
+	}
+
+	public void updateAdditionalInfo(String nickname, String officialEmail,
+		JobGroup jobGroup, JobCategory jobCategory) {
+		this.nickname = nickname;
+		this.officialEmail = officialEmail;
+		this.jobGroup = jobGroup;
+		this.jobCategory = jobCategory;
+	}
+
 }
