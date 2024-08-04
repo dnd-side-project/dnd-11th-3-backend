@@ -2,7 +2,10 @@ package com.dnd.gongmuin.common.fixture;
 
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -14,8 +17,7 @@ import lombok.NoArgsConstructor;
 public class QuestionPostFixture {
 
 	public static QuestionPost questionPost() {
-		return QuestionPost.of(
-			1L,
+		QuestionPost questionPost = QuestionPost.of(
 			"제목",
 			"내용",
 			1000,
@@ -26,5 +28,24 @@ public class QuestionPostFixture {
 			),
 			MemberFixture.member()
 		);
+		return questionPost;
+	}
+
+	public static QuestionPost questionPost(Long id) {
+		QuestionPost questionPost = QuestionPost.of(
+			"제목",
+			"내용",
+			1000,
+			JobGroup.of("공업"),
+			List.of(
+				QuestionPostImage.from("image1.jpg"),
+				QuestionPostImage.from("image2.jpg")
+			),
+			MemberFixture.member()
+		);
+		ReflectionTestUtils.setField(questionPost, "id", id);
+		ReflectionTestUtils.setField(questionPost, "createdAt", LocalDateTime.now());
+
+		return questionPost;
 	}
 }

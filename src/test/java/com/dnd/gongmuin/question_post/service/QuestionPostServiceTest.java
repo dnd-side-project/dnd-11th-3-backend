@@ -43,7 +43,7 @@ class QuestionPostServiceTest {
 	@Test
 	void registerQuestionPost() {
 		//given
-		QuestionPost questionPost = QuestionPostFixture.questionPost();
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 		RegisterQuestionPostRequest request =
 			RegisterQuestionPostRequest.of(
 				"제목",
@@ -74,7 +74,7 @@ class QuestionPostServiceTest {
 	@Test
 	void getQuestionPostById() {
 		//given
-		QuestionPost questionPost = QuestionPostFixture.questionPost();
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 		given(questionPostRepository.findById(1L))
 			.willReturn(Optional.of(questionPost));
 		//when
