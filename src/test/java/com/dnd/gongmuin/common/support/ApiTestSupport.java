@@ -26,14 +26,13 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	protected Member loginMember;
 	protected String accessToken;
 	@Autowired
-	private TokenProvider tokenProvider;
-	@Autowired
 	protected MemberRepository memberRepository;
 	@Autowired
 	protected MockMvc mockMvc;
-
 	@Autowired
 	protected ObjectMapper objectMapper;
+	@Autowired
+	private TokenProvider tokenProvider;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);
