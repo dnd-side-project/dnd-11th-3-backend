@@ -47,6 +47,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
+					.requestMatchers("/api/**").permitAll()
+					.requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
 					.requestMatchers("/api/auth/signin/kakao").permitAll()
 					.requestMatchers("/api/auth/member").permitAll()
 					.requestMatchers("/api/auth/check-email").permitAll()
