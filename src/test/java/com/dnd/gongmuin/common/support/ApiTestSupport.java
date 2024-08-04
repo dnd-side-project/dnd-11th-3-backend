@@ -28,7 +28,7 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	@Autowired
 	private TokenProvider tokenProvider;
 	@Autowired
-	private MemberRepository memberRepository;
+	protected MemberRepository memberRepository;
 	@Autowired
 	protected MockMvc mockMvc;
 
