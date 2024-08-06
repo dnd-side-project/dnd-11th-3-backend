@@ -33,9 +33,6 @@ class QuestionPostServiceTest {
 	@Mock
 	private QuestionPostRepository questionPostRepository;
 
-	@Mock
-	private MemberRepository memberRepository;
-
 	@InjectMocks
 	private QuestionPostService questionPostService;
 
