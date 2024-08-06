@@ -41,7 +41,7 @@ public class QuestionPostFixture {
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
 			),
-			MemberFixture.member()
+			MemberFixture.member(1L)
 		);
 		ReflectionTestUtils.setField(questionPost, "id", id);
 		ReflectionTestUtils.setField(questionPost, "createdAt", LocalDateTime.now());
