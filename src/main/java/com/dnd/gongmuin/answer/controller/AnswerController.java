@@ -15,6 +15,7 @@ import com.dnd.gongmuin.answer.service.AnswerService;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +27,7 @@ public class AnswerController {
 	@PostMapping("/{questionPostId}/answers")
 	public ResponseEntity<AnswerDetailResponse> registerAnswer(
 		@PathVariable Long questionPostId,
-		@RequestBody RegisterAnswerRequest request,
+		@Valid @RequestBody RegisterAnswerRequest request,
 		@AuthenticationPrincipal Member member
 	) {
 		AnswerDetailResponse response = answerService.registerAnswer(questionPostId, request, member);
