@@ -26,7 +26,19 @@ public class MemberFixture {
 		);
 	}
 
-	public static Member member(Long id) {
+	public static Member member2() {
+		return Member.of(
+			"회원",
+			"소셜회원",
+			JobGroup.ENGINEERING,
+			JobCategory.GAS,
+			"KAKAO123/member2@daum.net",
+			"member2@korea.kr",
+			20000
+		);
+	}
+
+	public static Member member(Long memberId) {
 		Member member = Member.of(
 			"김회원",
 			"회원123",
@@ -37,7 +49,7 @@ public class MemberFixture {
 			10000
 		);
 
-		ReflectionTestUtils.setField(member, "id", id);
+		ReflectionTestUtils.setField(member, "id", memberId);
 		ReflectionTestUtils.setField(member, "createdAt", LocalDateTime.now());
 
 		return member;
