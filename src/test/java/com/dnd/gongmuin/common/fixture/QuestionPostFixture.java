@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.common.fixture;
 
-import static lombok.AccessLevel.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,9 +10,10 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QuestionPostFixture {
 
 	public static QuestionPost questionPost(Member member) {
