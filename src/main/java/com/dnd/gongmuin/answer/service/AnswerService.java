@@ -8,8 +8,10 @@ import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.AnswerMapper;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,8 @@ public class AnswerService {
 		RegisterAnswerRequest request,
 		Member member
 	) {
-		QuestionPost questionPost = questionPostRepository.findById(questionPostId).orElseThrow();
+		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
+			.orElseThrow(()-> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		boolean isQuestioner
 			= questionPost.getMember().getId().equals(member.getId());
 		Answer answer = AnswerMapper.toAnswer(questionPostId, isQuestioner, request, member);
