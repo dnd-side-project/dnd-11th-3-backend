@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.answer.service;
 
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,6 +9,8 @@ import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.AnswerMapper;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.common.dto.PageMapper;
+import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -35,6 +38,22 @@ public class AnswerService {
 			= questionPost.getMember().getId().equals(member.getId());
 		Answer answer = AnswerMapper.toAnswer(questionPostId, isQuestioner, request, member);
 		return AnswerMapper.toAnswerDetailResponse(answerRepository.save(answer));
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<AnswerDetailResponse> getAnswersByQuestionPostId(Long questionPostId){
+		validateIfQuestionPostExists(questionPostId);
+		Slice<AnswerDetailResponse> answerResponsePage = answerRepository
+			.findByQuestionPostId(questionPostId)
+			.map(AnswerMapper::toAnswerDetailResponse);
+		return PageMapper.toPageResponse(answerResponsePage);
+	}
+
+	private void validateIfQuestionPostExists(Long questionPostId) {
+		boolean isExists = questionPostRepository.existsById(questionPostId);
+		if (!isExists){
+			throw new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST);
+		}
 	}
 
 }
