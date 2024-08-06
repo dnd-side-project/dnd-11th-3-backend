@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 public class AnswerFixture {
 
 	// 단위 테스트용
-	public static Answer answer(Long answerId){
+	public static Answer answer(Long answerId, Long questionPostId){
 		Answer answer = Answer.of(
 			"답변 내용",
 			false,
-			1L,
+			questionPostId,
 			MemberFixture.member(1L)
 		);
 
