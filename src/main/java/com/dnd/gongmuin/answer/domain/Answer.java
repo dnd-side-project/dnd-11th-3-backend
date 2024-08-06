@@ -36,11 +36,10 @@ public class Answer extends TimeBaseEntity {
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "question_post_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private QuestionPost questionPost;
+	@Column(name = "is_questioner", nullable = false)
+	private Boolean isQuestioner;
+
+	private Long questionPostId;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
@@ -48,11 +47,16 @@ public class Answer extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
-	@Builder
-	public Answer(String content, QuestionPost questionPost, Member member) {
+	private Answer(String content, Boolean isQuestioner, Long questionPostId, Member member) {
 		this.isChosen = false;
 		this.content = content;
-		this.questionPost = questionPost;
+		this.isQuestioner = isQuestioner;
+		this.questionPostId = questionPostId;
 		this.member = member;
 	}
+
+	public static Answer of(String content, boolean isQuestioner, Long questionPostId, Member member){
+		return new Answer(content, isQuestioner, questionPostId, member);
+	}
+
 }
