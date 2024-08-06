@@ -7,6 +7,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.mail.dto.MailMapper;
+import com.dnd.gongmuin.mail.dto.request.SendMailRequest;
+import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.exception.MailErrorCode;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
 
@@ -21,9 +24,12 @@ public class MailService {
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
 
-	public void sendEmail(String toEmail) {
+	public SendMailResponse sendEmail(SendMailRequest request) {
+		String toEmail = request.toEmail();
 		MimeMessage email = createMail(toEmail);
 		mailSender.send(email);
+
+		return MailMapper.toSendMailResponse(toEmail);
 	}
 
 	private MimeMessage createMail(String toEmail) {
@@ -51,4 +57,5 @@ public class MailService {
 	}
 
 	// TODO : 인증 코드 검증
+	// TODO : 특정 공무원 이메일 검증
 }
