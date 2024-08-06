@@ -14,8 +14,12 @@ import com.dnd.gongmuin.question_post.dto.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "질문글 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/question-posts")
@@ -24,6 +28,8 @@ public class QuestionPostController {
 	private final QuestionPostService questionPostService;
 
 	@PostMapping
+	@Operation(summary = "질문글 등록 API", description = "질문글을 등록한다")
+	@ApiResponse(useReturnTypeSchema = true)
 	public ResponseEntity<QuestionPostDetailResponse> registerQuestionPost(
 		@RequestBody RegisterQuestionPostRequest request,
 		@AuthenticationPrincipal Member member
@@ -33,6 +39,8 @@ public class QuestionPostController {
 	}
 
 	@GetMapping("/{questionPostId}")
+	@Operation(summary = "질문글 상세 조회 API", description = "질문글을 아이디로 상세조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
 	public ResponseEntity<QuestionPostDetailResponse> getQuestionPostById(
 		@PathVariable("questionPostId") Long questionPostId
 	) {
