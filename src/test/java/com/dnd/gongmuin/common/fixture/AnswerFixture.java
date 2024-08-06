@@ -15,7 +15,7 @@ public class AnswerFixture {
 	// 단위 테스트용
 	public static Answer answer(Long id){
 		Answer answer = Answer.of(
-			"제목",
+			"답변 내용",
 			false,
 			1L,
 			MemberFixture.member()
