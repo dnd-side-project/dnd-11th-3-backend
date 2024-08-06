@@ -31,7 +31,7 @@ public class QuestionPostFixture {
 	}
 
 	// 단위 테스트용
-	public static QuestionPost questionPost(Long id) {
+	public static QuestionPost questionPost(Long questionPostId) {
 		QuestionPost questionPost = QuestionPost.of(
 			"제목",
 			"내용",
@@ -43,7 +43,7 @@ public class QuestionPostFixture {
 			),
 			MemberFixture.member(1L)
 		);
-		ReflectionTestUtils.setField(questionPost, "id", id);
+		ReflectionTestUtils.setField(questionPost, "id", questionPostId);
 		ReflectionTestUtils.setField(questionPost, "createdAt", LocalDateTime.now());
 
 		return questionPost;

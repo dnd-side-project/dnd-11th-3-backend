@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 public class AnswerFixture {
 
 	// 단위 테스트용
-	public static Answer answer(Long id){
+	public static Answer answer(Long answerId){
 		Answer answer = Answer.of(
 			"답변 내용",
 			false,
 			1L,
-			MemberFixture.member()
+			MemberFixture.member(1L)
 		);
 
-		ReflectionTestUtils.setField(answer, "id", id);
+		ReflectionTestUtils.setField(answer, "id", answerId);
 		ReflectionTestUtils.setField(answer, "createdAt", LocalDateTime.now());
 
 		return answer;
