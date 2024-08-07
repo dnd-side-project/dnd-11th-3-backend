@@ -41,4 +41,13 @@ public class AnswerController {
 		PageResponse<AnswerDetailResponse> response = answerService.getAnswersByQuestionPostId(questionPostId);
 		return ResponseEntity.ok(response);
 	}
+
+	@PostMapping("/answers/{answerId}")
+	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostId(
+		@PathVariable Long answerId,
+		@AuthenticationPrincipal Member member
+	) {
+		AnswerDetailResponse response = answerService.chooseAnswer(answerId, member);
+		return ResponseEntity.ok(response);
+	}
 }
