@@ -33,7 +33,7 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
-			.orElseThrow(()-> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		boolean isQuestioner
 			= questionPost.getMember().getId().equals(member.getId());
 		Answer answer = AnswerMapper.toAnswer(questionPostId, isQuestioner, request, member);
@@ -41,7 +41,7 @@ public class AnswerService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<AnswerDetailResponse> getAnswersByQuestionPostId(Long questionPostId){
+	public PageResponse<AnswerDetailResponse> getAnswersByQuestionPostId(Long questionPostId) {
 		validateIfQuestionPostExists(questionPostId);
 		Slice<AnswerDetailResponse> answerResponsePage = answerRepository
 			.findByQuestionPostId(questionPostId)
@@ -51,7 +51,7 @@ public class AnswerService {
 
 	private void validateIfQuestionPostExists(Long questionPostId) {
 		boolean isExists = questionPostRepository.existsById(questionPostId);
-		if (!isExists){
+		if (!isExists) {
 			throw new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST);
 		}
 	}

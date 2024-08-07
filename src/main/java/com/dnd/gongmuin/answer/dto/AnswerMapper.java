@@ -15,7 +15,7 @@ public class AnswerMapper {
 		boolean isQuestioner,
 		RegisterAnswerRequest request,
 		Member member
-	){
+	) {
 		return Answer.of(
 			request.content(),
 			isQuestioner,
@@ -24,7 +24,7 @@ public class AnswerMapper {
 		);
 	}
 
-	public static AnswerDetailResponse toAnswerDetailResponse(Answer answer){
+	public static AnswerDetailResponse toAnswerDetailResponse(Answer answer) {
 		Member member = answer.getMember();
 		return new AnswerDetailResponse(
 			answer.getId(),

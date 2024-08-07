@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AnswerFixture {
 
-	public static Answer answer(Long questionPostId, Member member){
+	public static Answer answer(Long questionPostId, Member member) {
 		return Answer.of(
 			"답변 내용",
 			false,
@@ -23,7 +23,7 @@ public class AnswerFixture {
 	}
 
 	// 단위 테스트용
-	public static Answer answer(Long answerId, Long questionPostId){
+	public static Answer answer(Long answerId, Long questionPostId) {
 		Answer answer = Answer.of(
 			"답변 내용",
 			false,

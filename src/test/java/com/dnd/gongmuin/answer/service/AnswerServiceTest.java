@@ -66,7 +66,7 @@ class AnswerServiceTest {
 
 	@DisplayName("[질문글 아이디로 답변을 모두 조회할 수 있다.]")
 	@Test
-	void getAnswerByQuestionPostId(){
+	void getAnswerByQuestionPostId() {
 		//given
 		Long questionPostId = 1L;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId);
@@ -76,7 +76,7 @@ class AnswerServiceTest {
 		given(questionPostRepository.existsById(questionPost.getId()))
 			.willReturn(true);
 		given(answerRepository.findByQuestionPostId(questionPostId))
-			.willReturn(new SliceImpl<>(List.of(answer1, answer2), pageRequest,false));
+			.willReturn(new SliceImpl<>(List.of(answer1, answer2), pageRequest, false));
 
 		//when
 		PageResponse<AnswerDetailResponse> response = answerService.getAnswersByQuestionPostId(

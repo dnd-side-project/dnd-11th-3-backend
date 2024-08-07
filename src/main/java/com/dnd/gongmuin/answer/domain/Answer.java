@@ -5,7 +5,6 @@ import static jakarta.persistence.FetchType.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,7 +53,7 @@ public class Answer extends TimeBaseEntity {
 		this.member = member;
 	}
 
-	public static Answer of(String content, boolean isQuestioner, Long questionPostId, Member member){
+	public static Answer of(String content, boolean isQuestioner, Long questionPostId, Member member) {
 		return new Answer(content, isQuestioner, questionPostId, member);
 	}
 

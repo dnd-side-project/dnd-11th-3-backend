@@ -9,6 +9,6 @@ public record AnswerDetailResponse(
 	boolean isQuestioner,
 	MemberInfo memberInfo,
 	String createdAt
-){
+) {
 
 }
