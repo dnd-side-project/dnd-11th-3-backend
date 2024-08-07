@@ -75,10 +75,10 @@ public class MailServiceTest {
 		// given
 		String toEmail = "gongmuin@korea.kr";
 		String authCode = "123456";
-		String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
+		String PREFIX = "AuthCode ";
 		AuthCodeRequest request = new AuthCodeRequest(authCode, toEmail);
 
-		String key = SUBJECT + toEmail;
+		String key = PREFIX + toEmail;
 		when(redisUtil.validateData(key, authCode)).thenReturn(true);
 
 		// when
