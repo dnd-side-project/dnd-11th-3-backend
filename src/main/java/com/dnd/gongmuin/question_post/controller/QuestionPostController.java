@@ -27,9 +27,9 @@ public class QuestionPostController {
 
 	private final QuestionPostService questionPostService;
 
-	@PostMapping
 	@Operation(summary = "질문글 등록 API", description = "질문글을 등록한다")
 	@ApiResponse(useReturnTypeSchema = true)
+	@PostMapping
 	public ResponseEntity<QuestionPostDetailResponse> registerQuestionPost(
 		@RequestBody RegisterQuestionPostRequest request,
 		@AuthenticationPrincipal Member member
@@ -38,9 +38,9 @@ public class QuestionPostController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/{questionPostId}")
 	@Operation(summary = "질문글 상세 조회 API", description = "질문글을 아이디로 상세조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/{questionPostId}")
 	public ResponseEntity<QuestionPostDetailResponse> getQuestionPostById(
 		@PathVariable("questionPostId") Long questionPostId
 	) {
