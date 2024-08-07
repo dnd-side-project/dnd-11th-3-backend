@@ -16,6 +16,7 @@ import com.dnd.gongmuin.mail.dto.response.AuthCodeResponse;
 import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.exception.MailErrorCode;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
+import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.mail.internet.MimeMessage;
@@ -32,9 +33,12 @@ public class MailService {
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
 	private final RedisUtil redisUtil;
+	private final MemberService memberService;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
 		String toEmail = request.toEmail();
+
+		checkForDuplicatedOfficialEmail(toEmail);
 		MimeMessage email = createMail(toEmail);
 		mailSender.send(email);
 
@@ -77,5 +81,11 @@ public class MailService {
 	private void saveAuthCodeToRedis(String toEmail, String authCode, long authCodeExpirationMillis) {
 		String key = SUBJECT + toEmail;
 		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
+	}
+
+	private void checkForDuplicatedOfficialEmail(String officialEmail) {
+		if (memberService.isOfficialEmailExists(officialEmail)) {
+			throw new NotFoundException(MailErrorCode.MAIL_DUPLICATED_ERROR);
+		}
 	}
 }
