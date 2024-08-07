@@ -34,9 +34,7 @@ public class AnswerService {
 	) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-		boolean isQuestioner
-			= questionPost.getMember().getId().equals(member.getId());
-		Answer answer = AnswerMapper.toAnswer(questionPostId, isQuestioner, request, member);
+		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member), request, member);
 		return AnswerMapper.toAnswerDetailResponse(answerRepository.save(answer));
 	}
 

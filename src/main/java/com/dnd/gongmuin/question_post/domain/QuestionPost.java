@@ -5,6 +5,7 @@ import static jakarta.persistence.FetchType.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.member.domain.JobGroup;
@@ -76,5 +77,9 @@ public class QuestionPost extends TimeBaseEntity {
 			this.images.add(image);
 			image.addQuestionPost(this);
 		});
+	}
+
+	public boolean isQuestioner(Member member) {
+		return Objects.equals(this.member.getId(), member.getId());
 	}
 }
