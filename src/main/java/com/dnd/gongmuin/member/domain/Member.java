@@ -5,6 +5,8 @@ import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -91,6 +93,17 @@ public class Member extends TimeBaseEntity {
 		this.officialEmail = officialEmail;
 		this.jobGroup = jobGroup;
 		this.jobCategory = jobCategory;
+	}
+
+	public void decreaseCredit(int credit) {
+		if (this.credit < credit) {
+			throw new ValidationException(QuestionPostErrorCode.NOT_ENOUGH_CREDIT);
+		}
+		this.credit -= credit;
+	}
+
+	public void increaseCredit(int credit) {
+		this.credit += credit;
 	}
 
 }
