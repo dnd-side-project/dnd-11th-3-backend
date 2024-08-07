@@ -64,6 +64,8 @@ dependencies {
     //spring bean validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {
