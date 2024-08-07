@@ -91,4 +91,11 @@ public class MemberService {
 
 		return memberRepository.save(findMember);
 	}
+
+	@Transactional(readOnly = true)
+	public boolean isOfficialEmailExists(String officialEmail) {
+		boolean result = memberRepository.existsByOfficialEmail(officialEmail);
+
+		return result;
+	}
 }
