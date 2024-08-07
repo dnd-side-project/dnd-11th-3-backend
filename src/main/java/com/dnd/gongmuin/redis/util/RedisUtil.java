@@ -77,6 +77,17 @@ public class RedisUtil {
 			throw new NotFoundException(RedisErrorCode.REDIS_FIND_ERROR);
 		}
 
+		validateExpiredFromKey(key);
+
 		return Objects.equals(findValues, data);
 	}
+
+	@Transactional(readOnly = true)
+	public void validateExpiredFromKey(String key) {
+		Long ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+		if (ttl == null || ttl <= 0) {
+			throw new NotFoundException(RedisErrorCode.REDIS_EXPIRED_ERROR);
+		}
+	}
+
 }
