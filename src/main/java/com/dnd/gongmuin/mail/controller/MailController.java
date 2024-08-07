@@ -1,8 +1,6 @@
 package com.dnd.gongmuin.mail.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +29,9 @@ public class MailController {
 		return ResponseEntity.ok(toEmail);
 	}
 
-	@GetMapping("/{authCode}")
+	@PostMapping("/authCode")
 	public ResponseEntity<AuthCodeResponse> verifyMailAuthCode(
-		@PathVariable("authCode") @Valid AuthCodeRequest authCodeRequest) {
+		@RequestBody @Valid AuthCodeRequest authCodeRequest) {
 		AuthCodeResponse authCodeResponse = mailService.verifyMailAuthCode(authCodeRequest);
 		return ResponseEntity.ok(authCodeResponse);
 	}
