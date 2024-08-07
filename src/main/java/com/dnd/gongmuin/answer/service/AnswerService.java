@@ -28,6 +28,12 @@ public class AnswerService {
 	private final QuestionPostRepository questionPostRepository;
 	private final AnswerRepository answerRepository;
 
+	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
+		if (!questionPost.isQuestioner(member)) {
+			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
+		}
+	}
+
 	@Transactional
 	public AnswerDetailResponse registerAnswer(
 		Long questionPostId,
@@ -58,12 +64,6 @@ public class AnswerService {
 		validateIfQuestioner(member, questionPost);
 		questionPost.chooseAnswer(answer);
 		return AnswerMapper.toAnswerDetailResponse(answer);
-	}
-
-	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
-		if (!questionPost.isQuestioner(member)) {
-			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
-		}
 	}
 
 	private void validateIfQuestionPostExists(Long questionPostId) {
