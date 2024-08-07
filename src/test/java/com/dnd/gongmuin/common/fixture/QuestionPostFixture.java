@@ -48,4 +48,22 @@ public class QuestionPostFixture {
 
 		return questionPost;
 	}
+
+	public static QuestionPost questionPost(Long questionPostId, Member member) {
+		QuestionPost questionPost = QuestionPost.of(
+			"제목",
+			"내용",
+			1000,
+			JobGroup.of("공업"),
+			List.of(
+				QuestionPostImage.from("image1.jpg"),
+				QuestionPostImage.from("image2.jpg")
+			),
+			member
+		);
+		ReflectionTestUtils.setField(questionPost, "id", questionPostId);
+		ReflectionTestUtils.setField(questionPost, "createdAt", LocalDateTime.now());
+
+		return questionPost;
+	}
 }
