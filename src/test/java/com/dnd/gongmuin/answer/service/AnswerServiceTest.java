@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.answer.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.List;
@@ -88,9 +89,11 @@ class AnswerServiceTest {
 			questionPostId);
 
 		//then
-		Assertions.assertThat(response.content()).hasSize(2);
-		Assertions.assertThat(response.hasNext()).isFalse();
-		Assertions.assertThat(response.content().get(0).answerId()).isEqualTo(answer1.getId());
+		assertAll(
+			() -> assertThat(response.content()).hasSize(2),
+			() -> assertThat(response.hasNext()).isFalse(),
+			() -> assertThat(response.content().get(0).answerId()).isEqualTo(answer1.getId())
+		);
 	}
 
 	@DisplayName("[답변을 채택할 수 있다.]")
