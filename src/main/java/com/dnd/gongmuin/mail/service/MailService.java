@@ -1,17 +1,22 @@
 package com.dnd.gongmuin.mail.service;
 
+import java.time.Duration;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.mail.dto.MailMapper;
+import com.dnd.gongmuin.mail.dto.request.AuthCodeRequest;
 import com.dnd.gongmuin.mail.dto.request.SendMailRequest;
+import com.dnd.gongmuin.mail.dto.response.AuthCodeResponse;
 import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.exception.MailErrorCode;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
+import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +25,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailService {
 
+	@Value("${spring.mail.auth-code-expiration-millis}")
+	private long authCodeExpirationMillis;
 	private final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
+
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
+	private final RedisUtil redisUtil;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
 		String toEmail = request.toEmail();
@@ -30,6 +39,15 @@ public class MailService {
 		mailSender.send(email);
 
 		return MailMapper.toSendMailResponse(toEmail);
+	}
+
+	public AuthCodeResponse verifyMailAuthCode(AuthCodeRequest authCodeRequest) {
+		String toEmail = SUBJECT + authCodeRequest.toEmail();
+		String authCode = authCodeRequest.authCode();
+
+		boolean result = redisUtil.validateData(toEmail, authCode);
+
+		return MailMapper.toAuthCodeResponse(result);
 	}
 
 	private MimeMessage createMail(String toEmail) {
@@ -40,13 +58,13 @@ public class MailService {
 				throw new IllegalArgumentException();
 			}
 
+			saveAuthCodeToRedis(toEmail, authCode, authCodeExpirationMillis);
+
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 			messageHelper.setTo(toEmail);
 			messageHelper.setSubject(SUBJECT);
 			messageHelper.setText("인증 코드는 다음과 같습니다.\n" + authCode);
-
-			// TODO : Redis에 생성된 인증코드 저장(인증 시간 설정)
 
 			return mimeMessage;
 		} catch (IllegalArgumentException e) {
@@ -56,6 +74,8 @@ public class MailService {
 		}
 	}
 
-	// TODO : 인증 코드 검증
-	// TODO : 특정 공무원 이메일 검증
+	private void saveAuthCodeToRedis(String toEmail, String authCode, long authCodeExpirationMillis) {
+		String key = SUBJECT + toEmail;
+		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
+	}
 }
