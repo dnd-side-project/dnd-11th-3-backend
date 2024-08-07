@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
-import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
@@ -59,14 +59,31 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			);
 	}
 
+	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
+	@Test
+	void registerQuestionPostFail() throws Exception {
+		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
+			"제목",
+			"내용",
+			List.of("image1.jpg", "image2.jpg"),
+			loginMember.getCredit() + 1,
+			"공업"
+		);
+
+		mockMvc.perform(post("/api/question-posts")
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON)
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code")
+				.value(QuestionPostErrorCode.NOT_ENOUGH_CREDIT.getCode()));
+	}
+
 	@DisplayName("[질문글을 조회할 수 있다.]")
 	@Test
 	void getQuestionPostById() throws Exception {
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
-
-		List<String> imageUrls = questionPost.getImages().stream()
-			.map(QuestionPostImage::getImageUrl)
-			.toList();
 
 		mockMvc.perform(get("/api/question-posts/{questionPostId}", questionPost.getId())
 				.header(AUTHORIZATION, accessToken))
