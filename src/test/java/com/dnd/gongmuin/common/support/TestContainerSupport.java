@@ -33,8 +33,6 @@ public abstract class TestContainerSupport {
 
 		REDIS.start();
 		MYSQL.start();
-
-		System.out.println("Redis status: " + REDIS.isRunning());
 	}
 
 	// 동적으로 속성 할당

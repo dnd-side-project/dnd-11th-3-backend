@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-	private final TokenProvider tokenProvider;
 	private static final String TOKEN_PREFIX = "Bearer ";
+	private final TokenProvider tokenProvider;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
