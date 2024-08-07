@@ -29,6 +29,7 @@ public class MailService {
 	@Value("${spring.mail.auth-code-expiration-millis}")
 	private long authCodeExpirationMillis;
 	private final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
+	private static final String AUTH_CODE_PREFIX = "AuthCode ";
 
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
@@ -46,7 +47,7 @@ public class MailService {
 	}
 
 	public AuthCodeResponse verifyMailAuthCode(AuthCodeRequest authCodeRequest) {
-		String toEmail = SUBJECT + authCodeRequest.toEmail();
+		String toEmail = AUTH_CODE_PREFIX + authCodeRequest.toEmail();
 		String authCode = authCodeRequest.authCode();
 
 		boolean result = redisUtil.validateData(toEmail, authCode);
@@ -79,7 +80,7 @@ public class MailService {
 	}
 
 	private void saveAuthCodeToRedis(String toEmail, String authCode, long authCodeExpirationMillis) {
-		String key = SUBJECT + toEmail;
+		String key = AUTH_CODE_PREFIX + toEmail;
 		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
 	}
 
