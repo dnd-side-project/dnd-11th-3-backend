@@ -23,7 +23,7 @@ public class MailController {
 
 	private final MailService mailService;
 
-	public ResponseEntity<SendMailResponse> mailSend(
+	public ResponseEntity<SendMailResponse> sendToMail(
 		@RequestBody @Valid SendMailRequest sendMailRequest) {
 		SendMailResponse toEmail = mailService.sendEmail(sendMailRequest);
 		return ResponseEntity.ok(toEmail);
