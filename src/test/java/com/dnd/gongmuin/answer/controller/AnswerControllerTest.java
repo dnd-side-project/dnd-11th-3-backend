@@ -5,13 +5,17 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
@@ -84,4 +88,29 @@ class AnswerControllerTest extends ApiTestSupport {
 			);
 	}
 
+	@DisplayName("[질문글 아이디로 해당 질문글의 답변들을 조회할 수 있다.]")
+	@Test
+	void getAnswersByQuestionPostId() throws Exception {
+		QuestionPost questionPost
+			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		Member anotherMember = memberRepository.save(MemberFixture.member2());
+
+		List<Answer> answers = answerRepository.saveAll(List.of(
+			answerRepository.save(AnswerFixture.answer(questionPost.getId(), anotherMember)),
+			answerRepository.save(AnswerFixture.answer(questionPost.getId(), anotherMember))
+		));
+
+		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		mockMvc.perform(get("/api/question-posts/{questionPostId}/answers", questionPost.getId())
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON)
+				.header(AUTHORIZATION, accessToken) //loginMember
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.content[0].answerId").value(answers.get(0).getId()))
+			.andExpect(jsonPath("$.content[0].isQuestioner").value(false))
+			.andExpect(jsonPath("$.content[1].answerId").value(answers.get(1).getId()))
+			.andExpect(jsonPath("$.content[1].isQuestioner").value(false));
+	}
 }
