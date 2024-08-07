@@ -35,14 +35,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenProvider {
 
-	@Value("${spring.jwt.key}")
-	private String key;
-	private SecretKey secretKey;
 	private static final String ROLE_KEY = "ROLE";
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final TokenService tokenService;
 	private final MemberService memberService;
+	@Value("${spring.jwt.key}")
+	private String key;
+	private SecretKey secretKey;
 
 	@PostConstruct
 	private void initSecretKey() {
