@@ -113,4 +113,25 @@ class AnswerControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[1].answerId").value(answers.get(1).getId()))
 			.andExpect(jsonPath("$.content[1].isQuestioner").value(false));
 	}
+
+	@DisplayName("[질문자는 답변을 채택할 수 있다.]")
+	@Test
+	void chooseAnswer() throws Exception {
+		QuestionPost questionPost
+			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		Member answerer = memberRepository.save(MemberFixture.member2());
+		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
+
+		mockMvc.perform(post("/api/question-posts/answers/{answerId}", answer.getId())
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").value(answer.getContent()))
+			.andExpect(jsonPath("$.isChosen").value(true))
+			.andExpect(jsonPath("$.isQuestioner").value(false))
+			.andExpect(jsonPath("$.memberInfo.memberId").value(answerer.getId()))
+			.andExpect(jsonPath("$.memberInfo.nickname").value(answerer.getNickname()))
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(answerer.getJobGroup().getLabel())
+			);
+	}
 }
