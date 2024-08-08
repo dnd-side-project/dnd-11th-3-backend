@@ -50,7 +50,7 @@ class MailController extends ApiTestSupport {
 				.header(AUTHORIZATION, accessToken)
 			)
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.toEmail").value(request.targetEmail())
+			.andExpect(jsonPath("$.targetEmail").value(request.targetEmail())
 			);
 	}
 
@@ -62,7 +62,7 @@ class MailController extends ApiTestSupport {
 		redisUtil.setValues("AuthCode gongmuin@korea.kr", "123456", Duration.ofMillis(authCodeExpirationMillis));
 
 		// then
-		mockMvc.perform(post("/api/auth/check-email/{authCode}", request.authCode())
+		mockMvc.perform(post("/api/auth/check-email/authCode")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
 				.header(AUTHORIZATION, accessToken)
