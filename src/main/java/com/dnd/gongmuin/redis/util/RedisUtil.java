@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.redis.exception.RedisErrorCode;
@@ -41,7 +40,6 @@ public class RedisUtil {
 		}
 	}
 
-	@Transactional(readOnly = true)
 	public String getValues(String key) {
 		try {
 			ValueOperations<String, Object> values = redisTemplate.opsForValue();
@@ -82,7 +80,6 @@ public class RedisUtil {
 		return Objects.equals(findValues, data);
 	}
 
-	@Transactional(readOnly = true)
 	public void validateExpiredFromKey(String key) {
 		Long ttl = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
 		if (ttl == null || ttl <= 0) {
