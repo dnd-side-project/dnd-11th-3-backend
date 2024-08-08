@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
 @DisplayName("[MailController 통합 테스트]")
-@Disabled
-public class MailController extends ApiTestSupport {
+	// @Disabled
+class MailController extends ApiTestSupport {
 
 	@Value("${spring.mail.auth-code-expiration-millis}")
 	private long authCodeExpirationMillis;
@@ -51,7 +50,7 @@ public class MailController extends ApiTestSupport {
 				.header(AUTHORIZATION, accessToken)
 			)
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.toEmail").value(request.toEmail())
+			.andExpect(jsonPath("$.toEmail").value(request.targetEmail())
 			);
 	}
 

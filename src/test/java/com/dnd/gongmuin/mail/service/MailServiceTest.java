@@ -27,7 +27,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @DisplayName("[MailService 테스트]")
 @ExtendWith(MockitoExtension.class)
-public class MailServiceTest {
+class MailServiceTest {
 
 	@Mock
 	private MemberRepository memberRepository;
@@ -66,7 +66,7 @@ public class MailServiceTest {
 		SendMailResponse response = mailService.sendEmail(request);
 
 		// then
-		assertThat(request.toEmail()).isEqualTo(response.toEmail());
+		assertThat(request.targetEmail()).isEqualTo(response.targetEmail());
 	}
 
 	@DisplayName("발송된 인증번호와 입력된 인증번호를 검증한다.")
