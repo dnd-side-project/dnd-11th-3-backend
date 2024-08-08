@@ -75,8 +75,6 @@ public class RedisUtil {
 			throw new NotFoundException(RedisErrorCode.REDIS_FIND_ERROR);
 		}
 
-		validateExpiredFromKey(key);
-
 		return Objects.equals(findValues, data);
 	}
 
