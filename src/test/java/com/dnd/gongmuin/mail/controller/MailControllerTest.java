@@ -21,7 +21,7 @@ import com.dnd.gongmuin.redis.util.RedisUtil;
 
 @DisplayName("[MailController 통합 테스트]")
 	// @Disabled
-class MailController extends ApiTestSupport {
+class MailControllerTest extends ApiTestSupport {
 
 	@Value("${spring.mail.auth-code-expiration-millis}")
 	private long authCodeExpirationMillis;
@@ -41,7 +41,7 @@ class MailController extends ApiTestSupport {
 	@Test
 	void sentToMail() throws Exception {
 		// given
-		SendMailRequest request = new SendMailRequest("gongmuin@korea.kr");
+		SendMailRequest request = new SendMailRequest("gongmuin84165@korea.kr");
 
 		// then
 		mockMvc.perform(post("/api/auth/check-email")
