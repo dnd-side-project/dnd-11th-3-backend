@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MailMapper {
 
-	public static SendMailResponse toSendMailResponse(String toEmail) {
-		return new SendMailResponse(toEmail);
+	public static SendMailResponse toSendMailResponse(String targetEmail) {
+		return new SendMailResponse(targetEmail);
 	}
 
 	public static AuthCodeResponse toAuthCodeResponse(boolean result) {

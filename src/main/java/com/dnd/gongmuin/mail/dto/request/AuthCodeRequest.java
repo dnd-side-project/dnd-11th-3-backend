@@ -11,6 +11,6 @@ public record AuthCodeRequest(
 
 	@NotBlank(message = "공무원 이메일을 입력해주세요.")
 	@Email
-	String toEmail
+	String targetEmail
 ) {
 }

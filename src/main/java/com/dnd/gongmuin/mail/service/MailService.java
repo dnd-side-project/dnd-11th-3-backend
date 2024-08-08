@@ -37,25 +37,25 @@ public class MailService {
 	private final MemberService memberService;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
-		String toEmail = request.toEmail();
+		String targetEmail = request.targetEmail();
 
-		checkForDuplicatedOfficialEmail(toEmail);
-		MimeMessage email = createMail(toEmail);
+		checkDuplicatedOfficialEmail(targetEmail);
+		MimeMessage email = createMail(targetEmail);
 		mailSender.send(email);
 
-		return MailMapper.toSendMailResponse(toEmail);
+		return MailMapper.toSendMailResponse(targetEmail);
 	}
 
 	public AuthCodeResponse verifyMailAuthCode(AuthCodeRequest authCodeRequest) {
-		String toEmail = AUTH_CODE_PREFIX + authCodeRequest.toEmail();
+		String targetEmail = AUTH_CODE_PREFIX + authCodeRequest.targetEmail();
 		String authCode = authCodeRequest.authCode();
 
-		boolean result = redisUtil.validateData(toEmail, authCode);
+		boolean result = redisUtil.validateData(targetEmail, authCode);
 
 		return MailMapper.toAuthCodeResponse(result);
 	}
 
-	private MimeMessage createMail(String toEmail) {
+	private MimeMessage createMail(String targetEmail) {
 		try {
 			String authCode = authCodeGenerator.createAuthCode();
 
@@ -63,30 +63,30 @@ public class MailService {
 				throw new IllegalArgumentException();
 			}
 
-			saveAuthCodeToRedis(toEmail, authCode, authCodeExpirationMillis);
+			saveAuthCodeToRedis(targetEmail, authCode, authCodeExpirationMillis);
 
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-			messageHelper.setTo(toEmail);
+			messageHelper.setTo(targetEmail);
 			messageHelper.setSubject(SUBJECT);
 			messageHelper.setText("인증 코드는 다음과 같습니다.\n" + authCode);
 
 			return mimeMessage;
 		} catch (IllegalArgumentException e) {
-			throw new NotFoundException(MailErrorCode.MAIL_CONTENT_ERROR);
+			throw new NotFoundException(MailErrorCode.CONTENT_ERROR);
 		} catch (Exception e) {
-			throw new NotFoundException(MailErrorCode.MAIL_CONFIGURATION_ERROR);
+			throw new NotFoundException(MailErrorCode.CONFIGURATION_ERROR);
 		}
 	}
 
-	private void saveAuthCodeToRedis(String toEmail, String authCode, long authCodeExpirationMillis) {
-		String key = AUTH_CODE_PREFIX + toEmail;
+	private void saveAuthCodeToRedis(String targetEmail, String authCode, long authCodeExpirationMillis) {
+		String key = AUTH_CODE_PREFIX + targetEmail;
 		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
 	}
 
-	private void checkForDuplicatedOfficialEmail(String officialEmail) {
+	private void checkDuplicatedOfficialEmail(String officialEmail) {
 		if (memberService.isOfficialEmailExists(officialEmail)) {
-			throw new NotFoundException(MailErrorCode.MAIL_DUPLICATED_ERROR);
+			throw new NotFoundException(MailErrorCode.DUPLICATED_ERROR);
 		}
 	}
 }

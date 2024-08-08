@@ -23,10 +23,10 @@ public class MailController {
 	private final MailService mailService;
 
 	@PostMapping
-	public ResponseEntity<SendMailResponse> sendToMail(
+	public ResponseEntity<SendMailResponse> sendAuthCodeToMail(
 		@RequestBody @Valid SendMailRequest sendMailRequest) {
-		SendMailResponse toEmail = mailService.sendEmail(sendMailRequest);
-		return ResponseEntity.ok(toEmail);
+		SendMailResponse targetEmail = mailService.sendEmail(sendMailRequest);
+		return ResponseEntity.ok(targetEmail);
 	}
 
 	@PostMapping("/authCode")
