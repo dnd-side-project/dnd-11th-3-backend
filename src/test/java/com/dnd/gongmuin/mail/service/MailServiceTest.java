@@ -1,8 +1,7 @@
 package com.dnd.gongmuin.mail.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.redis.exception.RedisErrorCode;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.mail.internet.MimeMessage;
@@ -42,10 +42,10 @@ class MailServiceTest {
 	private JavaMailSender mailSender;
 
 	@Mock
-	private RedisUtil redisUtil;
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Mock
-	private RedisTemplate redisTemplate;
+	private RedisUtil redisUtil;
 
 	@InjectMocks
 	private MailService mailService;
@@ -58,9 +58,9 @@ class MailServiceTest {
 		MimeMessage mimeMessage = mock(MimeMessage.class);
 
 		String authCode = "123456";
-		when(authCodeGenerator.createAuthCode()).thenReturn(authCode);
-		when(memberService.isOfficialEmailExists(anyString())).thenReturn(false);
-		when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+		given(authCodeGenerator.createAuthCode()).willReturn(authCode);
+		given(memberService.isOfficialEmailExists(anyString())).willReturn(false);
+		given(mailSender.createMimeMessage()).willReturn(mimeMessage);
 
 		// when
 		SendMailResponse response = mailService.sendEmail(request);
@@ -79,7 +79,7 @@ class MailServiceTest {
 		AuthCodeRequest request = new AuthCodeRequest(authCode, toEmail);
 
 		String key = PREFIX + toEmail;
-		when(redisUtil.validateData(key, authCode)).thenReturn(true);
+		given(redisUtil.validateData(key, authCode)).willReturn(true);
 
 		// when
 		AuthCodeResponse response = mailService.verifyMailAuthCode(request);
@@ -92,16 +92,20 @@ class MailServiceTest {
 	@Test
 	void verifyAuthCodeWithExpired() {
 		// given
-		String toEmail = "gongmuin@korea.kr";
+		String targetEmail = "gongmuin@korea.kr";
 		String authCode = "123456";
-		String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
-		AuthCodeRequest request = new AuthCodeRequest(authCode, toEmail);
+		String PREFIX = "AuthCode ";
+		AuthCodeRequest request = new AuthCodeRequest(authCode, targetEmail);
 
-		String key = SUBJECT + toEmail;
-		when(redisUtil.validateData(key, authCode)).thenThrow(NotFoundException.class);
+		String key = PREFIX + targetEmail;
+
+		doThrow(new NotFoundException(RedisErrorCode.REDIS_EXPIRED_ERROR))
+			.when(redisUtil).validateExpiredFromKey(key);
 
 		// when // then
-		assertThrowsExactly(NotFoundException.class, () -> mailService.verifyMailAuthCode(request));
+		assertThatThrownBy(() -> mailService.verifyMailAuthCode(request))
+			.isInstanceOf(NotFoundException.class)
+			.hasMessage(RedisErrorCode.REDIS_EXPIRED_ERROR.getMessage());
 	}
 
 }
