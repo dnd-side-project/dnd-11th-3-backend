@@ -50,6 +50,8 @@ public class MailService {
 		String targetEmail = AUTH_CODE_PREFIX + authCodeRequest.targetEmail();
 		String authCode = authCodeRequest.authCode();
 
+		redisUtil.validateExpiredFromKey(targetEmail);
+
 		boolean result = redisUtil.validateData(targetEmail, authCode);
 
 		return MailMapper.toAuthCodeResponse(result);
