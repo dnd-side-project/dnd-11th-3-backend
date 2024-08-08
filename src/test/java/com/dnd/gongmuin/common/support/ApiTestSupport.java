@@ -2,6 +2,7 @@ package com.dnd.gongmuin.common.support;
 
 import java.util.Date;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +16,6 @@ import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.annotation.PostConstruct;
 
 // 컨트롤러 단 통합테스트용
 @SpringBootTest
@@ -39,7 +38,7 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	}
 
 	// API 테스트할 때마다 Member를 저장하고 토큰정보를 가져오지 않기 위해서 하나의 유저와 토큰정보 구성
-	@PostConstruct
+	// @PostConstruct
 	public void setUpMember() {
 		if (loginMember != null) {
 			return;
@@ -50,5 +49,11 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 
 		this.loginMember = savedMember;
 		this.accessToken = "Bearer " + token;
+	}
+
+	@BeforeEach
+	void setUp() {
+		memberRepository.deleteAll();
+		setUpMember();
 	}
 }
