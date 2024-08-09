@@ -55,7 +55,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		Member anotherMember = memberRepository.save(MemberFixture.member2());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(anotherMember));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
@@ -77,7 +77,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		QuestionPost questionPost
 			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
@@ -105,7 +105,7 @@ class AnswerControllerTest extends ApiTestSupport {
 			answerRepository.save(AnswerFixture.answer(questionPost.getId(), anotherMember))
 		));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(get("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)

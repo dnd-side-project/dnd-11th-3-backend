@@ -60,7 +60,7 @@ class AnswerServiceTest {
 		Long questionPostId = 1L;
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 		RegisterAnswerRequest request =
-			RegisterAnswerRequest.from("답변 내용");
+			new RegisterAnswerRequest("답변 내용");
 
 		given(questionPostRepository.findById(questionPostId))
 			.willReturn(Optional.of(QuestionPostFixture.questionPost(questionPostId)));
