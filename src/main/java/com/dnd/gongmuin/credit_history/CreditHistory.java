@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.credit;
+package com.dnd.gongmuin.credit_history;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -15,27 +15,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Credit extends TimeBaseEntity {
+public class CreditHistory extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "credit_id", nullable = false)
+	@Column(name = "credit_history_id", nullable = false)
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type", nullable = false)
 	private CreditType type;
 
-	@Enumerated(EnumType.STRING)
 	@Column(name = "detail", nullable = false)
-	private CreditDetail detail;
+	private String detail;
 
 	@Column(name = "amount", nullable = false)
 	private int amount;
@@ -44,11 +42,14 @@ public class Credit extends TimeBaseEntity {
 	@JoinColumn(name = "member_id", nullable = false) // 정합성 중요
 	private Member member;
 
-	@Builder
-	public Credit(CreditType type, CreditDetail detail, int amount, Member member) {
+	private CreditHistory(CreditType type, String detail, int amount, Member member) {
 		this.type = type;
 		this.detail = detail;
 		this.amount = amount;
 		this.member = member;
+	}
+
+	public static CreditHistory of(CreditType type, String detail, int amount, Member member) {
+		return new CreditHistory(type, detail, amount, member);
 	}
 }
