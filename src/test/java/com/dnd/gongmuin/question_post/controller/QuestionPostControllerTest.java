@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
-import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
@@ -77,7 +77,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			)
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.code")
-				.value(QuestionPostErrorCode.NOT_ENOUGH_CREDIT.getCode()));
+				.value(MemberErrorCode.NOT_ENOUGH_CREDIT.getCode()));
 	}
 
 	@DisplayName("[질문글을 조회할 수 있다.]")
