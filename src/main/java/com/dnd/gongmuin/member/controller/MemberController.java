@@ -29,12 +29,13 @@ public class MemberController {
 
 	@PostMapping("/check-nickname")
 	public ResponseEntity<ValidateNickNameResponse> checkNickName(
-		@RequestBody ValidateNickNameRequest validateNickNameRequest) {
+		@RequestBody @Valid ValidateNickNameRequest validateNickNameRequest) {
 		return ResponseEntity.ok(memberService.isDuplicatedNickname(validateNickNameRequest));
 	}
 
 	@PostMapping("/member")
-	public ResponseEntity<SignUpResponse> signUp(@RequestBody AdditionalInfoRequest request,
+	public ResponseEntity<SignUpResponse> signUp(
+		@RequestBody @Valid AdditionalInfoRequest request,
 		@AuthenticationPrincipal CustomOauth2User loginMember) {
 		SignUpResponse response = memberService.signUp(request, loginMember.getEmail());
 
