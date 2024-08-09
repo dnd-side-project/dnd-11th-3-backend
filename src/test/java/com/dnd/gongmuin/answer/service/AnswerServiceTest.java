@@ -28,7 +28,9 @@ import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -44,6 +46,9 @@ class AnswerServiceTest {
 
 	@Mock
 	private AnswerRepository answerRepository;
+
+	@Mock
+	private CreditHistoryService creditHistoryService;
 
 	@InjectMocks
 	private AnswerService answerService;
@@ -135,7 +140,7 @@ class AnswerServiceTest {
 		//when & then
 		assertThatThrownBy(() -> answerService.chooseAnswer(answer.getId(), member))
 			.isInstanceOf(ValidationException.class)
-			.hasMessageContaining(QuestionPostErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
 
 	}
 
