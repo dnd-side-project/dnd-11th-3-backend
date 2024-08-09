@@ -36,9 +36,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	void registerQuestionPost() throws Exception {
 		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
 			"제목",
-			"내용",
+			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
-			1000,
+			2000,
 			"공업"
 		);
 
@@ -62,9 +62,12 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
 	@Test
 	void registerQuestionPostFail() throws Exception {
+		loginMember.decreaseCredit(5000);
+		memberRepository.save(loginMember); // 크레딧
+
 		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
 			"제목",
-			"내용",
+			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
 			loginMember.getCredit() + 1,
 			"공업"
