@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
-import com.dnd.gongmuin.security.service.TokenService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,9 +39,6 @@ class TokenProviderTest {
 
 	@InjectMocks
 	private TokenProvider tokenProvider;
-
-	@Mock
-	private TokenService tokenService;
 
 	private SecretKey secretKey;
 
