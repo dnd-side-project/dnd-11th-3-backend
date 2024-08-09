@@ -14,6 +14,7 @@ import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
@@ -27,6 +28,7 @@ public class AnswerService {
 
 	private final QuestionPostRepository questionPostRepository;
 	private final AnswerRepository answerRepository;
+	private final CreditHistoryService creditHistoryService;
 
 	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
 		if (!questionPost.isQuestioner(member)) {
@@ -62,8 +64,16 @@ public class AnswerService {
 		Answer answer = getAnswerById(answerId);
 		QuestionPost questionPost = findQuestionPostById(answer.getQuestionPostId());
 		validateIfQuestioner(member, questionPost);
-		questionPost.chooseAnswer(answer);
+		chooseAnswer(questionPost, answer);
+
 		return AnswerMapper.toAnswerDetailResponse(answer);
+	}
+
+	private void chooseAnswer(QuestionPost questionPost, Answer answer) {
+		questionPost.updateIsChosen(answer);
+		answer.getMember().increaseCredit(questionPost.getReward());
+		questionPost.getMember().decreaseCredit(questionPost.getReward());
+		creditHistoryService.saveChosenCreditHistory(questionPost, answer);
 	}
 
 	private void validateIfQuestionPostExists(Long questionPostId) {
