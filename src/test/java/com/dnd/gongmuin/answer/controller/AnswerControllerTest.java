@@ -19,6 +19,7 @@ import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -36,8 +37,12 @@ class AnswerControllerTest extends ApiTestSupport {
 	@Autowired
 	private AnswerRepository answerRepository;
 
+	@Autowired
+	private CreditHistoryRepository creditHistoryRepository;
+
 	@AfterEach
 	void teardown() {
+		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
 		answerRepository.deleteAll();
