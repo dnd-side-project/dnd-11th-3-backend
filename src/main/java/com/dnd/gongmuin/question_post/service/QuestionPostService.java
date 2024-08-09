@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.QuestionPostMapper;
@@ -25,7 +26,7 @@ public class QuestionPostService {
 	@Transactional
 	public QuestionPostDetailResponse registerQuestionPost(@Valid RegisterQuestionPostRequest request, Member member) {
 		if (member.getCredit() < request.reward()) {
-			throw new ValidationException(QuestionPostErrorCode.NOT_ENOUGH_CREDIT);
+			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
 		}
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toQuestionPostDetailResponse(questionPostRepository.save(questionPost));
