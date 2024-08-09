@@ -17,6 +17,7 @@ import com.dnd.gongmuin.question_post.service.QuestionPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "질문글 API")
@@ -31,7 +32,7 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping
 	public ResponseEntity<QuestionPostDetailResponse> registerQuestionPost(
-		@RequestBody RegisterQuestionPostRequest request,
+		@Valid @RequestBody RegisterQuestionPostRequest request,
 		@AuthenticationPrincipal Member member
 	) {
 		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request, member);

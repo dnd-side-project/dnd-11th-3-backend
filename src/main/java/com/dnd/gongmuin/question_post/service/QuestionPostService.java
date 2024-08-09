@@ -14,7 +14,6 @@ import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,7 +23,7 @@ public class QuestionPostService {
 	private final QuestionPostRepository questionPostRepository;
 
 	@Transactional
-	public QuestionPostDetailResponse registerQuestionPost(@Valid RegisterQuestionPostRequest request, Member member) {
+	public QuestionPostDetailResponse registerQuestionPost(RegisterQuestionPostRequest request, Member member) {
 		if (member.getCredit() < request.reward()) {
 			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
 		}
