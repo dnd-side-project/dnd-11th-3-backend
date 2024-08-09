@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.credit;
+package com.dnd.gongmuin.credit_history;
 
 import java.util.Arrays;
 
@@ -9,12 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CreditType {
 
-	CHOOSE("채택하기"),
-	CHOSEN("채택받기"),
-	CHAT_REQUEST("채팅신청"),
-	CHAT_ACCEPT("채팅받기");
+	CHOOSE("채택하기", "출금"),
+	CHOSEN("채택받기", "입금"),
+	CHAT_REQUEST("채팅신청", "출금"),
+	CHAT_ACCEPT("채팅받기", "입금");
 
 	private final String label;
+	private final String detail;
 
 	public static CreditType of(String input) {
 		return Arrays.stream(values())
