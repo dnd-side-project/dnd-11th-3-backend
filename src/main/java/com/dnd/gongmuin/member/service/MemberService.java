@@ -1,21 +1,29 @@
 package com.dnd.gongmuin.member.service;
 
+import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
+import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.redis.util.RedisUtil;
+import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +32,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
 
+	private static final String TOKEN_PREFIX = "Bearer ";
 	private final MemberRepository memberRepository;
+	private final TokenProvider tokenProvider;
+	private final RedisUtil redisUtil;
 
 	public Member saveOrUpdate(Oauth2Response oauth2Response) {
 		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
@@ -97,5 +108,25 @@ public class MemberService {
 		boolean result = memberRepository.existsByOfficialEmail(officialEmail);
 
 		return result;
+	}
+
+	public LogoutResponse logout(LogoutRequest request) {
+		String accessToken = request.accessToken().substring(TOKEN_PREFIX.length());
+
+		if (!tokenProvider.validateToken(accessToken, new Date())) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		Member member = (Member)authentication.getPrincipal();
+
+		if (!Objects.isNull(redisUtil.getValues("RT:" + member.getSocialEmail()))) {
+			redisUtil.deleteValues("RT:" + member.getSocialEmail());
+		}
+
+		Long expiration = tokenProvider.getExpiration(accessToken, new Date());
+		redisUtil.setValues(accessToken, "logout", Duration.ofMillis(expiration));
+
+		return new LogoutResponse(true);
 	}
 }
