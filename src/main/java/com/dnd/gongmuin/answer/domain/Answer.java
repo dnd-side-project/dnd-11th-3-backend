@@ -57,4 +57,8 @@ public class Answer extends TimeBaseEntity {
 		return new Answer(content, isQuestioner, questionPostId, member);
 	}
 
+	public void updateIsChosen() {
+		this.isChosen = true;
+	}
+
 }

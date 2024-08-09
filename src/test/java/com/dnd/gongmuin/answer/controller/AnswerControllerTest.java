@@ -19,6 +19,7 @@ import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -36,8 +37,12 @@ class AnswerControllerTest extends ApiTestSupport {
 	@Autowired
 	private AnswerRepository answerRepository;
 
+	@Autowired
+	private CreditHistoryRepository creditHistoryRepository;
+
 	@AfterEach
 	void teardown() {
+		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
 		answerRepository.deleteAll();
@@ -50,7 +55,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		Member anotherMember = memberRepository.save(MemberFixture.member2());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(anotherMember));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
@@ -72,7 +77,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		QuestionPost questionPost
 			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
@@ -100,7 +105,7 @@ class AnswerControllerTest extends ApiTestSupport {
 			answerRepository.save(AnswerFixture.answer(questionPost.getId(), anotherMember))
 		));
 
-		RegisterAnswerRequest request = RegisterAnswerRequest.from("본문");
+		RegisterAnswerRequest request = new RegisterAnswerRequest("본문");
 		mockMvc.perform(get("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
@@ -112,5 +117,26 @@ class AnswerControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].isQuestioner").value(false))
 			.andExpect(jsonPath("$.content[1].answerId").value(answers.get(1).getId()))
 			.andExpect(jsonPath("$.content[1].isQuestioner").value(false));
+	}
+
+	@DisplayName("[질문자는 답변을 채택할 수 있다.]")
+	@Test
+	void chooseAnswer() throws Exception {
+		QuestionPost questionPost
+			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		Member answerer = memberRepository.save(MemberFixture.member2());
+		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
+
+		mockMvc.perform(post("/api/question-posts/answers/{answerId}", answer.getId())
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").value(answer.getContent()))
+			.andExpect(jsonPath("$.isChosen").value(true))
+			.andExpect(jsonPath("$.isQuestioner").value(false))
+			.andExpect(jsonPath("$.memberInfo.memberId").value(answerer.getId()))
+			.andExpect(jsonPath("$.memberInfo.nickname").value(answerer.getNickname()))
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(answerer.getJobGroup().getLabel())
+			);
 	}
 }

@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
-import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
@@ -36,9 +36,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	void registerQuestionPost() throws Exception {
 		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
 			"제목",
-			"내용",
+			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
-			1000,
+			2000,
 			"공업"
 		);
 
@@ -62,9 +62,12 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
 	@Test
 	void registerQuestionPostFail() throws Exception {
+		loginMember.decreaseCredit(5000);
+		memberRepository.save(loginMember); // 크레딧
+
 		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
 			"제목",
-			"내용",
+			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
 			loginMember.getCredit() + 1,
 			"공업"
@@ -77,7 +80,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			)
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.code")
-				.value(QuestionPostErrorCode.NOT_ENOUGH_CREDIT.getCode()));
+				.value(MemberErrorCode.NOT_ENOUGH_CREDIT.getCode()));
 	}
 
 	@DisplayName("[질문글을 조회할 수 있다.]")
