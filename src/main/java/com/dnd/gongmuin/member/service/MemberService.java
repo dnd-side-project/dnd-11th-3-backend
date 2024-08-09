@@ -16,6 +16,7 @@ import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.LogoutRequest;
+import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
@@ -24,6 +25,7 @@ import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
+import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
@@ -128,5 +130,33 @@ public class MemberService {
 		redisUtil.setValues(accessToken, "logout", Duration.ofMillis(expiration));
 
 		return new LogoutResponse(true);
+	}
+
+	public ReissueRequest reissue(ReissueRequest request) {
+		String accessToken = request.accessToken().substring(TOKEN_PREFIX.length());
+
+		if (!tokenProvider.validateToken(accessToken, new Date())) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		// 로그아웃 토큰 처리
+		if ("logout".equals(redisUtil.getValues(accessToken))) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		Member member = (Member)authentication.getPrincipal();
+
+		String refreshToken = redisUtil.getValues("RT:" + member.getSocialEmail());
+
+		// 로그아웃 또는 토큰 만료 경우 처리
+		if ("false".equals(refreshToken)) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		String reissuedAccessToken = tokenProvider.generateAccessToken((CustomOauth2User)authentication, new Date());
+		tokenProvider.generateRefreshToken((CustomOauth2User)authentication, new Date());
+
+		return new ReissueRequest(reissuedAccessToken);
 	}
 }

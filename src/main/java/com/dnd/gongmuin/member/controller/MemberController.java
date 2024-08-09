@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.LogoutRequest;
+import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
@@ -47,4 +48,9 @@ public class MemberController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PostMapping("/reissue/token")
+	public ResponseEntity<ReissueRequest> reissue(@RequestBody @Valid ReissueRequest request) {
+		ReissueRequest response = memberService.reissue(request);
+		return ResponseEntity.ok(response);
+	}
 }
