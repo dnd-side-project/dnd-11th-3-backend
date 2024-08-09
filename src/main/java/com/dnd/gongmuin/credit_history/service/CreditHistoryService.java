@@ -22,8 +22,8 @@ public class CreditHistoryService {
 	@Transactional
 	public void saveChosenCreditHistory(QuestionPost questionPost, Answer answer) {
 		creditHistoryRepository.saveAll(List.of(
-			CreditHistoryMapper.toCredit(CreditType.CHOSEN, questionPost, answer.getMember()),
-			CreditHistoryMapper.toCredit(CreditType.CHOOSE, questionPost, questionPost.getMember())
+			CreditHistoryMapper.toCreditHistory(CreditType.CHOSEN, questionPost.getReward(), answer.getMember()),
+			CreditHistoryMapper.toCreditHistory(CreditType.CHOOSE, questionPost.getReward(), questionPost.getMember())
 		));
 	}
 }
