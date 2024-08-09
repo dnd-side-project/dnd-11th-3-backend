@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,9 +33,12 @@ public class PostInteractionCount extends TimeBaseEntity {
 	@Column(name = "question_post_id")
 	private Long questionPostId;
 
-	@Builder
-	public PostInteractionCount(InteractionType type, Long questionPostId) {
+	private PostInteractionCount(InteractionType type, Long questionPostId) {
 		this.type = type;
 		this.questionPostId = questionPostId;
+	}
+
+	public static PostInteractionCount of(InteractionType type, Long questionPostId) {
+		return new PostInteractionCount(type, questionPostId);
 	}
 }
