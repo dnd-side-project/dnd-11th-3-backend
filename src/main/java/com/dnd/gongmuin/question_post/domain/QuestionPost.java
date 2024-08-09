@@ -86,11 +86,10 @@ public class QuestionPost extends TimeBaseEntity {
 		return Objects.equals(this.member.getId(), member.getId());
 	}
 
-	public void chooseAnswer(Answer answer) {
+	public void updateIsChosen(Answer answer) {
 		if (Boolean.TRUE.equals(this.isChosen))
 			throw new ValidationException(AnswerErrorCode.ALREADY_CHOSEN_ANSWER_EXISTS);
 		this.isChosen = true;
-		this.member.decreaseCredit(reward);
-		answer.chooseAnswer(reward);
+		answer.updateIsChosen();
 	}
 }
