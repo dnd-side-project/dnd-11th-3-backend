@@ -59,7 +59,7 @@ public class AnswerService {
 		Long answerId,
 		Member member
 	) {
-		Answer answer = findAnswerById(answerId);
+		Answer answer = getAnswerById(answerId);
 		QuestionPost questionPost = findQuestionPostById(answer.getQuestionPostId());
 		validateIfQuestioner(member, questionPost);
 		questionPost.chooseAnswer(answer);
@@ -73,7 +73,7 @@ public class AnswerService {
 		}
 	}
 
-	private Answer findAnswerById(Long answerId) {
+	private Answer getAnswerById(Long answerId) {
 		return answerRepository.findById(answerId)
 			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
 	}
