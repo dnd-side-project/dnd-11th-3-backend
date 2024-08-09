@@ -126,4 +126,10 @@ public class TokenProvider {
 		));
 	}
 
+	public Long getExpiration(String token, Date date) {
+		Claims claims = parseToken(token);
+		Date expiration = claims.getExpiration();
+		return (expiration.getTime() - date.getTime());
+	}
+
 }
