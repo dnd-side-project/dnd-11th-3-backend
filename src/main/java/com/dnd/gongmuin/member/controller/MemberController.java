@@ -2,7 +2,6 @@ package com.dnd.gongmuin.member.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,8 +41,8 @@ public class MemberController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/logout")
-	public ResponseEntity<LogoutResponse> logout(@Valid LogoutRequest request) {
+	@PostMapping("/logout")
+	public ResponseEntity<LogoutResponse> logout(@RequestBody @Valid LogoutRequest request) {
 		LogoutResponse response = memberService.logout(request);
 		return ResponseEntity.ok(response);
 	}
