@@ -25,7 +25,7 @@ jobs:
       - name: Generate application.yml
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.MAIN_APPLICATION_YML }}" | base64 -d > ./src/main/resources/application.yml
+          echo "${{ secrets.MAIN_APPLICATION_YML }}" > ./src/main/resources/application.yml
 
       # gradle 권한 부여
       - name: Grant execute permission for gradlew
