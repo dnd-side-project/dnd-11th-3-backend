@@ -3,29 +3,31 @@ package com.dnd.gongmuin.member.service;
 import static com.dnd.gongmuin.member.domain.JobCategory.*;
 import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
-import org.junit.jupiter.api.Disabled;
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
-@Transactional
-@Disabled
-class MemberServiceTest extends ApiTestSupport {
+@ExtendWith(MockitoExtension.class)
+class MemberServiceTest {
 
-	@Autowired
-	MemberService memberService;
-
-	@Autowired
+	@Mock
 	MemberRepository memberRepository;
+
+	@InjectMocks
+	MemberService memberService;
 
 	@DisplayName("조합된 소셜 이메일 부분 중 공급자 부분을 얻을 수 있다.")
 	@Test
@@ -61,9 +63,7 @@ class MemberServiceTest extends ApiTestSupport {
 	@Test
 	void isDuplicatedNickname() {
 		// given
-		Member member1 = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
-		memberRepository.save(member1);
-
+		given(memberRepository.existsByNickname("김철수")).willReturn(true);
 		ValidateNickNameRequest request = new ValidateNickNameRequest("김철수");
 
 		// when
@@ -77,16 +77,18 @@ class MemberServiceTest extends ApiTestSupport {
 	@Test
 	void signUp() {
 		// given
-		Member member1 = createMember(null, "철수", "kakao123/kakao123@daum.net", null);
-		memberRepository.save(member1);
-
 		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "가스");
+
+		Optional<Member> member1 = Optional.ofNullable(createMember(null, "철수", "kakao123/kakao123@daum.net", null));
+		given(memberRepository.findBySocialEmail("kakao123/kakao123@daum.net")).willReturn(member1);
+		Member member = member1.get();
+		given(memberRepository.save(any(Member.class))).willReturn(member);
 
 		// when
 		memberService.signUp(request, "kakao123/kakao123@daum.net");
 
 		// then
-		assertThat(member1).extracting("officialEmail", "nickname", "jobGroup", "jobCategory")
+		assertThat(member).extracting("officialEmail", "nickname", "jobGroup", "jobCategory")
 			.containsExactlyInAnyOrder(
 				"abc123@korea.com",
 				"김신규",
