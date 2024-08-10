@@ -15,15 +15,21 @@ import com.dnd.gongmuin.answer.service.AnswerService;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "답변 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/question-posts")
 public class AnswerController {
 	private final AnswerService answerService;
 
+	@Operation(summary = "답변 등록 API", description = "질문글에 대한 답변을 작성한다.")
+	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/{questionPostId}/answers")
 	public ResponseEntity<AnswerDetailResponse> registerAnswer(
 		@PathVariable Long questionPostId,
@@ -34,11 +40,24 @@ public class AnswerController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "답변 조회 API", description = "질문글에 속하는 답변을 모두 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/{questionPostId}/answers")
 	public ResponseEntity<PageResponse<AnswerDetailResponse>> getAnswersByQuestionPostId(
 		@PathVariable Long questionPostId
 	) {
 		PageResponse<AnswerDetailResponse> response = answerService.getAnswersByQuestionPostId(questionPostId);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "답변 채택 API", description = "질문자가 답변을 채택한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@PostMapping("/answers/{answerId}")
+	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostId(
+		@PathVariable Long answerId,
+		@AuthenticationPrincipal Member member
+	) {
+		AnswerDetailResponse response = answerService.chooseAnswer(answerId, member);
 		return ResponseEntity.ok(response);
 	}
 }

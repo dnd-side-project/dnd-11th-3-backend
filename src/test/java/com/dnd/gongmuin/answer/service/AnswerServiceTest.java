@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.answer.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.List;
@@ -15,16 +17,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.dto.PageResponse;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
+import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[AnswerService 테스트]")
@@ -39,6 +47,9 @@ class AnswerServiceTest {
 	@Mock
 	private AnswerRepository answerRepository;
 
+	@Mock
+	private CreditHistoryService creditHistoryService;
+
 	@InjectMocks
 	private AnswerService answerService;
 
@@ -49,7 +60,7 @@ class AnswerServiceTest {
 		Long questionPostId = 1L;
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 		RegisterAnswerRequest request =
-			RegisterAnswerRequest.from("답변 내용");
+			new RegisterAnswerRequest("답변 내용");
 
 		given(questionPostRepository.findById(questionPostId))
 			.willReturn(Optional.of(QuestionPostFixture.questionPost(questionPostId)));
@@ -83,8 +94,74 @@ class AnswerServiceTest {
 			questionPostId);
 
 		//then
-		Assertions.assertThat(response.content()).hasSize(2);
-		Assertions.assertThat(response.hasNext()).isFalse();
-		Assertions.assertThat(response.content().get(0).answerId()).isEqualTo(answer1.getId());
+		assertAll(
+			() -> assertThat(response.content()).hasSize(2),
+			() -> assertThat(response.hasNext()).isFalse(),
+			() -> assertThat(response.content().get(0).answerId()).isEqualTo(answer1.getId())
+		);
+	}
+
+	@DisplayName("[답변을 채택할 수 있다.]")
+	@Test
+	void chooseAnswer() {
+		//given
+		Long questionPostId = 1L;
+		Member member = MemberFixture.member(1L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
+		Answer answer = AnswerFixture.answer(1L, questionPostId);
+
+		given(answerRepository.findById(answer.getId()))
+			.willReturn(Optional.of(answer));
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+
+		//when
+		AnswerDetailResponse response = answerService.chooseAnswer(answer.getId(), member);
+
+		//then
+		Assertions.assertThat(response.isChosen()).isTrue();
+	}
+
+	@DisplayName("[크레딧이 부족하면 답변을 채택할 수 없다.]")
+	@Test
+	void chooseAnswer_fail() {
+		//given
+		Long questionPostId = 1L;
+		Member member = MemberFixture.member(1L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
+		ReflectionTestUtils.setField(questionPost, "reward", member.getCredit() + 1);
+		Answer answer = AnswerFixture.answer(1L, questionPostId);
+
+		given(answerRepository.findById(answer.getId()))
+			.willReturn(Optional.of(answer));
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+
+		//when & then
+		assertThatThrownBy(() -> answerService.chooseAnswer(answer.getId(), member))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+
+	}
+
+	@DisplayName("[질문자가 아니면 채택할 수 없다.]")
+	@Test
+	void chooseAnswer_fail2() {
+		//given
+		Long questionPostId = 1L;
+		Member questioner = MemberFixture.member(1L);
+		Member notQuestioner = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, questioner);
+		Answer answer = AnswerFixture.answer(1L, questionPostId);
+
+		given(answerRepository.findById(answer.getId()))
+			.willReturn(Optional.of(answer));
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+
+		//when & then
+		assertThatThrownBy(() -> answerService.chooseAnswer(answer.getId(), notQuestioner))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
 	}
 }

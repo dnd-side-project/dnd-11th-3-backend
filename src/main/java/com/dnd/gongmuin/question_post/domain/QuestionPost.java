@@ -5,8 +5,12 @@ import static jakarta.persistence.FetchType.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import com.dnd.gongmuin.answer.domain.Answer;
+import com.dnd.gongmuin.answer.exception.AnswerErrorCode;
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 
@@ -76,5 +80,16 @@ public class QuestionPost extends TimeBaseEntity {
 			this.images.add(image);
 			image.addQuestionPost(this);
 		});
+	}
+
+	public boolean isQuestioner(Member member) {
+		return Objects.equals(this.member.getId(), member.getId());
+	}
+
+	public void updateIsChosen(Answer answer) {
+		if (Boolean.TRUE.equals(this.isChosen))
+			throw new ValidationException(AnswerErrorCode.ALREADY_CHOSEN_ANSWER_EXISTS);
+		this.isChosen = true;
+		answer.updateIsChosen();
 	}
 }
