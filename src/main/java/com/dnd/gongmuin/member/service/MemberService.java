@@ -84,9 +84,9 @@ public class MemberService {
 			new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
 
-		Member signUpMember = updateAdditionalInfo(request, findMember);
+		updateAdditionalInfo(request, findMember);
 
-		return new SignUpResponse(signUpMember.getNickname());
+		return new SignUpResponse(findMember.getNickname());
 	}
 
 	public Member getMemberBySocialEmail(String socialEmail) {
