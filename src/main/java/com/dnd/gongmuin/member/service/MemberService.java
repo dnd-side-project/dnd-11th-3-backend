@@ -26,6 +26,7 @@ import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
+import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
@@ -161,8 +162,10 @@ public class MemberService {
 			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
 		}
 
-		String reissuedAccessToken = tokenProvider.generateAccessToken((CustomOauth2User)authentication, new Date());
-		tokenProvider.generateRefreshToken((CustomOauth2User)authentication, new Date());
+		CustomOauth2User customUser = new CustomOauth2User(
+			AuthInfo.of(member.getSocialName(), member.getSocialEmail()));
+		String reissuedAccessToken = tokenProvider.generateAccessToken(customUser, new Date());
+		tokenProvider.generateRefreshToken(customUser, new Date());
 
 		return new ReissueResponse(reissuedAccessToken);
 	}
