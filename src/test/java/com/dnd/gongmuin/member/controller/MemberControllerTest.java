@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
@@ -20,16 +20,19 @@ import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
-@Transactional
 @DisplayName("[MemberController] 통합테스트")
 class MemberControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private MemberRepository memberRepository;
 
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;
+
 	@AfterEach
 	void tearDown() {
-		memberRepository.deleteAll();
+		redisTemplate.getConnectionFactory().getConnection().flushAll();
+
 	}
 
 	@DisplayName("닉네임 중복을 검증한다.")
@@ -97,5 +100,4 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("accessToken").isString());
 	}
-
 }
