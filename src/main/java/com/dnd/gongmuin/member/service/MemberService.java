@@ -35,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private static final String TOKEN_PREFIX = "Bearer ";
+	private static final String LOGOUT = "logout";
 	private final MemberRepository memberRepository;
 	private final TokenProvider tokenProvider;
 	private final RedisUtil redisUtil;
@@ -127,7 +128,12 @@ public class MemberService {
 		}
 
 		Long expiration = tokenProvider.getExpiration(accessToken, new Date());
-		redisUtil.setValues(accessToken, "logout", Duration.ofMillis(expiration));
+		redisUtil.setValues(accessToken, LOGOUT, Duration.ofMillis(expiration));
+
+		String values = redisUtil.getValues(accessToken);
+		if (!Objects.equals(values, LOGOUT)) {
+			throw new NotFoundException(MemberErrorCode.FAIL_LOGOUT);
+		}
 
 		return new LogoutResponse(true);
 	}
