@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
@@ -16,7 +17,6 @@ import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
-import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +37,8 @@ public class MemberController {
 	@PostMapping("/member")
 	public ResponseEntity<SignUpResponse> signUp(
 		@RequestBody @Valid AdditionalInfoRequest request,
-		@AuthenticationPrincipal CustomOauth2User loginMember) {
-		SignUpResponse response = memberService.signUp(request, loginMember.getEmail());
+		@AuthenticationPrincipal Member loginMember) {
+		SignUpResponse response = memberService.signUp(request, loginMember.getSocialEmail());
 
 		return ResponseEntity.ok(response);
 	}
