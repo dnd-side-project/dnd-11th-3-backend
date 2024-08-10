@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.dnd.gongmuin.common.exception.runtime.CustomJwtException;
+import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.exception.JwtErrorCode;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
@@ -39,7 +41,7 @@ public class TokenProvider {
 	private static final String ROLE_KEY = "ROLE";
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
-	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 	private final RedisUtil redisUtil;
 	@Value("${spring.jwt.key}")
 	private String key;
@@ -91,7 +93,8 @@ public class TokenProvider {
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
 		String socialEmail = claims.getSubject();
-		Member principal = memberService.getMemberBySocialEmail(socialEmail);
+		Member principal = memberRepository.findBySocialEmail(socialEmail)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
