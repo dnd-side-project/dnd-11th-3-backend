@@ -12,6 +12,7 @@ import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
+import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -49,8 +50,8 @@ public class MemberController {
 	}
 
 	@PostMapping("/reissue/token")
-	public ResponseEntity<ReissueRequest> reissue(@RequestBody @Valid ReissueRequest request) {
-		ReissueRequest response = memberService.reissue(request);
+	public ResponseEntity<ReissueResponse> reissue(@RequestBody @Valid ReissueRequest request) {
+		ReissueResponse response = memberService.reissue(request);
 		return ResponseEntity.ok(response);
 	}
 }

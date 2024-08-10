@@ -19,6 +19,7 @@ import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
+import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -138,7 +139,7 @@ public class MemberService {
 		return new LogoutResponse(true);
 	}
 
-	public ReissueRequest reissue(ReissueRequest request) {
+	public ReissueResponse reissue(ReissueRequest request) {
 		String accessToken = request.accessToken().substring(TOKEN_PREFIX.length());
 
 		if (!tokenProvider.validateToken(accessToken, new Date())) {
@@ -163,6 +164,6 @@ public class MemberService {
 		String reissuedAccessToken = tokenProvider.generateAccessToken((CustomOauth2User)authentication, new Date());
 		tokenProvider.generateRefreshToken((CustomOauth2User)authentication, new Date());
 
-		return new ReissueRequest(reissuedAccessToken);
+		return new ReissueResponse(reissuedAccessToken);
 	}
 }
