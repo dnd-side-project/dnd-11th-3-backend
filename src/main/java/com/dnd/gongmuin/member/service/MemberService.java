@@ -80,16 +80,16 @@ public class MemberService {
 
 	@Transactional
 	public SignUpResponse signUp(AdditionalInfoRequest request, String email) {
-		Member findMember = memberRepository.findBySocialEmail(email)
+		Member foundMember = memberRepository.findBySocialEmail(email)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-		if (!isOfficialEmail(findMember)) {
+		if (!isOfficialEmail(foundMember)) {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
 
-		updateAdditionalInfo(request, findMember);
+		updateAdditionalInfo(request, foundMember);
 
-		return new SignUpResponse(findMember.getNickname());
+		return new SignUpResponse(foundMember.getNickname());
 	}
 
 	public Member getMemberBySocialEmail(String socialEmail) {
