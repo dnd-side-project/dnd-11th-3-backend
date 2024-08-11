@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.mail.dto.MailMapper;
@@ -16,7 +17,7 @@ import com.dnd.gongmuin.mail.dto.response.AuthCodeResponse;
 import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.exception.MailErrorCode;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
-import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.mail.internet.MimeMessage;
@@ -35,7 +36,7 @@ public class MailService {
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
 	private final RedisUtil redisUtil;
-	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
 		String targetEmail = request.targetEmail();
@@ -87,8 +88,9 @@ public class MailService {
 		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
 	}
 
-	private void checkDuplicatedOfficialEmail(String officialEmail) {
-		if (memberService.isOfficialEmailExists(officialEmail)) {
+	@Transactional(readOnly = true)
+	public void checkDuplicatedOfficialEmail(String officialEmail) {
+		if (memberRepository.existsByOfficialEmail(officialEmail)) {
 			throw new NotFoundException(MailErrorCode.DUPLICATED_ERROR);
 		}
 	}
