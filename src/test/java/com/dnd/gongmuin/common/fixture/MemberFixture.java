@@ -38,6 +38,14 @@ public class MemberFixture {
 		);
 	}
 
+	public static Member member3() {
+		return Member.of(
+			"소셜회원",
+			"KAKAO123/member2@daum.net",
+			20000
+		);
+	}
+
 	public static Member member(Long memberId) {
 		Member member = Member.of(
 			"김회원",
