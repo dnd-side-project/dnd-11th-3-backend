@@ -2,7 +2,7 @@ package com.dnd.gongmuin.answer.dto;
 
 import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.dto.MemberInfo;
+import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

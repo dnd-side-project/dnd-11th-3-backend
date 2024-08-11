@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.dto.QuestionPostDetailResponse;
-import com.dnd.gongmuin.question_post.dto.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
+import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
 import io.swagger.v3.oas.annotations.Operation;

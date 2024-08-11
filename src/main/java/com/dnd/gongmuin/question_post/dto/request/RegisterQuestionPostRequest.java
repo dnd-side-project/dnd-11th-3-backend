@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.question_post.dto;
+package com.dnd.gongmuin.question_post.dto.request;
 
 import java.util.List;
 
