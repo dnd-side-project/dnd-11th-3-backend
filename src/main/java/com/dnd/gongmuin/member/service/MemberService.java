@@ -97,15 +97,13 @@ public class MemberService {
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 	}
 
-	private Member updateAdditionalInfo(AdditionalInfoRequest request, Member findMember) {
+	private void updateAdditionalInfo(AdditionalInfoRequest request, Member findMember) {
 		findMember.updateAdditionalInfo(
 			request.nickname(),
 			request.officialEmail(),
 			JobGroup.of(request.jobGroup()),
 			JobCategory.of(request.jobCategory())
 		);
-
-		return memberRepository.save(findMember);
 	}
 
 	@Transactional(readOnly = true)
