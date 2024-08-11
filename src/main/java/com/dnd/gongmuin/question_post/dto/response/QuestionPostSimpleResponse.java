@@ -6,7 +6,8 @@ public record QuestionPostSimpleResponse(
 	String content,
 	String jobGroup,
 	int credit,
-	String createdAt
+	String createdAt,
+	boolean isChosen
 	// TODO: 8/11/24 북마크 수, 추천수 추가
 ){
 }
