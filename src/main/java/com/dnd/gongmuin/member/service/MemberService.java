@@ -135,10 +135,6 @@ public class MemberService {
 	public ReissueResponse reissue(ReissueRequest request) {
 		String accessToken = request.accessToken().substring(TOKEN_PREFIX.length());
 
-		if (!tokenProvider.validateToken(accessToken, new Date())) {
-			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
-		}
-
 		// 로그아웃 토큰 처리
 		if ("logout".equals(redisUtil.getValues(accessToken))) {
 			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
