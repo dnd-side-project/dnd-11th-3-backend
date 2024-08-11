@@ -14,10 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
@@ -51,16 +53,21 @@ class MemberServiceTest {
 	@Test
 	void parseProviderFromSocialEmail() {
 		// given
-		Member kakaoMember = createMember("김철수", "철수", "kakao123/kakao123@daum.net", "abc123@korea.com");
-		Member naverMember = createMember("김철수", "철수", "naver123/naver123@naver.com", "abc321@korea.com");
+		Member kakaoMember = createMember("김철수", "철수", "kakao123/kim@daum.net", "abc123@korea.com");
+		Member naverMember = createMember("박철수", "철수", "naver123/park@naver.com", "abc321@korea.com");
 
-		// when
-		String kakaoProvider = memberService.parseProviderFromSocialEmail(kakaoMember);
-		String naverProvider = memberService.parseProviderFromSocialEmail(naverMember);
+		try (MockedStatic<Provider> mockedProvider = mockStatic(Provider.class)) {
+			mockedProvider.when(() -> Provider.fromSocialEmail("kakao123/kim@daum.net")).thenReturn(Provider.KAKAO);
+			mockedProvider.when(() -> Provider.fromSocialEmail("naver123/park@naver.com")).thenReturn(Provider.NAVER);
 
-		// then
-		assertThat(kakaoProvider).isEqualToIgnoringCase("kakao");
-		assertThat(naverProvider).isEqualToIgnoringCase("naver");
+			// when
+			Provider kakaoProvider = memberService.parseProviderFromSocialEmail(kakaoMember);
+			Provider naverProvider = memberService.parseProviderFromSocialEmail(naverMember);
+
+			// then
+			assertThat(kakaoProvider).isEqualTo(Provider.KAKAO);
+			assertThat(naverProvider).isEqualTo(Provider.NAVER);
+		}
 	}
 
 	@DisplayName("공무원 이메일이 존재하는지 체크한다.")
