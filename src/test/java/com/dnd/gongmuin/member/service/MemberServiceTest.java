@@ -100,7 +100,6 @@ class MemberServiceTest {
 		Member member1 = createMember(null, "철수", "kakao123/kakao123@daum.net", null);
 		given(memberRepository.findBySocialEmail("kakao123/kakao123@daum.net")).willReturn(
 			Optional.ofNullable(member1));
-		given(memberRepository.save(any(Member.class))).willReturn(member1);
 
 		// when
 		memberService.signUp(request, "kakao123/kakao123@daum.net");
