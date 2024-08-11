@@ -172,7 +172,6 @@ class MemberServiceTest {
 		Member principal = MemberFixture.member();
 		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
 
-		given(tokenProvider.validateToken(anyString(), any(Date.class))).willReturn(true);
 		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
 
 		given(redisUtil.getValues(anyString())).willReturn("refreshToken");
