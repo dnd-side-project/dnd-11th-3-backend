@@ -54,14 +54,9 @@ public class MemberService {
 		return memberRepository.save(member);
 	}
 
-	public String parseProviderFromSocialEmail(Member member) {
+	public Provider parseProviderFromSocialEmail(Member member) {
 		String socialEmail = member.getSocialEmail();
-		if (socialEmail.contains(Provider.KAKAO.getProvider())) {
-			return "KAKAO";
-		} else if (socialEmail.contains(Provider.NAVER.getProvider())) {
-			return "NAVER";
-		}
-		throw new NotFoundException(AuthErrorCode.NOT_FOUND_PROVIDER);
+		return Provider.fromSocialEmail(socialEmail);
 	}
 
 	private Member createMemberFromOauth2Response(Oauth2Response oauth2Response) {
