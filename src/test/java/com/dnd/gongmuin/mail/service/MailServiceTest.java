@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
@@ -19,7 +18,6 @@ import com.dnd.gongmuin.mail.dto.response.AuthCodeResponse;
 import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.redis.exception.RedisErrorCode;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
@@ -33,16 +31,10 @@ class MailServiceTest {
 	private MemberRepository memberRepository;
 
 	@Mock
-	private MemberService memberService;
-
-	@Mock
 	private AuthCodeGenerator authCodeGenerator;
 
 	@Mock
 	private JavaMailSender mailSender;
-
-	@Mock
-	private RedisTemplate<String, Object> redisTemplate;
 
 	@Mock
 	private RedisUtil redisUtil;
@@ -59,8 +51,8 @@ class MailServiceTest {
 
 		String authCode = "123456";
 		given(authCodeGenerator.createAuthCode()).willReturn(authCode);
-		given(memberService.isOfficialEmailExists(anyString())).willReturn(false);
 		given(mailSender.createMimeMessage()).willReturn(mimeMessage);
+		given(memberRepository.existsByOfficialEmail(anyString())).willReturn(false);
 
 		// when
 		SendMailResponse response = mailService.sendEmail(request);

@@ -1,61 +1,59 @@
 package com.dnd.gongmuin.security.jwt;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.*;
+import static org.mockito.BDDMockito.*;
 
 import java.util.Date;
+import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.common.fixture.MemberFixture;
+import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
-import com.dnd.gongmuin.security.service.TokenService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-@Transactional
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class TokenProviderTest {
 
-	@Value("${spring.jwt.key}")
 	private String key;
+	private SecretKey secretKey;
+	private AuthInfo authInfo;
+
+	@Mock
+	private RedisUtil redisUtil;
+
+	@Mock
+	private MemberRepository memberRepository;
 
 	@InjectMocks
 	private TokenProvider tokenProvider;
 
-	@Mock
-	private TokenService tokenService;
-
-	private SecretKey secretKey;
-
-	@Mock
-	private AuthInfo authInfo;
-
 	@BeforeEach
 	void setUp() {
-		openMocks(this);
-
+		key = "oeq213n214eqf141n161saf145125t12tg2er31t3241g4v2r3131351332dsafsawefewqrft23fewfvdsafdsf32e1wq1r3ewfedfasdfsdafqrewqr1";
 		secretKey = Keys.hmacShaKeyFor(key.getBytes());
 
 		ReflectionTestUtils.setField(tokenProvider, "secretKey", secretKey);
+
+		this.authInfo = AuthInfo.of("김회원", "kakao123/daum.net");
 	}
 
 	@DisplayName("만료일이 30분인 토큰이 생성된다.")
@@ -65,18 +63,16 @@ class TokenProviderTest {
 		Date now = new Date();
 		long expectedExpirationTime = now.getTime() + 30 * 60 * 1000;
 
-		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authInfo.getSocialName()).thenReturn("김회원");
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
 		String accessToken = tokenProvider.generateAccessToken(authentication, now);
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
-
 		Date expiration = claims.getExpiration();
 
 		// then
 		assertThat(expiration.getTime()).isCloseTo(expectedExpirationTime, within(1000L));
+
 	}
 
 	@DisplayName("만료일이 1일인 토큰이 생성된다.")
@@ -86,14 +82,11 @@ class TokenProviderTest {
 		Date now = new Date();
 		long expectedExpirationTime = now.getTime() + 1000 * 60 * 60 * 24;
 
-		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authInfo.getSocialName()).thenReturn("김회원");
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
 		String accessToken = tokenProvider.generateRefreshToken(authentication, now);
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
-
 		Date expiration = claims.getExpiration();
 
 		// then
@@ -106,18 +99,19 @@ class TokenProviderTest {
 		// given
 		Date now = new Date();
 
-		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authInfo.getSocialName()).thenReturn("김회원");
+		Member member = MemberFixture.member();
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
-		String accessToken = tokenProvider.generateRefreshToken(customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+
+		given(memberRepository.findBySocialEmail(anyString())).willReturn(Optional.ofNullable(member));
 
 		// when
 		Authentication authentication = tokenProvider.getAuthentication(accessToken);
-		CustomOauth2User getPrincipal = (CustomOauth2User)authentication.getPrincipal();
+		Member principal = (Member)authentication.getPrincipal();
 
 		// then
 		assertThat(authentication.isAuthenticated()).isTrue();
-		assertThat(getPrincipal.getEmail()).isEqualTo("kakao123/kimMember@daum.net");
+		assertThat(principal.getSocialEmail()).isEqualTo("KAKAO123/gongmuin@daum.net");
 	}
 
 	@DisplayName("토큰의 만료일이 현재 시간보다 전이면 만료된 토큰이다.")
@@ -126,8 +120,6 @@ class TokenProviderTest {
 		// given
 		Date past = new Date(124, 6, 30, 16, 0, 0);
 
-		when(authInfo.getSocialEmail()).thenReturn("kakao123/kimMember@daum.net");
-		when(authInfo.getSocialName()).thenReturn("김회원");
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 		String accessToken = tokenProvider.generateRefreshToken(customOauth2User, past);
 

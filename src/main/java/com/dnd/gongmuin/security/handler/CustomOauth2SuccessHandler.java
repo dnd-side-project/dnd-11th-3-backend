@@ -39,6 +39,8 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
+		tokenProvider.generateRefreshToken(customOauth2User, new Date());
+
 		response.setHeader("Authorization", token);
 
 		if (!isAuthStatusOld(findmember)) {
