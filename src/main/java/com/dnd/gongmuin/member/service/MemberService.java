@@ -134,7 +134,7 @@ public class MemberService {
 
 		String values = redisUtil.getValues(accessToken);
 		if (!Objects.equals(values, LOGOUT)) {
-			throw new NotFoundException(MemberErrorCode.FAIL_LOGOUT);
+			throw new NotFoundException(MemberErrorCode.LOGOUT_FAILED);
 		}
 
 		return new LogoutResponse(true);
