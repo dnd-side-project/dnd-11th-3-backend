@@ -28,8 +28,9 @@ public class MailService {
 
 	@Value("${spring.mail.auth-code-expiration-millis}")
 	private long authCodeExpirationMillis;
-	private final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
+	private static final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
 	private static final String AUTH_CODE_PREFIX = "AuthCode ";
+	private static final String TEXT = "인증 코드는 다음과 같습니다.\n ";
 
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
@@ -71,7 +72,7 @@ public class MailService {
 			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 			messageHelper.setTo(targetEmail);
 			messageHelper.setSubject(SUBJECT);
-			messageHelper.setText("인증 코드는 다음과 같습니다.\n" + authCode);
+			messageHelper.setText(TEXT + authCode);
 
 			return mimeMessage;
 		} catch (IllegalArgumentException e) {
