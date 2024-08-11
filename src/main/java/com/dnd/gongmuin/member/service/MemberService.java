@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -54,10 +55,10 @@ public class MemberService {
 	}
 
 	public String parseProviderFromSocialEmail(Member member) {
-		String socialEmail = member.getSocialEmail().toUpperCase();
-		if (socialEmail.contains("KAKAO")) {
+		String socialEmail = member.getSocialEmail();
+		if (socialEmail.contains(Provider.KAKAO.getProvider())) {
 			return "KAKAO";
-		} else if (socialEmail.contains("NAVER")) {
+		} else if (socialEmail.contains(Provider.NAVER.getProvider())) {
 			return "NAVER";
 		}
 		throw new NotFoundException(AuthErrorCode.NOT_FOUND_PROVIDER);
