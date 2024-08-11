@@ -30,6 +30,20 @@ public class QuestionPostFixture {
 		);
 	}
 
+	public static QuestionPost questionPost(String jobGroup, Member member) {
+		return QuestionPost.of(
+			"제목",
+			"내용",
+			1000,
+			JobGroup.of(jobGroup),
+			List.of(
+				QuestionPostImage.from("image1.jpg"),
+				QuestionPostImage.from("image2.jpg")
+			),
+			member
+		);
+	}
+
 	// 단위 테스트용
 	public static QuestionPost questionPost(Long questionPostId) {
 		QuestionPost questionPost = QuestionPost.of(
