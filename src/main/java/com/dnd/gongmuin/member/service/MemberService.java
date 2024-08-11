@@ -110,9 +110,7 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	public boolean isOfficialEmailExists(String officialEmail) {
-		boolean result = memberRepository.existsByOfficialEmail(officialEmail);
-
-		return result;
+		return memberRepository.existsByOfficialEmail(officialEmail);
 	}
 
 	public LogoutResponse logout(LogoutRequest request) {
