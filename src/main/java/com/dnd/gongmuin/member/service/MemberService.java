@@ -74,9 +74,9 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	public ValidateNickNameResponse isDuplicatedNickname(ValidateNickNameRequest request) {
-		boolean isDuplicate = memberRepository.existsByNickname(request.nickname());
+		boolean isDuplicated = memberRepository.existsByNickname(request.nickname());
 
-		return new ValidateNickNameResponse(isDuplicate);
+		return new ValidateNickNameResponse(isDuplicated);
 	}
 
 	@Transactional
