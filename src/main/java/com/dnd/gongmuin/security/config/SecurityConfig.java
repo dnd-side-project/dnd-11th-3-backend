@@ -2,6 +2,7 @@ package com.dnd.gongmuin.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,7 +36,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.cors((auth) -> auth.disable())
+			.cors(Customizer.withDefaults())
 			.csrf((auth) -> auth.disable())
 			.formLogin((auth) -> auth.disable())
 			.httpBasic((auth) -> auth.disable())
@@ -47,11 +48,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
-					.requestMatchers("/api/**").permitAll()
 					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 					.requestMatchers("/api/auth/signin/kakao").permitAll()
-					.requestMatchers("/api/auth/member").permitAll()
-					.requestMatchers("/api/auth/check-email").permitAll()
 					.requestMatchers("/additional-info").permitAll()
 					.anyRequest().authenticated()
 			)
