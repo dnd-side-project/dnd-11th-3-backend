@@ -23,7 +23,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
-import com.dnd.gongmuin.security.jwt.exception.JwtErrorCode;
+import com.dnd.gongmuin.security.exception.JwtErrorCode;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import io.jsonwebtoken.Claims;
