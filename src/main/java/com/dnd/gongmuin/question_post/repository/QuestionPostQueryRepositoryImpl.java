@@ -29,7 +29,8 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 			.from(questionPost)
 			.where(
 				keywordContains(condition.keyword()),
-				jobGroupContains(condition.jobGroups())
+				jobGroupContains(condition.jobGroups()),
+				isChosenEq(condition.isChosen())
 			)
 			.limit(pageable.getPageSize() + 1L)
 			.offset(pageable.getOffset())
@@ -38,8 +39,20 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
+	private BooleanExpression isChosenEq(Boolean isChosen) {
+		if (isChosen == null) {
+			return null;
+		}
+		if (Boolean.TRUE.equals(isChosen)) {
+			return questionPost.isChosen.eq(Boolean.TRUE);
+		} else {
+			return questionPost.isChosen.eq(Boolean.FALSE);
+		}
+	}
+
 	private BooleanExpression jobGroupContains(List<String> jobGroups) {
-		if (jobGroups==null || jobGroups.isEmpty()) return null; // 직군 필터링 선택 안할 때
+		if (jobGroups == null || jobGroups.isEmpty())
+			return null; // 직군 필터링 선택 안할 때
 		List<JobGroup> selectedJobGroups = JobGroup.of(jobGroups); // string -> enum
 		return questionPost.jobGroup.in(selectedJobGroups);
 	}
