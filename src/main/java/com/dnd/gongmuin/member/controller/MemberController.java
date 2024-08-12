@@ -7,13 +7,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
+import com.dnd.gongmuin.member.dto.request.LogoutRequest;
+import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.member.dto.response.LogoutResponse;
+import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
-import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,16 +30,28 @@ public class MemberController {
 
 	@PostMapping("/check-nickname")
 	public ResponseEntity<ValidateNickNameResponse> checkNickName(
-		@RequestBody ValidateNickNameRequest validateNickNameRequest) {
+		@RequestBody @Valid ValidateNickNameRequest validateNickNameRequest) {
 		return ResponseEntity.ok(memberService.isDuplicatedNickname(validateNickNameRequest));
 	}
 
 	@PostMapping("/member")
-	public ResponseEntity<SignUpResponse> signUp(@RequestBody AdditionalInfoRequest request,
-		@AuthenticationPrincipal CustomOauth2User loginMember) {
-		SignUpResponse response = memberService.signUp(request, loginMember.getEmail());
+	public ResponseEntity<SignUpResponse> signUp(
+		@RequestBody @Valid AdditionalInfoRequest request,
+		@AuthenticationPrincipal Member loginMember) {
+		SignUpResponse response = memberService.signUp(request, loginMember.getSocialEmail());
 
 		return ResponseEntity.ok(response);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<LogoutResponse> logout(@RequestBody @Valid LogoutRequest request) {
+		LogoutResponse response = memberService.logout(request);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/reissue/token")
+	public ResponseEntity<ReissueResponse> reissue(@RequestBody @Valid ReissueRequest request) {
+		ReissueResponse response = memberService.reissue(request);
+		return ResponseEntity.ok(response);
+	}
 }

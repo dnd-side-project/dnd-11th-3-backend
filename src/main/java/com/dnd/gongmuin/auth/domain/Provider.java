@@ -15,11 +15,18 @@ public enum Provider {
 	KAKAO("kakao"),
 	NAVER("naver");
 
-	private final String provider;
+	private final String label;
 
 	public static Provider fromProviderName(String providerName) {
 		return Arrays.stream(values())
-			.filter(provider -> provider.getProvider().equalsIgnoreCase(providerName))
+			.filter(provider -> provider.getLabel().equalsIgnoreCase(providerName))
+			.findFirst()
+			.orElseThrow(() -> new NotFoundException(AuthErrorCode.NOT_FOUND_PROVIDER));
+	}
+
+	public static Provider fromSocialEmail(String socialEmail) {
+		return Arrays.stream(values())
+			.filter(provider -> socialEmail.contains(provider.getLabel()))
 			.findFirst()
 			.orElseThrow(() -> new NotFoundException(AuthErrorCode.NOT_FOUND_PROVIDER));
 	}

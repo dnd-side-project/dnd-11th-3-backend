@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.mail.dto.MailMapper;
@@ -16,7 +17,7 @@ import com.dnd.gongmuin.mail.dto.response.AuthCodeResponse;
 import com.dnd.gongmuin.mail.dto.response.SendMailResponse;
 import com.dnd.gongmuin.mail.exception.MailErrorCode;
 import com.dnd.gongmuin.mail.util.AuthCodeGenerator;
-import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.mail.internet.MimeMessage;
@@ -28,13 +29,14 @@ public class MailService {
 
 	@Value("${spring.mail.auth-code-expiration-millis}")
 	private long authCodeExpirationMillis;
-	private final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
+	private static final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
 	private static final String AUTH_CODE_PREFIX = "AuthCode ";
+	private static final String TEXT = "인증 코드는 다음과 같습니다.\n ";
 
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
 	private final RedisUtil redisUtil;
-	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
 		String targetEmail = request.targetEmail();
@@ -71,7 +73,7 @@ public class MailService {
 			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 			messageHelper.setTo(targetEmail);
 			messageHelper.setSubject(SUBJECT);
-			messageHelper.setText("인증 코드는 다음과 같습니다.\n" + authCode);
+			messageHelper.setText(TEXT + authCode);
 
 			return mimeMessage;
 		} catch (IllegalArgumentException e) {
@@ -86,8 +88,9 @@ public class MailService {
 		redisUtil.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
 	}
 
-	private void checkDuplicatedOfficialEmail(String officialEmail) {
-		if (memberService.isOfficialEmailExists(officialEmail)) {
+	@Transactional(readOnly = true)
+	public void checkDuplicatedOfficialEmail(String officialEmail) {
+		if (memberRepository.existsByOfficialEmail(officialEmail)) {
 			throw new NotFoundException(MailErrorCode.DUPLICATED_ERROR);
 		}
 	}

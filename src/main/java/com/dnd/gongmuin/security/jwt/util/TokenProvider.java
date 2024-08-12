@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.security.jwt.util;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.dnd.gongmuin.common.exception.runtime.CustomJwtException;
+import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.service.MemberService;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
+import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.exception.JwtErrorCode;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
-import com.dnd.gongmuin.security.service.TokenService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -38,8 +41,8 @@ public class TokenProvider {
 	private static final String ROLE_KEY = "ROLE";
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
-	private final TokenService tokenService;
-	private final MemberService memberService;
+	private final MemberRepository memberRepository;
+	private final RedisUtil redisUtil;
 	@Value("${spring.jwt.key}")
 	private String key;
 	private SecretKey secretKey;
@@ -55,7 +58,10 @@ public class TokenProvider {
 
 	public String generateRefreshToken(CustomOauth2User authentication, Date now) {
 		String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
-		// TODO : RedisRepo refreshToken SAVE
+
+		// redis Refresh 저장
+		redisUtil.setValues("RT:" + authentication.getEmail(), refreshToken,
+			Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
 		return refreshToken;
 	}
 
@@ -87,7 +93,8 @@ public class TokenProvider {
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
 		String socialEmail = claims.getSubject();
-		Member principal = memberService.getMemberBySocialEmail(socialEmail);
+		Member principal = memberRepository.findBySocialEmail(socialEmail)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
@@ -120,6 +127,12 @@ public class TokenProvider {
 		return Collections.singletonList(new SimpleGrantedAuthority(
 			claims.get(ROLE_KEY).toString()
 		));
+	}
+
+	public Long getExpiration(String token, Date date) {
+		Claims claims = parseToken(token);
+		Date expiration = claims.getExpiration();
+		return (expiration.getTime() - date.getTime());
 	}
 
 }

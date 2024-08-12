@@ -43,8 +43,7 @@ public class AuthService {
 	}
 
 	private Auth createAuth(Member savedMember) {
-		String providerName = memberService.parseProviderFromSocialEmail(savedMember);
-		Provider provider = Provider.fromProviderName(providerName);
+		Provider provider = memberService.parseProviderFromSocialEmail(savedMember);
 
 		return Auth.of(provider, AuthStatus.NEW, savedMember);
 	}
