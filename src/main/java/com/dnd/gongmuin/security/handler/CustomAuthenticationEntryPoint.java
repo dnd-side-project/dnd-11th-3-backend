@@ -26,8 +26,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 
-		ErrorResponse errorResponse = new ErrorResponse(SecurityErrorCode.UNAUTHORIZED.getMessage(),
-			SecurityErrorCode.UNAUTHORIZED.getCode());
+		ErrorResponse errorResponse = new ErrorResponse(SecurityErrorCode.UNAUTHORIZED_USER.getMessage(),
+			SecurityErrorCode.UNAUTHORIZED_USER.getCode());
 
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonResponse = mapper.writeValueAsString(errorResponse);

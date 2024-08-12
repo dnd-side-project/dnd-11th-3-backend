@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SecurityErrorCode implements ErrorCode {
-	UNAUTHORIZED("비인가 사용자 요청입니다.", "SECURITY_001");
+	UNAUTHORIZED_USER("비인가 사용자 요청입니다.", "SECURITY_001");
 
 	private final String message;
 	private final String code;
