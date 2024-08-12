@@ -9,5 +9,5 @@ public record QuestionPostSimpleResponse(
 	String createdAt,
 	boolean isChosen
 	// TODO: 8/11/24 북마크 수, 추천수 추가
-){
+) {
 }

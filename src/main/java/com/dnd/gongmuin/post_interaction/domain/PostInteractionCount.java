@@ -42,7 +42,7 @@ public class PostInteractionCount extends TimeBaseEntity {
 		return new PostInteractionCount(type, questionPostId);
 	}
 
-	private void increaseTotalCount(){
+	private void increaseTotalCount() {
 		totalCount++;
 	}
 }

@@ -27,16 +27,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailService {
 
-	@Value("${spring.mail.auth-code-expiration-millis}")
-	private long authCodeExpirationMillis;
 	private static final String SUBJECT = "[공무인] 공무원 인증 메일입니다.";
 	private static final String AUTH_CODE_PREFIX = "AuthCode ";
 	private static final String TEXT = "인증 코드는 다음과 같습니다.\n ";
-
 	private final JavaMailSender mailSender;
 	private final AuthCodeGenerator authCodeGenerator;
 	private final RedisUtil redisUtil;
 	private final MemberRepository memberRepository;
+	@Value("${spring.mail.auth-code-expiration-millis}")
+	private long authCodeExpirationMillis;
 
 	public SendMailResponse sendEmail(SendMailRequest request) {
 		String targetEmail = request.targetEmail();

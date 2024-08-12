@@ -23,7 +23,7 @@ public enum JobGroup {
 			.orElseThrow(IllegalArgumentException::new);
 	}
 
-	public static List<JobGroup> of(List<String> labels){
+	public static List<JobGroup> of(List<String> labels) {
 		return labels.stream()
 			.map(JobGroup::of)
 			.toList();
