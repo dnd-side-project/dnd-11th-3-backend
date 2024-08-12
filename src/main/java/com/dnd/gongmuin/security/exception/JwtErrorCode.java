@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.security.jwt.exception;
+package com.dnd.gongmuin.security.exception;
 
 import com.dnd.gongmuin.common.exception.ErrorCode;
 
