@@ -11,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
@@ -100,5 +102,58 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.nickname").value(questionPost.getMember().getNickname()))
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup().getLabel())
 			);
+	}
+
+	@DisplayName("[질문글을 키워드로 검색할 수 있다.]")
+	@Test
+	void searchQuestionPost() throws Exception {
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember, "발령"));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember, "발령대기"));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember, "반품"));
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		mockMvc.perform(get("/api/question-posts/search")
+				.param("keyword", "발령")
+				.header(AUTHORIZATION, accessToken))
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost1.getId()))
+			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost2.getId()));
+	}
+
+	@DisplayName("[질문글을 여러 직군들로 필터링할 수 있다.]")
+	@Test
+	void searchQuestionPostByCategories() throws Exception {
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost("기계", loginMember));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost("기계", loginMember));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost("공업", loginMember));
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		mockMvc.perform(get("/api/question-posts/search")
+				.param("jobGroups", "공업", "행정")
+				.header(AUTHORIZATION, accessToken))
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(1))
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()));
+	}
+
+	@DisplayName("[질문글을 채택여부로 필터링할 수 있다.]")
+	@Test
+	void searchQuestionPostByIsChosen() throws Exception {
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		ReflectionTestUtils.setField(questionPost2, "isChosen", true);
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		mockMvc.perform(get("/api/question-posts/search")
+				.param("isChosen", "true")
+				.header(AUTHORIZATION, accessToken))
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(1))
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost2.getId()));
 	}
 }
