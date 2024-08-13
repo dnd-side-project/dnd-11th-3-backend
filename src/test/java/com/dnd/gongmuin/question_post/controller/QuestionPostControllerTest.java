@@ -139,6 +139,22 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()));
 	}
 
+	@DisplayName("[질문글을 필터링 직군이 3개 넘어가면 예외가 발생한다.]")
+	@Test
+	void searchQuestionPostByCategoriesFails() throws Exception {
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost("기계", loginMember));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost("기계", loginMember));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost("공업", loginMember));
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		mockMvc.perform(get("/api/question-posts/search")
+				.param("jobGroups", "공업", "행정", "기계", "우정")
+				.header(AUTHORIZATION, accessToken))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message")
+				.value("직군은 3개까지 선택 가능합니다."));
+	}
+
 	@DisplayName("[질문글을 채택여부로 필터링할 수 있다.]")
 	@Test
 	void searchQuestionPostByIsChosen() throws Exception {
