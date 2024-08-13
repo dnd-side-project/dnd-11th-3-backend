@@ -1,24 +1,17 @@
 package com.dnd.gongmuin.post_interaction.domain;
 
-import static jakarta.persistence.ConstraintMode.*;
-import static jakarta.persistence.FetchType.*;
-
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
-import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.post_interaction.exception.PostInteractionErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,26 +29,37 @@ public class PostInteraction extends TimeBaseEntity {
 	@Column(name = "type", nullable = false)
 	private InteractionType type;
 
+	@Column(name = "question_post_id")
+	private Long questionPostId;
+
 	@Column(name = "is_interacted", nullable = false)
 	private Boolean isInteracted;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "member_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private Member member;
+	@Column(name = "member_id")
+	private Long memberId;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "question_post_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private QuestionPost questionPost;
-
-	@Builder
-	public PostInteraction(InteractionType type, Member member, QuestionPost questionPost) {
+	private PostInteraction(InteractionType type, Long memberId, Long questionPostId) {
 		this.isInteracted = true;
 		this.type = type;
-		this.member = member;
-		this.questionPost = questionPost;
+		this.memberId = memberId;
+		this.questionPostId = questionPostId;
+	}
+
+	public static PostInteraction of(InteractionType type, Long memberId, Long questionPostId) {
+		return new PostInteraction(type, memberId, questionPostId);
+	}
+
+	public void updateIsInteractedTrue(){
+		if (Boolean.FALSE.equals(isInteracted)){
+			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNRECOMMENDED);
+		}
+		isInteracted = true;
+	}
+
+	public void updateIsInteractedFalse(){
+		if (Boolean.TRUE.equals(isInteracted)){
+			throw new ValidationException(PostInteractionErrorCode.ALREADY_RECOMMENDED);
+		}
+		isInteracted = false;
 	}
 }
