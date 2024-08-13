@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.PostInteraction;
 import com.dnd.gongmuin.post_interaction.domain.PostInteractionCount;
@@ -12,6 +13,9 @@ import com.dnd.gongmuin.post_interaction.dto.PostInteractionResponse;
 import com.dnd.gongmuin.post_interaction.exception.PostInteractionErrorCode;
 import com.dnd.gongmuin.post_interaction.repository.PostInteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.PostInteractionRepository;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
+import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +25,7 @@ public class PostInteractionService {
 
 	private final PostInteractionRepository postInteractionRepository;
 	private final PostInteractionCountRepository postInteractionCountRepository;
+	private final QuestionPostRepository questionPostRepository;
 
 	@Transactional
 	public PostInteractionResponse activateInteraction(Long questionPostId, Long memberId, InteractionType type) {
@@ -46,21 +51,31 @@ public class PostInteractionService {
 	}
 
 	private int createInteractionAndCount(Long questionPostId, Long memberId, InteractionType type) {
-		postInteractionRepository.save(PostInteractionMapper.toPostInteraction(questionPostId, memberId, type));
+		validateCreatingInteraction(questionPostId, memberId);
+		postInteractionRepository.save(
+			PostInteractionMapper.toPostInteraction(questionPostId, memberId, type)
+		);
 		return postInteractionCountRepository
 			.save(PostInteractionMapper.toPostInteractionCount(questionPostId, type))
 			.getTotalCount();
+	}
+
+	private void validateCreatingInteraction(Long questionPostId, Long memberId) {
+		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+		if (questionPost.isQuestioner(memberId)){ //자기 게시물 상호작용 불가
+			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
+		}
 	}
 
 	private int updateInteractionAndCount(Long questionPostId, Long memberId, InteractionType type, boolean isActivate) {
 		int totalCount;
 		PostInteraction postInteraction = getPostInteraction(questionPostId, memberId, type);
 		PostInteractionCount postInteractionCount = getPostInteractionCount(questionPostId, type);
-
-		if (isActivate){
+		if (isActivate){ //활성화
 			postInteraction.updateIsInteractedTrue();
 			totalCount = postInteractionCount.increaseTotalCount();
-		} else {
+		} else { // 비활성화
 			postInteraction.updateIsInteractedFalse();
 			totalCount = postInteractionCount.decreaseTotalCount();
 		}
@@ -78,5 +93,4 @@ public class PostInteractionService {
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.orElseThrow();
 	}
-
 }
