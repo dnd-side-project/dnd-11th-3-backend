@@ -51,14 +51,14 @@ public class PostInteraction extends TimeBaseEntity {
 
 	public void updateIsInteractedTrue(){
 		if (Boolean.FALSE.equals(isInteracted)){
-			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNRECOMMENDED);
+			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
 		}
 		isInteracted = true;
 	}
 
 	public void updateIsInteractedFalse(){
 		if (Boolean.TRUE.equals(isInteracted)){
-			throw new ValidationException(PostInteractionErrorCode.ALREADY_RECOMMENDED);
+			throw new ValidationException(PostInteractionErrorCode.ALREADY_INTERACTED);
 		}
 		isInteracted = false;
 	}
