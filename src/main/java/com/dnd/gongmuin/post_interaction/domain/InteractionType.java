@@ -14,7 +14,7 @@ public enum InteractionType {
 
 	private final String label;
 
-	public static InteractionType of(String input) {
+	public static InteractionType from(String input) {
 		return Arrays.stream(values())
 			.filter(type -> type.isEqual(input))
 			.findAny()
