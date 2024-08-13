@@ -106,4 +106,10 @@ public class Member extends TimeBaseEntity {
 		this.credit += credit;
 	}
 
+	public void updateProfile(String nickname, JobGroup jobGroup, JobCategory jobCategory) {
+		this.nickname = nickname;
+		this.jobGroup = jobGroup;
+		this.jobCategory = jobCategory;
+	}
+
 }

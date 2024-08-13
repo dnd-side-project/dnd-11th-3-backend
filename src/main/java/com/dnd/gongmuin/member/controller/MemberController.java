@@ -3,10 +3,13 @@ package com.dnd.gongmuin.member.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.service.MemberService;
 
@@ -30,4 +33,15 @@ public class MemberController {
 		MemberProfileResponse response = memberService.getMemberProfile(member);
 		return ResponseEntity.ok(response);
 	}
+
+	@Operation(summary = "프로필 수정 API", description = "로그인 된 사용자 프로필 정보를 수정한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@PatchMapping("/profile/edit")
+	public ResponseEntity<MemberProfileResponse> updateMemberProfile(
+		@RequestBody UpdateMemberProfileRequest updateMemberProfileRequest,
+		@AuthenticationPrincipal Member member) {
+		MemberProfileResponse response = memberService.updateMemberProfile(updateMemberProfileRequest, member);
+		return ResponseEntity.ok(response);
+	}
+
 }
