@@ -58,7 +58,7 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/search")
 	public ResponseEntity<PageResponse<QuestionPostSimpleResponse>> searchQuestionPost(
-		@ModelAttribute QuestionPostSearchCondition condition,
+		@Valid @ModelAttribute QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
