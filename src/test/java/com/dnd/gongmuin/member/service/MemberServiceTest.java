@@ -22,11 +22,13 @@ import org.springframework.security.core.Authentication;
 
 import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
+import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
@@ -217,6 +219,39 @@ class MemberServiceTest {
 
 		// when  // then
 		assertThrows(NotFoundException.class, () -> memberService.getMemberProfile(member));
+	}
+
+	@DisplayName("로그인 된 사용자 프로필을 수정한다.")
+	@Test
+	void updateMemberProfile() {
+		// given
+		Member member = MemberFixture.member();
+		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "공업", "가스");
+
+		given(memberRepository.findByOfficialEmail(anyString())).willReturn(member);
+
+		// when
+		MemberProfileResponse response = memberService.updateMemberProfile(request, member);
+
+		// then
+		assertAll(
+			() -> assertThat(response.nickname()).isEqualTo("박회원"),
+			() -> assertThat(response.jobGroup()).isEqualTo("공업"),
+			() -> assertThat(response.jobCategory()).isEqualTo("가스"),
+			() -> assertThat(response.credit()).isEqualTo(10000)
+		);
+	}
+
+	@DisplayName("로그인 된 사용자 프로필 수정 실패 시 예외가 발생한다.")
+	@Test
+	void updateMemberProfileThrowException() {
+		// given
+		Member member = MemberFixture.member();
+		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "공업", "가스");
+
+		// when  // then
+		assertThrows(ValidationException.class, () -> memberService.updateMemberProfile(request, member));
+
 	}
 
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
