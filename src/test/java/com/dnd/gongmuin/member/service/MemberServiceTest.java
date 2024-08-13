@@ -3,6 +3,7 @@ package com.dnd.gongmuin.member.service;
 import static com.dnd.gongmuin.member.domain.JobCategory.*;
 import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.Duration;
@@ -27,6 +28,7 @@ import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
+import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
@@ -185,6 +187,26 @@ class MemberServiceTest {
 
 		// then
 		assertThat(response.accessToken()).isEqualTo("reissueToken");
+	}
+
+	@DisplayName("로그인 된 사용자 프로필 정보를 조회한다.")
+	@Test
+	void getMemberProfile() {
+		// given
+		Member member = MemberFixture.member();
+		given(memberRepository.findByOfficialEmail(anyString())).willReturn(member);
+
+		// when
+		MemberProfileResponse memberProfile = memberService.getMemberProfile(member);
+
+		// then
+		assertAll(
+			() -> assertThat(memberProfile.nickname()).isEqualTo("김회원"),
+			() -> assertThat(memberProfile.jobGroup()).isEqualTo("공업"),
+			() -> assertThat(memberProfile.jboCategory()).isEqualTo("가스"),
+			() -> assertThat(memberProfile.credit()).isEqualTo(10000)
+		);
+
 	}
 
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
