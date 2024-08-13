@@ -6,6 +6,10 @@ import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
+import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
+import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
+import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class QuestionPostMapper {
 
 	public static QuestionPost toQuestionPost(RegisterQuestionPostRequest request, Member member) {
-		JobGroup jobGroup = JobGroup.of(request.targetJobGroup());
+		JobGroup jobGroup = JobGroup.from(request.targetJobGroup());
 		List<QuestionPostImage> images = request.imageUrls().stream()
 			.map(QuestionPostImage::from)
 			.toList();
@@ -37,6 +41,18 @@ public class QuestionPostMapper {
 				member.getJobGroup().getLabel()
 			),
 			questionPost.getCreatedAt().toString()
+		);
+	}
+
+	public static QuestionPostSimpleResponse toQuestionPostSimpleResponse(QuestionPost questionPost) {
+		return new QuestionPostSimpleResponse(
+			questionPost.getId(),
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			questionPost.getJobGroup().getLabel(),
+			questionPost.getReward(),
+			questionPost.getCreatedAt().toString(),
+			questionPost.getIsChosen()
 		);
 	}
 }

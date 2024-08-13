@@ -21,7 +21,35 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
+			List.of(
+				QuestionPostImage.from("image1.jpg"),
+				QuestionPostImage.from("image2.jpg")
+			),
+			member
+		);
+	}
+
+	public static QuestionPost questionPost(String jobGroup, Member member) {
+		return QuestionPost.of(
+			"제목",
+			"내용",
+			1000,
+			JobGroup.from(jobGroup),
+			List.of(
+				QuestionPostImage.from("image1.jpg"),
+				QuestionPostImage.from("image2.jpg")
+			),
+			member
+		);
+	}
+
+	public static QuestionPost questionPost(Member member, String title) {
+		return QuestionPost.of(
+			title,
+			"내용",
+			1000,
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -36,7 +64,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -54,7 +82,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
