@@ -204,10 +204,10 @@ class MemberServiceTest {
 
 		// then
 		assertAll(
-			() -> assertThat(memberProfile.nickname()).isEqualTo("김회원"),
-			() -> assertThat(memberProfile.jobGroup()).isEqualTo("공업"),
-			() -> assertThat(memberProfile.jobCategory()).isEqualTo("가스"),
-			() -> assertThat(memberProfile.credit()).isEqualTo(10000)
+			() -> assertThat(memberProfile.nickname()).isEqualTo(member.getNickname()),
+			() -> assertThat(memberProfile.jobGroup()).isEqualTo(member.getJobGroup().getLabel()),
+			() -> assertThat(memberProfile.jobCategory()).isEqualTo(member.getJobCategory().getLabel()),
+			() -> assertThat(memberProfile.credit()).isEqualTo(member.getCredit())
 		);
 	}
 
@@ -235,10 +235,10 @@ class MemberServiceTest {
 
 		// then
 		assertAll(
-			() -> assertThat(response.nickname()).isEqualTo("박회원"),
-			() -> assertThat(response.jobGroup()).isEqualTo("공업"),
-			() -> assertThat(response.jobCategory()).isEqualTo("가스"),
-			() -> assertThat(response.credit()).isEqualTo(10000)
+			() -> assertThat(response.nickname()).isEqualTo(request.nickname()),
+			() -> assertThat(response.jobGroup()).isEqualTo(request.jobGroup()),
+			() -> assertThat(response.jobCategory()).isEqualTo(request.jobCategory()),
+			() -> assertThat(response.credit()).isEqualTo(member.getCredit())
 		);
 	}
 
