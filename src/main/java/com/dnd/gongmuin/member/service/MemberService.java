@@ -15,11 +15,14 @@ import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.MemberMapper;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.member.dto.request.LogoutRequest;
 import com.dnd.gongmuin.member.dto.request.ReissueRequest;
+import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
+import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
@@ -98,7 +101,7 @@ public class MemberService {
 			request.nickname(),
 			request.officialEmail(),
 			JobGroup.from(request.jobGroup()),
-			JobCategory.of(request.jobCategory())
+			JobCategory.from(request.jobCategory())
 		);
 	}
 
@@ -156,5 +159,34 @@ public class MemberService {
 		tokenProvider.generateRefreshToken(customUser, new Date());
 
 		return new ReissueResponse(reissuedAccessToken);
+	}
+
+	@Transactional(readOnly = true)
+	public MemberProfileResponse getMemberProfile(Member member) {
+		try {
+			Member findMember = memberRepository.findByOfficialEmail(member.getOfficialEmail());
+			return MemberMapper.toMemberProfileResponse(findMember);
+		} catch (Exception e) {
+			throw new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER);
+		}
+	}
+
+	@Transactional
+	public MemberProfileResponse updateMemberProfile(UpdateMemberProfileRequest request, Member member) {
+		try {
+			Member findMember = memberRepository.findByOfficialEmail(member.getOfficialEmail());
+			JobGroup jobGroup = JobGroup.from(request.jobGroup());
+			JobCategory jobCategory = JobCategory.from(request.jobCategory());
+
+			findMember.updateProfile(
+				request.nickname(),
+				jobGroup,
+				jobCategory
+			);
+
+			return MemberMapper.toMemberProfileResponse(findMember);
+		} catch (Exception e) {
+			throw new ValidationException(MemberErrorCode.UPDATE_PROFILE_FAILED);
+		}
 	}
 }

@@ -13,7 +13,7 @@ public enum JobCategory {
 
 	private final String label;
 
-	public static JobCategory of(String input) {
+	public static JobCategory from(String input) {
 		return Arrays.stream(values())
 			.filter(category -> category.isEqual(input))
 			.findAny()

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.auth.domain.Auth;
 import com.dnd.gongmuin.auth.domain.AuthStatus;
 import com.dnd.gongmuin.auth.domain.Provider;
-import com.dnd.gongmuin.auth.dto.LoginRequest;
+import com.dnd.gongmuin.auth.dto.TempLoginRequest;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.auth.repository.AuthRepository;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
@@ -59,9 +59,9 @@ public class AuthService {
 	}
 
 	@Transactional
-	public String swaggerToken(LoginRequest loginRequest) {
+	public String swaggerToken(TempLoginRequest tempLoginRequest) {
 		Date now = new Date();
-		Member member = Member.of(loginRequest.socialName(), "kakao/" + loginRequest.socialEmail(), 10000);
+		Member member = Member.of(tempLoginRequest.socialName(), "kakao/" + tempLoginRequest.socialEmail(), 10000);
 
 		if (memberRepository.existsBySocialEmail(member.getSocialEmail())) {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
