@@ -161,6 +161,7 @@ public class MemberService {
 		return new ReissueResponse(reissuedAccessToken);
 	}
 
+	@Transactional(readOnly = true)
 	public MemberProfileResponse getMemberProfile(Member member) {
 		try {
 			Member findMember = memberRepository.findByOfficialEmail(member.getOfficialEmail());
