@@ -53,7 +53,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	private BooleanExpression jobGroupContains(List<String> jobGroups) {
 		if (jobGroups == null || jobGroups.isEmpty())
 			return null; // 직군 필터링 선택 안할 때
-		List<JobGroup> selectedJobGroups = JobGroup.of(jobGroups); // string -> enum
+		List<JobGroup> selectedJobGroups = JobGroup.from(jobGroups); // string -> enum
 		return questionPost.jobGroup.in(selectedJobGroups);
 	}
 

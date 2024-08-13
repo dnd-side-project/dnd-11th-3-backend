@@ -21,7 +21,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -35,7 +35,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of(jobGroup),
+			JobGroup.from(jobGroup),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -49,7 +49,7 @@ public class QuestionPostFixture {
 			title,
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -64,7 +64,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")
@@ -82,7 +82,7 @@ public class QuestionPostFixture {
 			"제목",
 			"내용",
 			1000,
-			JobGroup.of("공업"),
+			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
 				QuestionPostImage.from("image2.jpg")

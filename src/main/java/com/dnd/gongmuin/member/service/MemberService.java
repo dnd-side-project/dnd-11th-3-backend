@@ -97,7 +97,7 @@ public class MemberService {
 		findMember.updateAdditionalInfo(
 			request.nickname(),
 			request.officialEmail(),
-			JobGroup.of(request.jobGroup()),
+			JobGroup.from(request.jobGroup()),
 			JobCategory.of(request.jobCategory())
 		);
 	}

@@ -16,16 +16,16 @@ public enum JobGroup {
 
 	private final String label;
 
-	public static JobGroup of(String input) {
+	public static JobGroup from(String input) {
 		return Arrays.stream(values())
 			.filter(group -> group.isEqual(input))
 			.findAny()
 			.orElseThrow(IllegalArgumentException::new);
 	}
 
-	public static List<JobGroup> of(List<String> labels) {
+	public static List<JobGroup> from(List<String> labels) {
 		return labels.stream()
-			.map(JobGroup::of)
+			.map(JobGroup::from)
 			.toList();
 	}
 
