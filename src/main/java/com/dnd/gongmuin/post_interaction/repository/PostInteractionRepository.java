@@ -12,6 +12,7 @@ public interface PostInteractionRepository extends JpaRepository<PostInteraction
 	boolean existsByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);
+
 	Optional<PostInteraction> findByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);

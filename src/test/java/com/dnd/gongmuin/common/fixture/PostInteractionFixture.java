@@ -15,13 +15,13 @@ public class PostInteractionFixture {
 		InteractionType type,
 		Long memberId,
 		Long questionPostId
-	){
+	) {
 		PostInteraction postInteraction = PostInteraction.of(
 			type,
 			memberId,
 			questionPostId
 		);
-		ReflectionTestUtils.setField(postInteraction,"id",1L);
+		ReflectionTestUtils.setField(postInteraction, "id", 1L);
 		return postInteraction;
 	}
 }

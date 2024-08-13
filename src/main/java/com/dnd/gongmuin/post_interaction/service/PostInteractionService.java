@@ -63,16 +63,17 @@ public class PostInteractionService {
 	private void validateCreatingInteraction(Long questionPostId, Long memberId) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-		if (questionPost.isQuestioner(memberId)){ //자기 게시물 상호작용 불가
+		if (questionPost.isQuestioner(memberId)) { //자기 게시물 상호작용 불가
 			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
 		}
 	}
 
-	private int updateInteractionAndCount(Long questionPostId, Long memberId, InteractionType type, boolean isActivate) {
+	private int updateInteractionAndCount(Long questionPostId, Long memberId, InteractionType type,
+		boolean isActivate) {
 		int totalCount;
 		PostInteraction postInteraction = getPostInteraction(questionPostId, memberId, type);
 		PostInteractionCount postInteractionCount = getPostInteractionCount(questionPostId, type);
-		if (isActivate){ //활성화
+		if (isActivate) { //활성화
 			postInteraction.updateIsInteractedTrue();
 			totalCount = postInteractionCount.increaseTotalCount();
 		} else { // 비활성화

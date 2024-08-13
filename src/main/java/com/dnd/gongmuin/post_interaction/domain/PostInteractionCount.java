@@ -47,7 +47,7 @@ public class PostInteractionCount extends TimeBaseEntity {
 		return ++totalCount;
 	}
 
-	public int decreaseTotalCount(){
+	public int decreaseTotalCount() {
 		return --totalCount;
 	}
 }

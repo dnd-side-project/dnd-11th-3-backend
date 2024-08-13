@@ -49,15 +49,15 @@ public class PostInteraction extends TimeBaseEntity {
 		return new PostInteraction(type, memberId, questionPostId);
 	}
 
-	public void updateIsInteractedTrue(){
-		if (Boolean.TRUE.equals(isInteracted)){
+	public void updateIsInteractedTrue() {
+		if (Boolean.TRUE.equals(isInteracted)) {
 			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
 		}
 		isInteracted = true;
 	}
 
-	public void updateIsInteractedFalse(){
-		if (Boolean.FALSE.equals(isInteracted)){
+	public void updateIsInteractedFalse() {
+		if (Boolean.FALSE.equals(isInteracted)) {
 			throw new ValidationException(PostInteractionErrorCode.ALREADY_INTERACTED);
 		}
 		isInteracted = false;

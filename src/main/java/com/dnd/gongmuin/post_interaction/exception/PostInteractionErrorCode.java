@@ -14,7 +14,6 @@ public enum PostInteractionErrorCode implements ErrorCode {
 	ALREADY_UNINTERACTED("이미 상호작용 취소한 게시글입니다.", "PI_003"),
 	INTERACTION_NOT_ALLOWED("본인 게시물은 상호작용할 수 없습니다", "PI_004");
 
-
 	private final String message;
 	private final String code;
 }

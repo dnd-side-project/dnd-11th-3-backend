@@ -43,7 +43,8 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = findQuestionPostById(questionPostId);
-		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request, member);
+		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
+			member);
 		return AnswerMapper.toAnswerDetailResponse(answerRepository.save(answer));
 	}
 
