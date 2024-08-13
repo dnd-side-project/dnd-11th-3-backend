@@ -38,9 +38,9 @@ public class MemberController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PatchMapping("/profile/edit")
 	public ResponseEntity<MemberProfileResponse> updateMemberProfile(
-		@RequestBody UpdateMemberProfileRequest updateMemberProfileRequest,
+		@RequestBody UpdateMemberProfileRequest request,
 		@AuthenticationPrincipal Member member) {
-		MemberProfileResponse response = memberService.updateMemberProfile(updateMemberProfileRequest, member);
+		MemberProfileResponse response = memberService.updateMemberProfile(request, member);
 		return ResponseEntity.ok(response);
 	}
 
