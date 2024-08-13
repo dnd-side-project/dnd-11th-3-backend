@@ -38,8 +38,8 @@ public class PostInteractionController {
 
 	@PostMapping("/{questionPostId}/inactivated")
 	public ResponseEntity<PostInteractionResponse> inactivateInteraction(
-		@PathVariable Long questionPostId,
-		@RequestParam String type,
+		@PathVariable("questionPostId") Long questionPostId,
+		@RequestParam("type") String type,
 		@AuthenticationPrincipal Member member
 	) {
 		PostInteractionResponse response = postInteractionService.inactivateInteraction(
