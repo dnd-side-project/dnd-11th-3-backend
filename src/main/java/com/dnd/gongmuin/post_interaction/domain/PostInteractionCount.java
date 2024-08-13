@@ -23,6 +23,9 @@ public class PostInteractionCount extends TimeBaseEntity {
 	@Column(name = "post_interaction_count_id", nullable = false)
 	private Long id;
 
+	@Column(name = "question_post_id")
+	private Long questionPostId;
+
 	@Column(name = "total_count", nullable = false)
 	private int totalCount;
 
@@ -30,10 +33,8 @@ public class PostInteractionCount extends TimeBaseEntity {
 	@Column(name = "type")
 	private InteractionType type;
 
-	@Column(name = "question_post_id")
-	private Long questionPostId;
-
 	private PostInteractionCount(InteractionType type, Long questionPostId) {
+		this.totalCount = 1;
 		this.type = type;
 		this.questionPostId = questionPostId;
 	}
@@ -42,7 +43,11 @@ public class PostInteractionCount extends TimeBaseEntity {
 		return new PostInteractionCount(type, questionPostId);
 	}
 
-	private void increaseTotalCount() {
-		totalCount++;
+	public int increaseTotalCount() {
+		return ++totalCount;
+	}
+
+	public int decreaseTotalCount(){
+		return --totalCount;
 	}
 }
