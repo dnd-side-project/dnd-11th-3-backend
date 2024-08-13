@@ -53,7 +53,7 @@ public class AuthController {
 	@Operation(summary = "임시 로그인/회원가입(토큰 발급) API", description = "로그인 또는 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/token")
-	public ResponseEntity<String> swaggerToken(@RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<String> swaggerToken(@RequestBody @Valid LoginRequest loginRequest) {
 		String accessToken = authService.swaggerToken(loginRequest);
 		return ResponseEntity.ok(accessToken);
 
