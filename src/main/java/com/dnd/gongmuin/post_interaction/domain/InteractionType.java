@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum InteractionType {
 
-	SAVED("저장"),
+	SAVED("북마크"),
 	RECOMMEND("추천");
 
 	private final String label;
