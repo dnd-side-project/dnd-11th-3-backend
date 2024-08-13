@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import com.dnd.gongmuin.auth.domain.Provider;
+import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
@@ -203,10 +204,19 @@ class MemberServiceTest {
 		assertAll(
 			() -> assertThat(memberProfile.nickname()).isEqualTo("김회원"),
 			() -> assertThat(memberProfile.jobGroup()).isEqualTo("공업"),
-			() -> assertThat(memberProfile.jboCategory()).isEqualTo("가스"),
+			() -> assertThat(memberProfile.jobCategory()).isEqualTo("가스"),
 			() -> assertThat(memberProfile.credit()).isEqualTo(10000)
 		);
+	}
 
+	@DisplayName("로그인 된 사용자 프로필 정보 조회 시 회원을 찾을 수 없으면 예외가 발생한다.")
+	@Test
+	void getMemberProfileThrowException() {
+		// given
+		Member member = MemberFixture.member();
+
+		// when  // then
+		assertThrows(NotFoundException.class, () -> memberService.getMemberProfile(member));
 	}
 
 	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
