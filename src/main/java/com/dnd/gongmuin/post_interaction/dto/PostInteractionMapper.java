@@ -26,7 +26,7 @@ public class PostInteractionMapper {
 
 	public static PostInteractionResponse toPostInteractionResponse(int count, InteractionType type){
 		return new PostInteractionResponse(
-			count, type.toString()
+			count, type.getLabel()
 		);
 	}
 }
