@@ -82,8 +82,8 @@ public class QuestionPost extends TimeBaseEntity {
 		});
 	}
 
-	public boolean isQuestioner(Member member) {
-		return Objects.equals(this.member.getId(), member.getId());
+	public boolean isQuestioner(Long memberId) {
+		return Objects.equals(this.member.getId(), memberId);
 	}
 
 	public void updateIsChosen(Answer answer) {
