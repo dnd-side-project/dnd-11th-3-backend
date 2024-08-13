@@ -2,7 +2,7 @@ package com.dnd.gongmuin.auth.dto;
 
 import jakarta.validation.constraints.Email;
 
-public record LoginRequest(
+public record TempLoginRequest(
 
 	String socialName,
 

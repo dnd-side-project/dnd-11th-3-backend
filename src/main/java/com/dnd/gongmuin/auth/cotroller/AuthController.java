@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.gongmuin.auth.dto.LoginRequest;
+import com.dnd.gongmuin.auth.dto.TempLoginRequest;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
@@ -53,8 +53,8 @@ public class AuthController {
 	@Operation(summary = "임시 로그인/회원가입(토큰 발급) API", description = "로그인 또는 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/token")
-	public ResponseEntity<String> swaggerToken(@RequestBody @Valid LoginRequest loginRequest) {
-		String accessToken = authService.swaggerToken(loginRequest);
+	public ResponseEntity<String> getTempToken(@RequestBody @Valid TempLoginRequest request) {
+		String accessToken = authService.swaggerToken(request);
 		return ResponseEntity.ok(accessToken);
 
 	}
@@ -63,8 +63,8 @@ public class AuthController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/check-nickname")
 	public ResponseEntity<ValidateNickNameResponse> checkNickName(
-		@RequestBody @Valid ValidateNickNameRequest validateNickNameRequest) {
-		return ResponseEntity.ok(memberService.isDuplicatedNickname(validateNickNameRequest));
+		@RequestBody @Valid ValidateNickNameRequest request) {
+		return ResponseEntity.ok(memberService.isDuplicatedNickname(request));
 	}
 
 	@Operation(summary = "추가정보 API", description = "추가 정보를 저장한다.")
