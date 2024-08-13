@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth;
+package com.dnd.gongmuin.auth.controller;
 
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
