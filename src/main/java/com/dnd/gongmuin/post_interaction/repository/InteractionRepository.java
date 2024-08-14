@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.Interaction;
+import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 
 public interface InteractionRepository extends JpaRepository<Interaction, Long> {
 

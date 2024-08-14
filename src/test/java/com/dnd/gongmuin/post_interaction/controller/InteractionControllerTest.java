@@ -10,9 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
+import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;

@@ -13,14 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
+import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.dto.InteractionResponse;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
@@ -63,7 +63,7 @@ class InteractionServiceTest {
 		given(interactionRepository.save(any(Interaction.class)))
 			.willReturn(interaction);
 		given(interactionCountRepository.findByQuestionPostIdAndType(
-			questionPost.getId(),type)).willReturn(Optional.of(interactionCount));
+			questionPost.getId(), type)).willReturn(Optional.of(interactionCount));
 
 		//when
 		InteractionResponse response = interactionService.activateInteraction(1L, 2L,
@@ -93,7 +93,7 @@ class InteractionServiceTest {
 		given(interactionRepository.save(any(Interaction.class)))
 			.willReturn(interaction);
 		given(interactionCountRepository.findByQuestionPostIdAndType(
-			questionPost.getId(),type)).willReturn(Optional.empty());
+			questionPost.getId(), type)).willReturn(Optional.empty());
 		given(interactionCountRepository.save(any(InteractionCount.class)))
 			.willReturn(interactionCount);
 
