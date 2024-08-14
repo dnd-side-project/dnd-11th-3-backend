@@ -2,7 +2,7 @@ package com.dnd.gongmuin.post_interaction.domain;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
-import com.dnd.gongmuin.post_interaction.exception.PostInteractionErrorCode;
+import com.dnd.gongmuin.post_interaction.exception.InteractionErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostInteraction extends TimeBaseEntity {
+public class Interaction extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "post_interaction_id", nullable = false)
+	@Column(name = "interaction_id", nullable = false)
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
@@ -38,27 +38,27 @@ public class PostInteraction extends TimeBaseEntity {
 	@Column(name = "member_id")
 	private Long memberId;
 
-	private PostInteraction(InteractionType type, Long memberId, Long questionPostId) {
+	private Interaction(InteractionType type, Long memberId, Long questionPostId) {
 		this.isInteracted = true;
 		this.type = type;
 		this.memberId = memberId;
 		this.questionPostId = questionPostId;
 	}
 
-	public static PostInteraction of(InteractionType type, Long memberId, Long questionPostId) {
-		return new PostInteraction(type, memberId, questionPostId);
+	public static Interaction of(InteractionType type, Long memberId, Long questionPostId) {
+		return new Interaction(type, memberId, questionPostId);
 	}
 
 	public void updateIsInteractedTrue() {
 		if (Boolean.TRUE.equals(isInteracted)) {
-			throw new ValidationException(PostInteractionErrorCode.ALREADY_INTERACTED);
+			throw new ValidationException(InteractionErrorCode.ALREADY_INTERACTED);
 		}
 		isInteracted = true;
 	}
 
 	public void updateIsInteractedFalse() {
 		if (Boolean.FALSE.equals(isInteracted)) {
-			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
+			throw new ValidationException(InteractionErrorCode.ALREADY_UNINTERACTED);
 		}
 		isInteracted = false;
 	}

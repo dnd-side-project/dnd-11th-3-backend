@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum PostInteractionErrorCode implements ErrorCode {
+public enum InteractionErrorCode implements ErrorCode {
 
 	NOT_FOUND_POST_INTERACTION("상호작용 이력이 존재하지 않습니다.", "PI_001"),
 	ALREADY_INTERACTED("이미 상호작용한 게시글입니다.", "PI_002"),

@@ -2,26 +2,26 @@ package com.dnd.gongmuin.common.fixture;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.domain.PostInteraction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostInteractionFixture {
+public class InteractionFixture {
 
-	public static PostInteraction postInteraction(
+	public static Interaction postInteraction(
 		InteractionType type,
 		Long memberId,
 		Long questionPostId
 	) {
-		PostInteraction postInteraction = PostInteraction.of(
+		Interaction interaction = Interaction.of(
 			type,
 			memberId,
 			questionPostId
 		);
-		ReflectionTestUtils.setField(postInteraction, "id", 1L);
-		return postInteraction;
+		ReflectionTestUtils.setField(interaction, "id", 1L);
+		return interaction;
 	}
 }

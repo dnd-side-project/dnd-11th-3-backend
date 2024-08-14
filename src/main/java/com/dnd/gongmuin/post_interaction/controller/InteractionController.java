@@ -10,25 +10,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.dto.PostInteractionResponse;
-import com.dnd.gongmuin.post_interaction.service.PostInteractionService;
+import com.dnd.gongmuin.post_interaction.dto.InteractionResponse;
+import com.dnd.gongmuin.post_interaction.service.InteractionService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/question-posts")
-public class PostInteractionController {
+public class InteractionController {
 
-	private final PostInteractionService postInteractionService;
+	private final InteractionService interactionService;
 
 	@PostMapping("/{questionPostId}/activated")
-	public ResponseEntity<PostInteractionResponse> activateInteraction(
+	public ResponseEntity<InteractionResponse> activateInteraction(
 		@PathVariable Long questionPostId,
 		@RequestParam String type,
 		@AuthenticationPrincipal Member member
 	) {
-		PostInteractionResponse response = postInteractionService.activateInteraction(
+		InteractionResponse response = interactionService.activateInteraction(
 			questionPostId,
 			member.getId(),
 			InteractionType.from(type)
@@ -37,12 +37,12 @@ public class PostInteractionController {
 	}
 
 	@PostMapping("/{questionPostId}/inactivated")
-	public ResponseEntity<PostInteractionResponse> inactivateInteraction(
+	public ResponseEntity<InteractionResponse> inactivateInteraction(
 		@PathVariable("questionPostId") Long questionPostId,
 		@RequestParam("type") String type,
 		@AuthenticationPrincipal Member member
 	) {
-		PostInteractionResponse response = postInteractionService.inactivateInteraction(
+		InteractionResponse response = interactionService.inactivateInteraction(
 			questionPostId,
 			member.getId(),
 			InteractionType.from(type)

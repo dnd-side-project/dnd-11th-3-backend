@@ -11,28 +11,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dnd.gongmuin.common.fixture.MemberFixture;
-import com.dnd.gongmuin.common.fixture.PostInteractionCountFixture;
-import com.dnd.gongmuin.common.fixture.PostInteractionFixture;
+import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
+import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.repository.PostInteractionCountRepository;
-import com.dnd.gongmuin.post_interaction.repository.PostInteractionRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-@DisplayName("[PostInteraction 통합 테스트]")
-class PostInteractionControllerTest extends ApiTestSupport {
+@DisplayName("[Interaction 통합 테스트]")
+class InteractionControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private QuestionPostRepository questionPostRepository;
 
 	@Autowired
-	private PostInteractionRepository postInteractionRepository;
+	private InteractionRepository interactionRepository;
 
 	@Autowired
-	private PostInteractionCountRepository postInteractionCountRepository;
+	private InteractionCountRepository interactionCountRepository;
 
 	@AfterEach
 	void teardown() {
@@ -63,10 +63,10 @@ class PostInteractionControllerTest extends ApiTestSupport {
 		QuestionPost questionPost = questionPostRepository.save(
 			QuestionPostFixture.questionPost(questioner)
 		);
-		postInteractionRepository.save(PostInteractionFixture.postInteraction(InteractionType.RECOMMEND,
+		interactionRepository.save(InteractionFixture.postInteraction(InteractionType.RECOMMEND,
 			loginMember.getId(), questionPost.getId()));
-		postInteractionCountRepository.save(
-			PostInteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
+		interactionCountRepository.save(
+			InteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
 		);
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
@@ -84,10 +84,10 @@ class PostInteractionControllerTest extends ApiTestSupport {
 		QuestionPost questionPost = questionPostRepository.save(
 			QuestionPostFixture.questionPost(questioner)
 		);
-		postInteractionRepository.save(PostInteractionFixture.postInteraction(InteractionType.RECOMMEND,
+		interactionRepository.save(InteractionFixture.postInteraction(InteractionType.RECOMMEND,
 			loginMember.getId(), questionPost.getId()));
-		postInteractionCountRepository.save(
-			PostInteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
+		interactionCountRepository.save(
+			InteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
 		);
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())

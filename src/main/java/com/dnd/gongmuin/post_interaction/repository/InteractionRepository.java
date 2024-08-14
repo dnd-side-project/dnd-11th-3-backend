@@ -5,15 +5,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.domain.PostInteraction;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
 
-public interface PostInteractionRepository extends JpaRepository<PostInteraction, Long> {
+public interface InteractionRepository extends JpaRepository<Interaction, Long> {
 
 	boolean existsByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);
 
-	Optional<PostInteraction> findByQuestionPostIdAndMemberIdAndType(
+	Optional<Interaction> findByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);
 }

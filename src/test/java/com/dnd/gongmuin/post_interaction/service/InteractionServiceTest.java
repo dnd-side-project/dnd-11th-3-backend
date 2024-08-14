@@ -14,37 +14,37 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.gongmuin.common.fixture.MemberFixture;
-import com.dnd.gongmuin.common.fixture.PostInteractionCountFixture;
-import com.dnd.gongmuin.common.fixture.PostInteractionFixture;
+import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
+import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
-import com.dnd.gongmuin.post_interaction.domain.PostInteraction;
-import com.dnd.gongmuin.post_interaction.domain.PostInteractionCount;
-import com.dnd.gongmuin.post_interaction.dto.PostInteractionResponse;
-import com.dnd.gongmuin.post_interaction.repository.PostInteractionCountRepository;
-import com.dnd.gongmuin.post_interaction.repository.PostInteractionRepository;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
+import com.dnd.gongmuin.post_interaction.dto.InteractionResponse;
+import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-@DisplayName("[PostInteractionService 테스트]")
+@DisplayName("[InteractionService 테스트]")
 @ExtendWith(MockitoExtension.class)
-class PostInteractionServiceTest {
+class InteractionServiceTest {
 
 	private final Member questioner = MemberFixture.member(1L);
 	private final Member interactor = MemberFixture.member(2L);
 
 	@Mock
-	private PostInteractionRepository postInteractionRepository;
+	private InteractionRepository interactionRepository;
 
 	@Mock
-	private PostInteractionCountRepository postInteractionCountRepository;
+	private InteractionCountRepository interactionCountRepository;
 
 	@Mock
 	private QuestionPostRepository questionPostRepository;
 
 	@InjectMocks
-	private PostInteractionService postInteractionService;
+	private InteractionService interactionService;
 
 	@DisplayName("[상호작용을 새로 활성화한다. 기존에 게시글 상호작용 수가 저장되어 있다.]")
 	@Test
@@ -52,21 +52,21 @@ class PostInteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		PostInteraction postInteraction = PostInteraction.of(type, interactor.getId(), questionPost.getId());
-		PostInteractionCount postInteractionCount = PostInteractionCount.of(type, interactor.getId());
+		Interaction interaction = Interaction.of(type, interactor.getId(), questionPost.getId());
+		InteractionCount interactionCount = InteractionCount.of(type, interactor.getId());
 
-		given(postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType(
+		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(), interactor.getId(), type
 		)).willReturn(false); // 생성
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
-		given(postInteractionRepository.save(any(PostInteraction.class)))
-			.willReturn(postInteraction);
-		given(postInteractionCountRepository.findByQuestionPostIdAndType(
-			questionPost.getId(),type)).willReturn(Optional.of(postInteractionCount));
+		given(interactionRepository.save(any(Interaction.class)))
+			.willReturn(interaction);
+		given(interactionCountRepository.findByQuestionPostIdAndType(
+			questionPost.getId(),type)).willReturn(Optional.of(interactionCount));
 
 		//when
-		PostInteractionResponse response = postInteractionService.activateInteraction(1L, 2L,
+		InteractionResponse response = interactionService.activateInteraction(1L, 2L,
 			type);
 
 		//then
@@ -82,24 +82,24 @@ class PostInteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		PostInteraction postInteraction = PostInteraction.of(type, interactor.getId(), questionPost.getId());
-		PostInteractionCount postInteractionCount = PostInteractionCount.of(type, interactor.getId());
+		Interaction interaction = Interaction.of(type, interactor.getId(), questionPost.getId());
+		InteractionCount interactionCount = InteractionCount.of(type, interactor.getId());
 
-		given(postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType(
+		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(), interactor.getId(), type
 		)).willReturn(false); // 생성
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
-		given(postInteractionRepository.save(any(PostInteraction.class)))
-			.willReturn(postInteraction);
-		given(postInteractionCountRepository.findByQuestionPostIdAndType(
+		given(interactionRepository.save(any(Interaction.class)))
+			.willReturn(interaction);
+		given(interactionCountRepository.findByQuestionPostIdAndType(
 			questionPost.getId(),type)).willReturn(Optional.empty());
-		given(postInteractionCountRepository.save(any(PostInteractionCount.class)))
-			.willReturn(postInteractionCount);
+		given(interactionCountRepository.save(any(InteractionCount.class)))
+			.willReturn(interactionCount);
 
 		//when
-		PostInteractionResponse response
-			= postInteractionService.activateInteraction(1L, 2L, type);
+		InteractionResponse response
+			= interactionService.activateInteraction(1L, 2L, type);
 
 		//then
 		assertAll(
@@ -114,27 +114,27 @@ class PostInteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		PostInteraction postInteraction = PostInteractionFixture.postInteraction(type, interactor.getId(),
+		Interaction interaction = InteractionFixture.postInteraction(type, interactor.getId(),
 			questionPost.getId());
-		PostInteractionCount postInteractionCount = PostInteractionCountFixture.postInteractionCount(type,
+		InteractionCount interactionCount = InteractionCountFixture.postInteractionCount(type,
 			interactor.getId());
-		postInteraction.updateIsInteractedFalse();
-		postInteractionCount.decreaseTotalCount();
+		interaction.updateIsInteractedFalse();
+		interactionCount.decreaseTotalCount();
 
-		given(postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType(
+		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(), interactor.getId(), type
 		)).willReturn(true); // 업데이트
-		given(postInteractionRepository.findByQuestionPostIdAndMemberIdAndType(
+		given(interactionRepository.findByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(),
 			interactor.getId(),
 			type
-		)).willReturn(Optional.of(postInteraction));
-		given(postInteractionCountRepository.findByQuestionPostIdAndType(
-			postInteractionCount.getId(), type))
-			.willReturn(Optional.of(postInteractionCount));
+		)).willReturn(Optional.of(interaction));
+		given(interactionCountRepository.findByQuestionPostIdAndType(
+			interactionCount.getId(), type))
+			.willReturn(Optional.of(interactionCount));
 
 		//when
-		PostInteractionResponse response = postInteractionService.activateInteraction(1L, 2L,
+		InteractionResponse response = interactionService.activateInteraction(1L, 2L,
 			type);
 
 		//then
@@ -150,22 +150,22 @@ class PostInteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		PostInteraction postInteraction = PostInteractionFixture.postInteraction(type, interactor.getId(),
+		Interaction interaction = InteractionFixture.postInteraction(type, interactor.getId(),
 			questionPost.getId());
-		PostInteractionCount postInteractionCount = PostInteractionCountFixture.postInteractionCount(type,
+		InteractionCount interactionCount = InteractionCountFixture.postInteractionCount(type,
 			interactor.getId());
 
-		given(postInteractionRepository.findByQuestionPostIdAndMemberIdAndType(
+		given(interactionRepository.findByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(),
 			interactor.getId(),
 			type
-		)).willReturn(Optional.of(postInteraction));
-		given(postInteractionCountRepository.findByQuestionPostIdAndType(
-			postInteractionCount.getId(), type))
-			.willReturn(Optional.of(postInteractionCount));
+		)).willReturn(Optional.of(interaction));
+		given(interactionCountRepository.findByQuestionPostIdAndType(
+			interactionCount.getId(), type))
+			.willReturn(Optional.of(interactionCount));
 
 		//when
-		PostInteractionResponse response = postInteractionService.inactivateInteraction(1L, 2L,
+		InteractionResponse response = interactionService.inactivateInteraction(1L, 2L,
 			type);
 
 		//then

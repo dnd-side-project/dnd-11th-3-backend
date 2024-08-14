@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostInteractionCount extends TimeBaseEntity {
+public class InteractionCount extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "post_interaction_count_id", nullable = false)
+	@Column(name = "interaction_count_id", nullable = false)
 	private Long id;
 
 	@Column(name = "question_post_id")
@@ -33,14 +33,14 @@ public class PostInteractionCount extends TimeBaseEntity {
 	@Column(name = "type")
 	private InteractionType type;
 
-	private PostInteractionCount(InteractionType type, Long questionPostId) {
+	private InteractionCount(InteractionType type, Long questionPostId) {
 		this.totalCount = 1;
 		this.type = type;
 		this.questionPostId = questionPostId;
 	}
 
-	public static PostInteractionCount of(InteractionType type, Long questionPostId) {
-		return new PostInteractionCount(type, questionPostId);
+	public static InteractionCount of(InteractionType type, Long questionPostId) {
+		return new InteractionCount(type, questionPostId);
 	}
 
 	public int increaseTotalCount() {
