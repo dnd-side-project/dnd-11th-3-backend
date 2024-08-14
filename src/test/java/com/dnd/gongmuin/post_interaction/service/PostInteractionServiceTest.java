@@ -46,9 +46,9 @@ class PostInteractionServiceTest {
 	@InjectMocks
 	private PostInteractionService postInteractionService;
 
-	@DisplayName("[상호작용을 새로 활성화한다.]")
+	@DisplayName("[상호작용을 새로 활성화한다. 기존에 게시글 상호작용 수가 저장되어 있다.]")
 	@Test
-	void activateInteraction_create() {
+	void activateInteraction_create1() {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
@@ -62,12 +62,44 @@ class PostInteractionServiceTest {
 			.willReturn(Optional.of(questionPost));
 		given(postInteractionRepository.save(any(PostInteraction.class)))
 			.willReturn(postInteraction);
-		given(postInteractionCountRepository.save(any(PostInteractionCount.class)))
-			.willReturn(postInteractionCount);
+		given(postInteractionCountRepository.findByQuestionPostIdAndType(
+			questionPost.getId(),type)).willReturn(Optional.of(postInteractionCount));
 
 		//when
 		PostInteractionResponse response = postInteractionService.activateInteraction(1L, 2L,
 			type);
+
+		//then
+		assertAll(
+			() -> assertThat(response.count()).isEqualTo(1),
+			() -> assertThat(response.interactionType()).isEqualTo(type.getLabel())
+		);
+	}
+
+	@DisplayName("[상호작용을 새로 활성화한다. 기존에 게시글 상호작용 수가 저장되어있지 않다.]")
+	@Test
+	void activateInteraction_create2() {
+		//given
+		InteractionType type = InteractionType.RECOMMEND;
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
+		PostInteraction postInteraction = PostInteraction.of(type, interactor.getId(), questionPost.getId());
+		PostInteractionCount postInteractionCount = PostInteractionCount.of(type, interactor.getId());
+
+		given(postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType(
+			questionPost.getId(), interactor.getId(), type
+		)).willReturn(false); // 생성
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(postInteractionRepository.save(any(PostInteraction.class)))
+			.willReturn(postInteraction);
+		given(postInteractionCountRepository.findByQuestionPostIdAndType(
+			questionPost.getId(),type)).willReturn(Optional.empty());
+		given(postInteractionCountRepository.save(any(PostInteractionCount.class)))
+			.willReturn(postInteractionCount);
+
+		//when
+		PostInteractionResponse response
+			= postInteractionService.activateInteraction(1L, 2L, type);
 
 		//then
 		assertAll(
