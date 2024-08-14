@@ -28,12 +28,16 @@ public class PostInteractionService {
 	private final QuestionPostRepository questionPostRepository;
 
 	@Transactional
-	public PostInteractionResponse activateInteraction(Long questionPostId, Long memberId, InteractionType type) {
+	public PostInteractionResponse activateInteraction(
+		Long questionPostId,
+		Long memberId,
+		InteractionType type // 북마크, 추천
+	) {
 		int totalCount;
-		if (!postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType // 상호작용 존재x -> 저장
+		if (!postInteractionRepository.existsByQuestionPostIdAndMemberIdAndType // 상호 작용 존재x -> 저장
 			(questionPostId, memberId, type)
 		) {
-			totalCount = createInteractionAndCount(questionPostId, memberId, type);
+			totalCount = createInteraction(questionPostId, memberId, type);
 		} else { // 존재 -> 값 업데이트
 			totalCount = updateInteractionAndCount(questionPostId, memberId, type, true);
 		}
@@ -43,36 +47,56 @@ public class PostInteractionService {
 	}
 
 	@Transactional
-	public PostInteractionResponse inactivateInteraction(Long questionPostId, Long memberId, InteractionType type) {
+	public PostInteractionResponse inactivateInteraction(
+		Long questionPostId,
+		Long memberId,
+		InteractionType type
+	) {
 		int totalCount = updateInteractionAndCount(questionPostId, memberId, type, false);
 		return PostInteractionMapper.toPostInteractionResponse(
 			totalCount, type
 		);
 	}
 
-	private int createInteractionAndCount(Long questionPostId, Long memberId, InteractionType type) {
-		validateCreatingInteraction(questionPostId, memberId);
+	private int createInteraction(
+		Long questionPostId,
+		Long memberId,
+		InteractionType type
+	) {
+		validateIfPostExistsAndNotQuestioner(questionPostId, memberId);
 		postInteractionRepository.save(
 			PostInteractionMapper.toPostInteraction(questionPostId, memberId, type)
 		);
-		return postInteractionCountRepository
-			.save(PostInteractionMapper.toPostInteractionCount(questionPostId, type))
+		return postInteractionCountRepository // 게시글 상호작용이 없어도 타 회원에 인해 게시글 상호작용 수가 있을 수 있음
+			.findByQuestionPostIdAndType(questionPostId, type)
+			.orElseGet(
+				() -> postInteractionCountRepository
+					.save(PostInteractionMapper.toPostInteractionCount(questionPostId, type)) // 생성 시 count 1로 초기화
+			)
 			.getTotalCount();
 	}
 
-	private void validateCreatingInteraction(Long questionPostId, Long memberId) {
+	private void validateIfPostExistsAndNotQuestioner(
+		Long questionPostId,
+		Long memberId
+	) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-		if (questionPost.isQuestioner(memberId)) { //자기 게시물 상호작용 불가
+		if (questionPost.isQuestioner(memberId)) {
 			throw new ValidationException(PostInteractionErrorCode.ALREADY_UNINTERACTED);
 		}
 	}
 
-	private int updateInteractionAndCount(Long questionPostId, Long memberId, InteractionType type,
-		boolean isActivate) {
+	private int updateInteractionAndCount(
+		Long questionPostId,
+		Long memberId,
+		InteractionType type,
+		boolean isActivate
+	) {
 		int totalCount;
 		PostInteraction postInteraction = getPostInteraction(questionPostId, memberId, type);
 		PostInteractionCount postInteractionCount = getPostInteractionCount(questionPostId, type);
+
 		if (isActivate) { //활성화
 			postInteraction.updateIsInteractedTrue();
 			totalCount = postInteractionCount.increaseTotalCount();
