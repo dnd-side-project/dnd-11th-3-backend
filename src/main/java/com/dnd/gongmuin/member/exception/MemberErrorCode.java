@@ -13,7 +13,8 @@ public enum MemberErrorCode implements ErrorCode {
 	NOT_FOUND_NEW_MEMBER("신규 회원이 아닙니다.", "MEMBER_002"),
 	LOGOUT_FAILED("로그아웃을 실패했습니다.", "MEMBER_003"),
 	NOT_ENOUGH_CREDIT("보유한 크레딧이 부족합니다.", "MEMBER_004"),
-	UPDATE_PROFILE_FAILED("프로필 수정에 실패했습니다.", "MEMBER_005");
+	UPDATE_PROFILE_FAILED("프로필 수정에 실패했습니다.", "MEMBER_005"),
+	QUESTION_POSTS_BY_MEMBER_FAILED("작성한 게시글 목록을 찾는 도중 실패했습니다.", "MEMBER_002");
 
 	private final String message;
 	private final String code;
