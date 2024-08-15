@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractionFixture {
 
-	public static Interaction postInteraction(
+	public static Interaction interaction(
 		InteractionType type,
 		Long memberId,
 		Long questionPostId
