@@ -1,15 +1,15 @@
 package com.dnd.gongmuin.member.repository;
 
-import static com.dnd.gongmuin.post_interaction.domain.QPostInteractionCount.*;
-import static com.dnd.gongmuin.question_post.domain.QQuestionPost.*;
-
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
+import com.dnd.gongmuin.answer.domain.QAnswer;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.post_interaction.domain.QPostInteractionCount;
@@ -25,8 +25,8 @@ public class MemberCustomImpl implements MemberCustom {
 
 	@Override
 	public Slice<QuestionPostsByMemberResponse> getQuestionPostsByMember(Member member, Pageable pageable) {
-		QQuestionPost qp = questionPost;
-		QPostInteractionCount ic = postInteractionCount;
+		QQuestionPost qp = QQuestionPost.questionPost;
+		QPostInteractionCount ic = QPostInteractionCount.postInteractionCount;
 
 		List<QuestionPostsByMemberResponse> content = queryFactory
 			.select(new QQuestionPostsByMemberResponse(qp, ic))
@@ -34,7 +34,7 @@ public class MemberCustomImpl implements MemberCustom {
 			.leftJoin(ic)
 			.on(qp.id.eq(ic.questionPostId))
 			.where(qp.member.eq(member))
-			.orderBy(questionPost.id.desc())
+			.orderBy(qp.id.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
@@ -44,7 +44,32 @@ public class MemberCustomImpl implements MemberCustom {
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
-	private boolean hasNext(int pageSize, List<QuestionPostsByMemberResponse> content) {
+	@Override
+	public Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(
+		Member member, Pageable pageable) {
+		QQuestionPost qp = QQuestionPost.questionPost;
+		QPostInteractionCount ic = QPostInteractionCount.postInteractionCount;
+		QAnswer aw = QAnswer.answer;
+
+		List<AnsweredQuestionPostsByMemberResponse> content = queryFactory
+			.select(new QAnsweredQuestionPostsByMemberResponse(qp, ic, aw))
+			.from(qp)
+			.join(aw)
+			.on(qp.id.eq(aw.questionPostId))
+			.leftJoin(ic)
+			.on(qp.id.eq(ic.questionPostId))
+			.where(aw.member.eq(member))
+			.orderBy(qp.id.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize() + 1)
+			.fetch();
+
+		boolean hasNext = hasNext(pageable.getPageSize(), content);
+
+		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	private <T> boolean hasNext(int pageSize, List<T> content) {
 		if (content.size() <= pageSize) {
 			return false;
 		}
