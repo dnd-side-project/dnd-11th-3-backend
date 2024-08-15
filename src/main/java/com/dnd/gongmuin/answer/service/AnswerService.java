@@ -31,7 +31,7 @@ public class AnswerService {
 	private final CreditHistoryService creditHistoryService;
 
 	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
-		if (!questionPost.isQuestioner(member)) {
+		if (!questionPost.isQuestioner(member.getId())) {
 			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
 		}
 	}
@@ -43,7 +43,8 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = findQuestionPostById(questionPostId);
-		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member), request, member);
+		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
+			member);
 		return AnswerMapper.toAnswerDetailResponse(answerRepository.save(answer));
 	}
 
