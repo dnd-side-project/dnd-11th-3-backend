@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -57,6 +58,18 @@ public class MemberController {
 		Pageable pageable) {
 		PageResponse<QuestionPostsByMemberResponse> response =
 			memberService.getQuestionPostsByMember(member, pageable);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "댓글 단 질문 전체 조회 API", description = "댓글 단 질문을 전체 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/answer-posts")
+	public ResponseEntity<PageResponse<AnsweredQuestionPostsByMemberResponse>> getAnsweredQuestionPostsByMember(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable) {
+		PageResponse<AnsweredQuestionPostsByMemberResponse> response =
+			memberService.getAnsweredQuestionPostsByMember(member, pageable);
 
 		return ResponseEntity.ok(response);
 	}
