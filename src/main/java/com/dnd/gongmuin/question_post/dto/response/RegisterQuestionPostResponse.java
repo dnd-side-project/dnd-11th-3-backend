@@ -2,7 +2,7 @@ package com.dnd.gongmuin.question_post.dto.response;
 
 import java.util.List;
 
-public record RegisterQuestionPostResponse (
+public record RegisterQuestionPostResponse(
 	Long questionPostId,
 	String title,
 	String content,
@@ -11,5 +11,5 @@ public record RegisterQuestionPostResponse (
 	String targetJobGroup,
 	MemberInfo memberInfo,
 	String createdAt
-){
+) {
 }

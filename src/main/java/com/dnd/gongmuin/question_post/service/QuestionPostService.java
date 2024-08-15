@@ -72,7 +72,7 @@ public class QuestionPostService {
 		return PageMapper.toPageResponse(responsePage);
 	}
 
-	private int getCountByType(Long questionPostId, InteractionType type){
+	private int getCountByType(Long questionPostId, InteractionType type) {
 		return interactionCountRepository
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.map(InteractionCount::getTotalCount)
