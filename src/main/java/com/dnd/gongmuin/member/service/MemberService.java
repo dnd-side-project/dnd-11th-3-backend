@@ -4,12 +4,16 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
+import com.dnd.gongmuin.common.dto.PageMapper;
+import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobCategory;
@@ -23,6 +27,7 @@ import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.ReissueResponse;
 import com.dnd.gongmuin.member.dto.response.SignUpResponse;
 import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
@@ -187,6 +192,18 @@ public class MemberService {
 			return MemberMapper.toMemberProfileResponse(findMember);
 		} catch (Exception e) {
 			throw new ValidationException(MemberErrorCode.UPDATE_PROFILE_FAILED);
+		}
+	}
+
+	public PageResponse<QuestionPostsByMemberResponse> getQuestionPostsByMember(
+		Member member, Pageable pageable) {
+		try {
+			Slice<QuestionPostsByMemberResponse> responsePage =
+				memberRepository.getQuestionPostsByMember(member, pageable);
+
+			return PageMapper.toPageResponse(responsePage);
+		} catch (Exception e) {
+			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
 	}
 }
