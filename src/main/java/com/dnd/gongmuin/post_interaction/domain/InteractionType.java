@@ -9,12 +9,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum InteractionType {
 
-	SAVED("저장"),
+	SAVED("북마크"),
 	RECOMMEND("추천");
 
 	private final String label;
 
-	public static InteractionType of(String input) {
+	public static InteractionType from(String input) {
 		return Arrays.stream(values())
 			.filter(type -> type.isEqual(input))
 			.findAny()
