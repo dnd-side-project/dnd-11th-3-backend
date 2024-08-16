@@ -12,13 +12,16 @@ public record QuestionPostsByMemberResponse(
 	int reward,
 	String updatedAt,
 	boolean isChosen,
-	Long interactionCountId,
-	int totalCount,
-	String interactionType
+	int savedTotalCount,
+	int recommendTotalCount
 ) {
 
 	@QueryProjection
-	public QuestionPostsByMemberResponse(QuestionPost questionPost, InteractionCount interactionCount) {
+	public QuestionPostsByMemberResponse(
+		QuestionPost questionPost,
+		InteractionCount savedCount,
+		InteractionCount recommendCount
+	) {
 		this(
 			questionPost.getId(),
 			questionPost.getTitle(),
@@ -27,22 +30,13 @@ public record QuestionPostsByMemberResponse(
 			questionPost.getReward(),
 			questionPost.getUpdatedAt().toString(),
 			questionPost.getIsChosen(),
-			extractId(interactionCount),
-			extractTotalCount(interactionCount),
-			extractTypeLabel(interactionCount)
+			extractTotalCount(savedCount),
+			extractTotalCount(recommendCount)
 		);
-	}
-
-	private static Long extractId(InteractionCount interactionCount) {
-		return interactionCount != null ? interactionCount.getId() : null;
 	}
 
 	private static int extractTotalCount(InteractionCount interactionCount) {
 		return interactionCount != null ? interactionCount.getCount() : 0;
-	}
-
-	private static String extractTypeLabel(InteractionCount interactionCount) {
-		return interactionCount != null ? interactionCount.getType().getLabel() : null;
 	}
 
 }
