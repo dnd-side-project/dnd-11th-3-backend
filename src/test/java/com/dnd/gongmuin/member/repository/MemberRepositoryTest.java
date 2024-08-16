@@ -69,7 +69,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		assertThat(findMember.getNickname()).isEqualTo("공무인1");
 	}
 
-	@DisplayName("자신이 작성한 게시글 목록만 조회할 수 있다.[상호작용 수 비포함]")
+	@DisplayName("자신이 작성한 질문 목록만 조회할 수 있다.[상호작용 수 비포함]")
 	@Test
 	void getQuestionPostsByMember() {
 		// given
@@ -102,7 +102,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	@DisplayName("자신이 작성한 게시글 목록만 조회할 수 있다.[상호작용 수 포함]")
+	@DisplayName("자신이 작성한 질문 목록만 조회할 수 있다.[상호작용 수 포함]")
 	@Test
 	void getQuestionPostsByMemberWithInteractionCount() {
 		// given
@@ -155,7 +155,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	@DisplayName("자신이 댓글 단 게시글 목록만 조회할 수 있다.[상호작용 수 미포함]")
+	@DisplayName("자신이 댓글 단 질문 목록만 조회할 수 있다.[상호작용 수 미포함]")
 	@Test
 	void getAnsweredQuestionPostsByMember() {
 		// given
@@ -199,7 +199,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	@DisplayName("자신이 댓글 단 게시글 목록만 조회할 수 있다.[상호작용 수 포함]")
+	@DisplayName("자신이 댓글 단 질문 목록만 조회할 수 있다.[상호작용 수 포함]")
 	@Test
 	void getAnsweredQuestionPostsByMemberWithInteractionCount() {
 		// given
@@ -263,9 +263,9 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	@DisplayName("답변단 게시글이 존재하지 않으면 게시글 목록의 Size는 0 이다.")
+	@DisplayName("답변단 게시글이 존재하지 않으면 질문 목록의 Size는 0 이다.")
 	@Test
-	void test() {
+	void whenNoAnsweredQuestionPosts_thenGetQuestionPosts() {
 		// given
 		Member member1 = MemberFixture.member();
 		Member member2 = MemberFixture.member2();
@@ -299,6 +299,62 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(0),
 			() -> assertThat(postsByMember.getContent()).isEmpty()
+		);
+	}
+
+	@DisplayName("답변 단 질문을 가져올 때, 질문 내 답변이 여러 개면 가장 마지막 작성된 답변을 가져온다")
+	@Test
+	void whenAnsweredQuestionPosts_thenGetQuestionPostsAtRecently() {
+		// given
+		Member member1 = MemberFixture.member();
+		Member member2 = MemberFixture.member();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(member1, "첫 번째 게시글입니다.22");
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member1, "두 번째 게시글입니다.");
+		QuestionPost questionPost3 = QuestionPostFixture.questionPost(member1, "세 번째 게시글입니다.");
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member1);
+		Answer answer2 = AnswerFixture.answer(questionPost1.getId(), member1);
+		Answer answer3 = AnswerFixture.answer(questionPost1.getId(), member2);
+		ReflectionTestUtils.setField(answer1, "content", "1번답변.");
+		ReflectionTestUtils.setField(answer2, "content", "2번답변.");
+		answerRepository.saveAll(List.of(answer1, answer3));
+		answerRepository.save(answer2);
+
+		// when
+		Slice<AnsweredQuestionPostsByMemberResponse> postsByMember =
+			memberRepository.getAnsweredQuestionPostsByMember(member1, pageRequest);
+
+		// then
+		Assertions.assertAll(
+			() -> postsByMember.forEach(post -> {
+				System.out.println("QuestionPostId: " + post.questionPostId());
+				System.out.println("Title: " + post.title());
+				System.out.println("Content: " + post.content());
+				System.out.println("JobGroup: " + post.jobGroup());
+				System.out.println("Reward: " + post.reward());
+				System.out.println("UpdatedAt: " + post.questionPostUpdatedAt());
+				System.out.println("IsChosen: " + post.isChosen());
+				System.out.println("answerId: " + post.answerId());
+				System.out.println("post.answerContent() = " + post.answerContent());
+				System.out.println("post.answerUpdatedAt() = " + post.answerUpdatedAt());
+				System.out.println("----------");
+			}),
+			() -> assertThat(postsByMember).hasSize(1),
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
+				.containsExactly(
+					answer2.getId()
+				),
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerUpdatedAt)
+				.containsExactly(
+					answer2.getUpdatedAt().toString()
+				),
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerContent)
+				.containsExactly(
+					answer2.getContent()
+				)
 		);
 	}
 

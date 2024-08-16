@@ -147,7 +147,9 @@ class MemberControllerTest extends ApiTestSupport {
 
 		Answer answer1 = AnswerFixture.answer(questionPost2.getId(), loginMember);
 		Answer answer2 = AnswerFixture.answer(questionPost3.getId(), loginMember);
-		answerRepository.saveAll(List.of(answer1, answer2));
+		Answer answer3 = AnswerFixture.answer(questionPost3.getId(), loginMember);
+		answerRepository.saveAll(List.of(answer1, answer3));
+		answerRepository.save(answer2);
 
 		// when  // then
 		mockMvc.perform(get("/api/members/answer-posts")
@@ -156,6 +158,9 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(2))
-			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()));
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()))
+			.andExpect(jsonPath("$.content[0].answerId").value(answer2.getId()))
+			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost2.getId()))
+			.andExpect(jsonPath("$.content[1].answerId").value(answer1.getId()));
 	}
 }
