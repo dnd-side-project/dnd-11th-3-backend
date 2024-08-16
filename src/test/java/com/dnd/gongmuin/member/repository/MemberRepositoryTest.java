@@ -19,15 +19,19 @@ import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
+import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.DataJpaTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -46,6 +50,9 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	InteractionCountRepository interactionCountRepository;
+
+	@Autowired
+	InteractionRepository interactionRepository;
 
 	@AfterEach
 	void tearDown() {
@@ -91,8 +98,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(postsByMember).hasSize(2),
 			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::title)
 				.containsExactly(
-					"두 번째 게시글입니다.",
-					"첫 번째 게시글입니다."
+					questionPost2.getTitle(),
+					questionPost1.getTitle()
 				),
 			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::questionPostId)
 				.containsExactly(
@@ -139,8 +146,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::title)
 				.containsExactly(
-					"두 번째 게시글입니다.",
-					"첫 번째 게시글입니다."
+					questionPost2.getTitle(),
+					questionPost1.getTitle()
 				),
 			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::savedTotalCount)
 				.containsExactly(
@@ -183,8 +190,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(postsByMember).hasSize(2),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::title)
 				.containsExactly(
-					"세 번째 게시글입니다.",
-					"첫 번째 게시글입니다."
+					questionPost3.getTitle(),
+					questionPost1.getTitle()
 				),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::questionPostId)
 				.containsExactly(
@@ -237,8 +244,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(postsByMember).hasSize(2),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::title)
 				.containsExactly(
-					"세 번째 게시글입니다.",
-					"첫 번째 게시글입니다."
+					questionPost3.getTitle(),
+					questionPost1.getTitle()
 				),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::questionPostId)
 				.containsExactly(
@@ -329,19 +336,6 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 
 		// then
 		Assertions.assertAll(
-			() -> postsByMember.forEach(post -> {
-				System.out.println("QuestionPostId: " + post.questionPostId());
-				System.out.println("Title: " + post.title());
-				System.out.println("Content: " + post.content());
-				System.out.println("JobGroup: " + post.jobGroup());
-				System.out.println("Reward: " + post.reward());
-				System.out.println("UpdatedAt: " + post.questionPostUpdatedAt());
-				System.out.println("IsChosen: " + post.isChosen());
-				System.out.println("answerId: " + post.answerId());
-				System.out.println("post.answerContent() = " + post.answerContent());
-				System.out.println("post.answerUpdatedAt() = " + post.answerUpdatedAt());
-				System.out.println("----------");
-			}),
 			() -> assertThat(postsByMember).hasSize(1),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
 				.containsExactly(
@@ -354,6 +348,49 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerContent)
 				.containsExactly(
 					answer2.getContent()
+				)
+		);
+	}
+
+	@DisplayName("회원의 스크랩 질문 목록을 조회힌다.")
+	@Test
+	void getBookmarksByMember() {
+		// given
+		Member member1 = MemberFixture.member();
+		Member member2 = MemberFixture.member2();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(member1, "첫 번째 게시글입니다.");
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2, "두 번째 게시글입니다.");
+		QuestionPost questionPost3 = QuestionPostFixture.questionPost(member2, "세 번째 게시글입니다.");
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		Interaction interaction1 = InteractionFixture.interaction2(InteractionType.SAVED, member1.getId(),
+			questionPost1.getId());
+		Interaction interaction2 = InteractionFixture.interaction2(InteractionType.SAVED, member1.getId(),
+			questionPost2.getId());
+		Interaction interaction3 = InteractionFixture.interaction2(InteractionType.RECOMMEND, member1.getId(),
+			questionPost2.getId());
+		Interaction interaction4 = InteractionFixture.interaction2(InteractionType.RECOMMEND, member1.getId(),
+			questionPost3.getId());
+		interactionRepository.saveAll(List.of(interaction1, interaction2, interaction3, interaction4));
+
+		// when
+		Slice<BookmarksByMemberResponse> bookmarksByMember = memberRepository.getBookmarksByMember(member1,
+			pageRequest);
+
+		// then
+		Assertions.assertAll(
+			() -> assertThat(bookmarksByMember).hasSize(2),
+			() -> assertThat(bookmarksByMember).extracting(BookmarksByMemberResponse::questionPostId)
+				.containsExactly(
+					questionPost2.getId(),
+					questionPost1.getId()
+				),
+			() -> assertThat(bookmarksByMember).extracting(BookmarksByMemberResponse::title)
+				.containsExactly(
+					questionPost2.getTitle(),
+					questionPost1.getTitle()
 				)
 		);
 	}

@@ -18,15 +18,18 @@ import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
+import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -44,6 +47,9 @@ class MemberControllerTest extends ApiTestSupport {
 
 	@Autowired
 	InteractionCountRepository interactionCountRepository;
+
+	@Autowired
+	InteractionRepository interactionRepository;
 
 	@AfterEach
 	void tearDown() {
@@ -162,5 +168,38 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].answerId").value(answer2.getId()))
 			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost2.getId()))
 			.andExpect(jsonPath("$.content[1].answerId").value(answer1.getId()));
+	}
+
+	@DisplayName("로그인 된 회원의 스크랩 질문을 전체 조회한다.")
+	@Test
+	void getBookmarksByMember() throws Exception {
+		// given
+		Member member = MemberFixture.member2();
+		Member savedMember = memberRepository.save(member);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(loginMember, "첫 번째 게시글입니다.");
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(savedMember, "두 번째 게시글입니다.");
+		QuestionPost questionPost3 = QuestionPostFixture.questionPost(loginMember, "세 번째 게시글입니다.");
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		Interaction interaction1 = InteractionFixture.interaction2(InteractionType.SAVED, loginMember.getId(),
+			questionPost1.getId());
+		Interaction interaction3 = InteractionFixture.interaction2(InteractionType.RECOMMEND, loginMember.getId(),
+			questionPost2.getId());
+		Interaction interaction2 = InteractionFixture.interaction2(InteractionType.SAVED, loginMember.getId(),
+			questionPost3.getId());
+		Interaction interaction4 = InteractionFixture.interaction2(InteractionType.RECOMMEND, loginMember.getId(),
+			questionPost3.getId());
+		interactionRepository.saveAll(List.of(interaction1, interaction2, interaction3, interaction4));
+
+		// when  // then
+		mockMvc.perform(get("/api/members/post-interaction/bookmarks")
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()))
+			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost1.getId()));
 	}
 }
