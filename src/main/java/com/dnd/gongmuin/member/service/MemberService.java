@@ -226,7 +226,7 @@ public class MemberService {
 		try {
 			Slice<BookmarksByMemberResponse> responsePage =
 				memberRepository.getBookmarksByMember(member, pageable);
-			
+
 			return PageMapper.toPageResponse(responsePage);
 		} catch (Exception e) {
 			throw new NotFoundException(MemberErrorCode.BOOKMARK_QUESTION_POSTS_BY_MEMBER_FAILED);
