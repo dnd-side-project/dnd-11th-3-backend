@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.post_interaction.domain;
 
+import java.util.Objects;
+
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.post_interaction.exception.InteractionErrorCode;
@@ -11,7 +13,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
