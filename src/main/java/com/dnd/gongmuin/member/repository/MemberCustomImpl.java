@@ -9,10 +9,13 @@ import org.springframework.data.domain.SliceImpl;
 import com.dnd.gongmuin.answer.domain.QAnswer;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.QBookmarksByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
+import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.querydsl.jpa.JPAExpressions;
@@ -91,6 +94,34 @@ public class MemberCustomImpl implements MemberCustom {
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
+	@Override
+	public Slice<BookmarksByMemberResponse> getBookmarksByMember(Member member, Pageable pageable) {
+		QQuestionPost qp = QQuestionPost.questionPost;
+		QInteraction ir = QInteraction.interaction;
+		QInteractionCount saved = new QInteractionCount("SAVED");
+		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
+
+		List<BookmarksByMemberResponse> content = queryFactory
+			.select(new QBookmarksByMemberResponse(qp, saved, recommend))
+			.from(qp)
+			.join(ir)
+			.on(qp.id.eq(ir.questionPostId).and(ir.type.eq(InteractionType.SAVED)))
+			.leftJoin(saved)
+			.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
+			.leftJoin(recommend)
+			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
+			.where(ir.memberId.eq(member.getId()))
+			.orderBy(qp.updatedAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize() + 1L)
+			.fetch();
+
+		boolean hasNext = hasNext(pageable.getPageSize(), content);
+
+		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	// .on(qp.id.eq(ir.questionPostId).and(ir.type.eq(InteractionType.SAVED)))
 	private <T> boolean hasNext(int pageSize, List<T> content) {
 		if (content.size() <= pageSize) {
 			return false;
