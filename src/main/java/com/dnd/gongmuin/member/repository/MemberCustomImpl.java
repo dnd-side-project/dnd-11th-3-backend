@@ -12,7 +12,7 @@ import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberRespons
 import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
-import com.dnd.gongmuin.post_interaction.domain.QPostInteractionCount;
+import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -26,7 +26,7 @@ public class MemberCustomImpl implements MemberCustom {
 	@Override
 	public Slice<QuestionPostsByMemberResponse> getQuestionPostsByMember(Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
-		QPostInteractionCount ic = QPostInteractionCount.postInteractionCount;
+		QInteractionCount ic = QInteractionCount.interactionCount;
 
 		List<QuestionPostsByMemberResponse> content = queryFactory
 			.select(new QQuestionPostsByMemberResponse(qp, ic))
@@ -48,7 +48,7 @@ public class MemberCustomImpl implements MemberCustom {
 	public Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(
 		Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
-		QPostInteractionCount ic = QPostInteractionCount.postInteractionCount;
+		QInteractionCount ic = QInteractionCount.interactionCount;
 		QAnswer aw = QAnswer.answer;
 
 		List<AnsweredQuestionPostsByMemberResponse> content = queryFactory
