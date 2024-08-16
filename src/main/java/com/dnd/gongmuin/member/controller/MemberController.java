@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.member.controller;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +35,7 @@ public class MemberController {
 	@GetMapping("/profile")
 	public ResponseEntity<MemberProfileResponse> getMemberProfile(@AuthenticationPrincipal Member member) {
 		MemberProfileResponse response = memberService.getMemberProfile(member);
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -41,6 +46,31 @@ public class MemberController {
 		@RequestBody UpdateMemberProfileRequest request,
 		@AuthenticationPrincipal Member member) {
 		MemberProfileResponse response = memberService.updateMemberProfile(request, member);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "작성한 질문 전체 조회 API", description = "작성한 질문을 전체 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/question-posts")
+	public ResponseEntity<PageResponse<QuestionPostsByMemberResponse>> getQuestionPostsByMember(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable) {
+		PageResponse<QuestionPostsByMemberResponse> response =
+			memberService.getQuestionPostsByMember(member, pageable);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "댓글 단 질문 전체 조회 API", description = "댓글 단 질문을 전체 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/answer-posts")
+	public ResponseEntity<PageResponse<AnsweredQuestionPostsByMemberResponse>> getAnsweredQuestionPostsByMember(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable) {
+		PageResponse<AnsweredQuestionPostsByMemberResponse> response =
+			memberService.getAnsweredQuestionPostsByMember(member, pageable);
+
 		return ResponseEntity.ok(response);
 	}
 
