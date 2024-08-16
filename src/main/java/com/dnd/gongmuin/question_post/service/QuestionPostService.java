@@ -45,7 +45,7 @@ public class QuestionPostService {
 			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
 		}
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
-		return QuestionPostMapper.toRegisterQuestionPostResponse(
+		return QuestionPostMapper.toQuestionPostDetailResponse(
 			questionPostRepository.save(questionPost)
 		);
 	}
@@ -54,10 +54,10 @@ public class QuestionPostService {
 	public QuestionPostDetailResponse getQuestionPostById(Long questionPostId) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-		return QuestionPostMapper.toRegisterQuestionPostResponse(
+		return QuestionPostMapper.toQuestionPostDetailResponse(
 			questionPost,
-			getCountByType(questionPostId, InteractionType.RECOMMEND),
-			getCountByType(questionPostId, InteractionType.SAVED)
+			getTotalCountByType(questionPostId, InteractionType.RECOMMEND),
+			getTotalCountByType(questionPostId, InteractionType.SAVED)
 		);
 	}
 
@@ -72,7 +72,7 @@ public class QuestionPostService {
 		return PageMapper.toPageResponse(responsePage);
 	}
 
-	private int getCountByType(Long questionPostId, InteractionType type) {
+	private int getTotalCountByType(Long questionPostId, InteractionType type) {
 		return interactionCountRepository
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.map(InteractionCount::getTotalCount)

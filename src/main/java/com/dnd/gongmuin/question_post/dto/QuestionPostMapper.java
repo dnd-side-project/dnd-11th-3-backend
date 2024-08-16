@@ -26,7 +26,7 @@ public class QuestionPostMapper {
 		return QuestionPost.of(request.title(), request.content(), request.reward(), jobGroup, images, member);
 	}
 
-	public static QuestionPostDetailResponse toRegisterQuestionPostResponse(
+	public static QuestionPostDetailResponse toQuestionPostDetailResponse(
 		QuestionPost questionPost,
 		int recommendCount,
 		int savedCount
@@ -51,7 +51,7 @@ public class QuestionPostMapper {
 		);
 	}
 
-	public static RegisterQuestionPostResponse toRegisterQuestionPostResponse(
+	public static RegisterQuestionPostResponse toQuestionPostDetailResponse(
 		QuestionPost questionPost
 	) {
 		Member member = questionPost.getMember();
