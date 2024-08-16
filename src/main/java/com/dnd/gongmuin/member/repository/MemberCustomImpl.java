@@ -12,6 +12,7 @@ import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberRespons
 import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,13 +27,16 @@ public class MemberCustomImpl implements MemberCustom {
 	@Override
 	public Slice<QuestionPostsByMemberResponse> getQuestionPostsByMember(Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
-		QInteractionCount ic = QInteractionCount.interactionCount;
+		QInteractionCount saved = new QInteractionCount("SAVED");
+		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 
 		List<QuestionPostsByMemberResponse> content = queryFactory
-			.select(new QQuestionPostsByMemberResponse(qp, ic))
+			.select(new QQuestionPostsByMemberResponse(qp, saved, recommend))
 			.from(qp)
-			.leftJoin(ic)
-			.on(qp.id.eq(ic.questionPostId))
+			.leftJoin(saved)
+			.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
+			.leftJoin(recommend)
+			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(qp.member.eq(member))
 			.orderBy(qp.id.desc())
 			.offset(pageable.getOffset())
@@ -48,16 +52,19 @@ public class MemberCustomImpl implements MemberCustom {
 	public Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(
 		Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
-		QInteractionCount ic = QInteractionCount.interactionCount;
+		QInteractionCount saved = new QInteractionCount("SAVED");
+		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 		QAnswer aw = QAnswer.answer;
 
 		List<AnsweredQuestionPostsByMemberResponse> content = queryFactory
-			.select(new QAnsweredQuestionPostsByMemberResponse(qp, ic, aw))
+			.select(new QAnsweredQuestionPostsByMemberResponse(qp, saved, recommend, aw))
 			.from(qp)
 			.join(aw)
 			.on(qp.id.eq(aw.questionPostId))
-			.leftJoin(ic)
-			.on(qp.id.eq(ic.questionPostId))
+			.leftJoin(saved)
+			.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
+			.leftJoin(recommend)
+			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(aw.member.eq(member))
 			.orderBy(qp.id.desc())
 			.offset(pageable.getOffset())
