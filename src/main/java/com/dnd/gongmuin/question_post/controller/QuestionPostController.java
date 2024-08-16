@@ -17,6 +17,7 @@ import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,11 +37,11 @@ public class QuestionPostController {
 	@Operation(summary = "질문글 등록 API", description = "질문글을 등록한다")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping
-	public ResponseEntity<QuestionPostDetailResponse> registerQuestionPost(
+	public ResponseEntity<RegisterQuestionPostResponse> registerQuestionPost(
 		@Valid @RequestBody RegisterQuestionPostRequest request,
 		@AuthenticationPrincipal Member member
 	) {
-		QuestionPostDetailResponse response = questionPostService.registerQuestionPost(request, member);
+		RegisterQuestionPostResponse response = questionPostService.registerQuestionPost(request, member);
 		return ResponseEntity.ok(response);
 	}
 

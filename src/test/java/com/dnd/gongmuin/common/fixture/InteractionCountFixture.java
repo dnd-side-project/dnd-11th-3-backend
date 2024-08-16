@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractionCountFixture {
 
-	public static InteractionCount postInteractionCount(
+	public static InteractionCount interactionCount(
 		InteractionType type,
 		Long questionPostId
 	) {
