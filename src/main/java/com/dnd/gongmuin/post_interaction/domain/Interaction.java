@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,17 +50,10 @@ public class Interaction extends TimeBaseEntity {
 		return new Interaction(type, memberId, questionPostId);
 	}
 
-	public void updateIsInteractedTrue() {
-		if (Boolean.TRUE.equals(isInteracted)) {
+	public void updateIsInteracted(boolean updateStatus) {
+		if (Objects.equals(isInteracted, updateStatus)) {
 			throw new ValidationException(InteractionErrorCode.ALREADY_INTERACTED);
 		}
-		isInteracted = true;
-	}
-
-	public void updateIsInteractedFalse() {
-		if (Boolean.FALSE.equals(isInteracted)) {
-			throw new ValidationException(InteractionErrorCode.ALREADY_UNINTERACTED);
-		}
-		isInteracted = false;
+		isInteracted = updateStatus;
 	}
 }
