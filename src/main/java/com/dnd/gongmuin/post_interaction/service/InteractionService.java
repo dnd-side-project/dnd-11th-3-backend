@@ -33,16 +33,16 @@ public class InteractionService {
 		Long memberId,
 		InteractionType type // 북마크, 추천
 	) {
-		int totalCount;
+		int count;
 		if (!interactionRepository.existsByQuestionPostIdAndMemberIdAndType // 상호 작용 존재x -> 저장
 			(questionPostId, memberId, type)
 		) {
-			totalCount = createInteraction(questionPostId, memberId, type);
+			count = createInteraction(questionPostId, memberId, type);
 		} else { // 존재 -> 값 업데이트
-			totalCount = updateInteractionAndCount(questionPostId, memberId, type, true);
+			count = updateInteractionAndCount(questionPostId, memberId, type, true);
 		}
 		return InteractionMapper.toPostInteractionResponse(
-			totalCount, type
+			count, type
 		);
 	}
 
@@ -52,9 +52,9 @@ public class InteractionService {
 		Long memberId,
 		InteractionType type
 	) {
-		int totalCount = updateInteractionAndCount(questionPostId, memberId, type, false);
+		int count = updateInteractionAndCount(questionPostId, memberId, type, false);
 		return InteractionMapper.toPostInteractionResponse(
-			totalCount, type
+			count, type
 		);
 	}
 
@@ -73,7 +73,7 @@ public class InteractionService {
 				() -> interactionCountRepository
 					.save(InteractionMapper.toPostInteractionCount(questionPostId, type)) // 생성 시 count 1로 초기화
 			)
-			.getTotalCount();
+			.getCount();
 	}
 
 	private void validateIfPostExistsAndNotQuestioner(
@@ -93,18 +93,18 @@ public class InteractionService {
 		InteractionType type,
 		boolean isActivate
 	) {
-		int totalCount;
+		int count;
 		Interaction interaction = getPostInteraction(questionPostId, memberId, type);
 		InteractionCount interactionCount = getPostInteractionCount(questionPostId, type);
 
 		if (isActivate) { //활성화
 			interaction.updateIsInteractedTrue();
-			totalCount = interactionCount.increaseTotalCount();
+			count = interactionCount.increaseCount();
 		} else { // 비활성화
 			interaction.updateIsInteractedFalse();
-			totalCount = interactionCount.decreaseTotalCount();
+			count = interactionCount.decreaseCount();
 		}
-		return totalCount;
+		return count;
 	}
 
 	private Interaction getPostInteraction(Long questionPostId, Long memberId, InteractionType type) {

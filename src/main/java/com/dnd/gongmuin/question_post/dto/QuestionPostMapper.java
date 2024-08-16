@@ -10,6 +10,7 @@ import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,36 @@ public class QuestionPostMapper {
 		return QuestionPost.of(request.title(), request.content(), request.reward(), jobGroup, images, member);
 	}
 
-	public static QuestionPostDetailResponse toQuestionPostDetailResponse(QuestionPost questionPost) {
+	public static QuestionPostDetailResponse toQuestionPostDetailResponse(
+		QuestionPost questionPost,
+		int recommendCount,
+		int savedCount
+	) {
 		Member member = questionPost.getMember();
 		return new QuestionPostDetailResponse(
+			questionPost.getId(),
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			questionPost.getImages().stream()
+				.map(QuestionPostImage::getImageUrl).toList(),
+			questionPost.getReward(),
+			questionPost.getJobGroup().getLabel(),
+			new MemberInfo(
+				member.getId(),
+				member.getNickname(),
+				member.getJobGroup().getLabel()
+			),
+			recommendCount,
+			savedCount,
+			questionPost.getCreatedAt().toString()
+		);
+	}
+
+	public static RegisterQuestionPostResponse toQuestionPostDetailResponse(
+		QuestionPost questionPost
+	) {
+		Member member = questionPost.getMember();
+		return new RegisterQuestionPostResponse(
 			questionPost.getId(),
 			questionPost.getTitle(),
 			questionPost.getContent(),

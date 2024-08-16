@@ -100,7 +100,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup().getLabel()))
 			.andExpect(jsonPath("$.memberInfo.memberId").value(questionPost.getMember().getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(questionPost.getMember().getNickname()))
-			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup().getLabel())
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.recommendCount").value(0))
+			.andExpect(jsonPath("$.savedCount").value(0)
 			);
 	}
 

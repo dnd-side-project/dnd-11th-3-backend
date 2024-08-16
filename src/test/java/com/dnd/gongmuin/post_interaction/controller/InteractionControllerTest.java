@@ -63,10 +63,10 @@ class InteractionControllerTest extends ApiTestSupport {
 		QuestionPost questionPost = questionPostRepository.save(
 			QuestionPostFixture.questionPost(questioner)
 		);
-		interactionRepository.save(InteractionFixture.postInteraction(InteractionType.RECOMMEND,
+		interactionRepository.save(InteractionFixture.interaction(InteractionType.RECOMMEND,
 			loginMember.getId(), questionPost.getId()));
 		interactionCountRepository.save(
-			InteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
+			InteractionCountFixture.interactionCount(InteractionType.RECOMMEND, questionPost.getId())
 		);
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
@@ -84,10 +84,10 @@ class InteractionControllerTest extends ApiTestSupport {
 		QuestionPost questionPost = questionPostRepository.save(
 			QuestionPostFixture.questionPost(questioner)
 		);
-		interactionRepository.save(InteractionFixture.postInteraction(InteractionType.RECOMMEND,
+		interactionRepository.save(InteractionFixture.interaction(InteractionType.RECOMMEND,
 			loginMember.getId(), questionPost.getId()));
 		interactionCountRepository.save(
-			InteractionCountFixture.postInteractionCount(InteractionType.RECOMMEND, questionPost.getId())
+			InteractionCountFixture.interactionCount(InteractionType.RECOMMEND, questionPost.getId())
 		);
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
