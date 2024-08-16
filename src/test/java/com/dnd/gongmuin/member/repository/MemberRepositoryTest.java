@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,13 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	AnswerRepository answerRepository;
+
+	@AfterEach
+	void tearDown() {
+		answerRepository.deleteAll();
+		questionPostRepository.deleteAll();
+		memberRepository.deleteAll();
+	}
 
 	@DisplayName("소셜이메일로 특정 회원을 조회한다.")
 	@Test
@@ -79,8 +87,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::questionPostId)
 				.containsExactly(
-					2L,
-					1L
+					questionPost2.getId(),
+					questionPost1.getId()
 				)
 		);
 	}
@@ -118,13 +126,13 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::questionPostId)
 				.containsExactly(
-					3L,
-					1L
+					questionPost3.getId(),
+					questionPost1.getId()
 				),
 			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
 				.containsExactly(
-					4L,
-					1L
+					answer4.getId(),
+					answer1.getId()
 				)
 		);
 	}
