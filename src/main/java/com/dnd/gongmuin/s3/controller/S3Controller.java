@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.s3.dto.ImagesUploadRequest;
@@ -23,14 +22,13 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "S3 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/files")
 public class S3Controller {
 
 	private final S3Service s3Service;
 
 	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/images")
+	@PostMapping("/api/files/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
 		@ModelAttribute @Valid ImagesUploadRequest request
 	) {
@@ -40,7 +38,7 @@ public class S3Controller {
 
 	@Operation(summary = "동영상 등록 API", description = "최대 45MB의 동영상을 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/videos")
+	@PostMapping("/api/files/videos")
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
 		@ModelAttribute @Valid VideoUploadRequest request
 	) {

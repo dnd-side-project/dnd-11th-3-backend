@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +16,11 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/question-posts")
 public class InteractionController {
 
 	private final InteractionService interactionService;
 
-	@PostMapping("/{questionPostId}/activated")
+	@PostMapping("/api/question-posts/{questionPostId}/activated")
 	public ResponseEntity<InteractionResponse> activateInteraction(
 		@PathVariable Long questionPostId,
 		@RequestParam String type,
@@ -36,7 +34,7 @@ public class InteractionController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/{questionPostId}/inactivated")
+	@PostMapping("/api/question-posts/{questionPostId}/inactivated")
 	public ResponseEntity<InteractionResponse> inactivateInteraction(
 		@PathVariable("questionPostId") Long questionPostId,
 		@RequestParam("type") String type,
