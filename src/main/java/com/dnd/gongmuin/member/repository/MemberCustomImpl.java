@@ -41,7 +41,7 @@ public class MemberCustomImpl implements MemberCustom {
 			.where(qp.member.eq(member))
 			.orderBy(qp.id.desc())
 			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
@@ -83,7 +83,7 @@ public class MemberCustomImpl implements MemberCustom {
 				.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
 				.orderBy(qp.id.desc())
 				.offset(pageable.getOffset())
-				.limit(pageable.getPageSize() + 1)
+				.limit(pageable.getPageSize() + 1L)
 				.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
