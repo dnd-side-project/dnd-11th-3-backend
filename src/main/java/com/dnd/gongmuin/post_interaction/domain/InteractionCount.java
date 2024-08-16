@@ -26,15 +26,15 @@ public class InteractionCount extends TimeBaseEntity {
 	@Column(name = "question_post_id")
 	private Long questionPostId;
 
-	@Column(name = "total_count", nullable = false)
-	private int totalCount;
+	@Column(name = "count", nullable = false)
+	private int count;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type")
 	private InteractionType type;
 
 	private InteractionCount(InteractionType type, Long questionPostId) {
-		this.totalCount = 1;
+		this.count = 1;
 		this.type = type;
 		this.questionPostId = questionPostId;
 	}
@@ -43,11 +43,11 @@ public class InteractionCount extends TimeBaseEntity {
 		return new InteractionCount(type, questionPostId);
 	}
 
-	public int increaseTotalCount() {
-		return ++totalCount;
+	public int increaseCount() {
+		return ++count;
 	}
 
-	public int decreaseTotalCount() {
-		return --totalCount;
+	public int decreaseCount() {
+		return --count;
 	}
 }

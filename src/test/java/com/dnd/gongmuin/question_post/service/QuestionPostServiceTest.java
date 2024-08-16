@@ -135,9 +135,9 @@ class QuestionPostServiceTest {
 			() -> assertThat(response.questionPostId())
 				.isEqualTo(questionPost.getId()),
 			() -> assertThat(response.recommendCount())
-				.isEqualTo(recommendCount.getTotalCount()).isEqualTo(1),
+				.isEqualTo(recommendCount.getCount()).isEqualTo(1),
 			() -> assertThat(response.savedCount())
-				.isEqualTo(savedCount.getTotalCount()).isEqualTo(1)
+				.isEqualTo(savedCount.getCount()).isEqualTo(1)
 		);
 	}
 }

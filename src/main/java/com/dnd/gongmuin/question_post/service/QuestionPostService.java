@@ -56,8 +56,8 @@ public class QuestionPostService {
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		return QuestionPostMapper.toQuestionPostDetailResponse(
 			questionPost,
-			getTotalCountByType(questionPostId, InteractionType.RECOMMEND),
-			getTotalCountByType(questionPostId, InteractionType.SAVED)
+			getCountByType(questionPostId, InteractionType.RECOMMEND),
+			getCountByType(questionPostId, InteractionType.SAVED)
 		);
 	}
 
@@ -72,10 +72,10 @@ public class QuestionPostService {
 		return PageMapper.toPageResponse(responsePage);
 	}
 
-	private int getTotalCountByType(Long questionPostId, InteractionType type) {
+	private int getCountByType(Long questionPostId, InteractionType type) {
 		return interactionCountRepository
 			.findByQuestionPostIdAndType(questionPostId, type)
-			.map(InteractionCount::getTotalCount)
+			.map(InteractionCount::getCount)
 			.orElse(0);
 	}
 }
