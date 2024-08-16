@@ -15,6 +15,7 @@ import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -54,22 +55,36 @@ public class MemberCustomImpl implements MemberCustom {
 		QQuestionPost qp = QQuestionPost.questionPost;
 		QInteractionCount saved = new QInteractionCount("SAVED");
 		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
-		QAnswer aw = QAnswer.answer;
+		QAnswer aw1 = new QAnswer("answer1");
+		QAnswer aw2 = new QAnswer("answer2");
 
-		List<AnsweredQuestionPostsByMemberResponse> content = queryFactory
-			.select(new QAnsweredQuestionPostsByMemberResponse(qp, saved, recommend, aw))
-			.from(qp)
-			.join(aw)
-			.on(qp.id.eq(aw.questionPostId))
-			.leftJoin(saved)
-			.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
-			.leftJoin(recommend)
-			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
-			.where(aw.member.eq(member))
-			.orderBy(qp.id.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
+		List<AnsweredQuestionPostsByMemberResponse> content =
+			queryFactory
+				.select(new QAnsweredQuestionPostsByMemberResponse(qp, saved, recommend, aw1))
+				.from(qp)
+				.join(aw1)
+				.on(aw1.id.eq(
+					JPAExpressions
+						.select(aw2.id)
+						.from(aw2)
+						.where(aw2.questionPostId.eq(qp.id)
+							.and(aw2.member.eq(member))
+							.and(aw2.updatedAt.eq(
+								JPAExpressions
+									.select(aw2.updatedAt.max())
+									.from(aw2)
+									.where(aw2.questionPostId.eq(qp.id)
+										.and(aw2.member.eq(member)))
+							)))
+				))
+				.leftJoin(saved)
+				.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
+				.leftJoin(recommend)
+				.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
+				.orderBy(qp.id.desc())
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize() + 1)
+				.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
 
