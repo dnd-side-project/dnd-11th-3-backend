@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.question_post.dto.response;
 
-import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -19,8 +18,8 @@ public record QuestionPostSimpleResponse(
 	@QueryProjection
 	public QuestionPostSimpleResponse(
 		QuestionPost questionPost,
-		InteractionCount savedCount,
-		InteractionCount recommendCount
+		int savedCount,
+		int recommendCount
 	) {
 		this(
 			questionPost.getId(),
@@ -30,12 +29,8 @@ public record QuestionPostSimpleResponse(
 			questionPost.getReward(),
 			questionPost.getCreatedAt().toString(),
 			questionPost.getIsChosen(),
-			getCount(savedCount),
-			getCount(recommendCount)
+			savedCount,
+			recommendCount
 		);
-	}
-
-	private static int getCount(InteractionCount interactionCount) {
-		return interactionCount != null ? interactionCount.getCount() : 0;
 	}
 }
