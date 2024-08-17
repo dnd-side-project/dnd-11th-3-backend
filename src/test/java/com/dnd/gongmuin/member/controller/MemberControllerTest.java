@@ -158,7 +158,7 @@ class MemberControllerTest extends ApiTestSupport {
 		answerRepository.save(answer2);
 
 		// when  // then
-		mockMvc.perform(get("/api/members/answer-posts")
+		mockMvc.perform(get("/api/members/question-posts/answers")
 				.header(AUTHORIZATION, accessToken)
 			)
 			.andExpect(status().isOk())
@@ -193,7 +193,7 @@ class MemberControllerTest extends ApiTestSupport {
 		interactionRepository.saveAll(List.of(interaction1, interaction2, interaction3, interaction4));
 
 		// when  // then
-		mockMvc.perform(get("/api/members/post-interaction/bookmarks")
+		mockMvc.perform(get("/api/members/question-posts/bookmarks")
 				.header(AUTHORIZATION, accessToken)
 			)
 			.andExpect(status().isOk())
