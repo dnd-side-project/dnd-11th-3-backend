@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class InteractionFixture {
 
 	public static Interaction interaction(
+		Long id,
 		InteractionType type,
 		Long memberId,
 		Long questionPostId
@@ -21,7 +22,19 @@ public class InteractionFixture {
 			memberId,
 			questionPostId
 		);
-		ReflectionTestUtils.setField(interaction, "id", 1L);
+		ReflectionTestUtils.setField(interaction, "id",id);
 		return interaction;
+	}
+
+	public static Interaction interaction(
+		InteractionType type,
+		Long memberId,
+		Long questionPostId
+	) {
+		return Interaction.of(
+			type,
+			memberId,
+			questionPostId
+		);
 	}
 }
