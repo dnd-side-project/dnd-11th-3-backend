@@ -35,7 +35,11 @@ public class MemberCustomImpl implements MemberCustom {
 		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 
 		List<QuestionPostsByMemberResponse> content = queryFactory
-			.select(new QQuestionPostsByMemberResponse(qp, saved, recommend))
+			.select(new QQuestionPostsByMemberResponse(
+				qp,
+				saved.count.coalesce(0).as("savedTotalCount"),
+				recommend.count.coalesce(0).as("recommendTotalCount")
+			))
 			.from(qp)
 			.leftJoin(saved)
 			.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
@@ -63,7 +67,12 @@ public class MemberCustomImpl implements MemberCustom {
 
 		List<AnsweredQuestionPostsByMemberResponse> content =
 			queryFactory
-				.select(new QAnsweredQuestionPostsByMemberResponse(qp, saved, recommend, aw1))
+				.select(new QAnsweredQuestionPostsByMemberResponse(
+					qp,
+					saved.count.coalesce(0).as("savedTotalCount"),
+					recommend.count.coalesce(0).as("recommendTotalCount"),
+					aw1
+				))
 				.from(qp)
 				.join(aw1)
 				.on(aw1.id.eq(
@@ -102,7 +111,11 @@ public class MemberCustomImpl implements MemberCustom {
 		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 
 		List<BookmarksByMemberResponse> content = queryFactory
-			.select(new QBookmarksByMemberResponse(qp, saved, recommend))
+			.select(new QBookmarksByMemberResponse(
+				qp,
+				saved.count.coalesce(0).as("savedTotalCount"),
+				recommend.count.coalesce(0).as("recommendTotalCount")
+			))
 			.from(qp)
 			.join(ir)
 			.on(qp.id.eq(ir.questionPostId).and(ir.type.eq(InteractionType.SAVED)))

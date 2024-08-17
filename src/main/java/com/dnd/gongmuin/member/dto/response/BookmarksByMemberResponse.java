@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.member.dto.response;
 
-import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -18,8 +17,8 @@ public record BookmarksByMemberResponse(
 	@QueryProjection
 	public BookmarksByMemberResponse(
 		QuestionPost questionPost,
-		InteractionCount savedCount,
-		InteractionCount recommendCount
+		int savedTotalCount,
+		int recommendTotalCount
 	) {
 		this(
 			questionPost.getId(),
@@ -29,12 +28,8 @@ public record BookmarksByMemberResponse(
 			questionPost.getReward(),
 			questionPost.getUpdatedAt().toString(),
 			questionPost.getIsChosen(),
-			extractTotalCount(savedCount),
-			extractTotalCount(recommendCount)
+			savedTotalCount,
+			recommendTotalCount
 		);
-	}
-
-	private static int extractTotalCount(InteractionCount interactionCount) {
-		return interactionCount != null ? interactionCount.getCount() : 0;
 	}
 }
