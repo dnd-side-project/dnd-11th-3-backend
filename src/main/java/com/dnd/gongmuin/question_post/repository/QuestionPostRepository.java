@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
-public interface QuestionPostRepository extends JpaRepository<QuestionPost, Long> {
+public interface QuestionPostRepository extends JpaRepository<QuestionPost, Long>, QuestionPostQueryRepository {
 	boolean existsById(Long id);
 }

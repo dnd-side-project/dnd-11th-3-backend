@@ -21,7 +21,7 @@ import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 
 @DisplayName("[질문글 동적 쿼리 테스트]")
-class QuestionPostQueryRepositoryImplTest extends DataJpaTestSupport {
+class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 10);
 	private Member member;
@@ -31,9 +31,6 @@ class QuestionPostQueryRepositoryImplTest extends DataJpaTestSupport {
 
 	@Autowired
 	private QuestionPostRepository questionPostRepository;
-
-	@Autowired
-	private QuestionPostQueryRepository questionPostQueryRepository;
 
 	@BeforeEach
 	void setup() {
@@ -56,7 +53,7 @@ class QuestionPostQueryRepositoryImplTest extends DataJpaTestSupport {
 		);
 
 		//when
-		List<QuestionPost> questionPosts = questionPostQueryRepository
+		List<QuestionPost> questionPosts = questionPostRepository
 			.searchQuestionPosts(condition, pageRequest)
 			.getContent();
 
@@ -84,7 +81,7 @@ class QuestionPostQueryRepositoryImplTest extends DataJpaTestSupport {
 		);
 
 		//when
-		List<QuestionPost> questionPosts = questionPostQueryRepository
+		List<QuestionPost> questionPosts = questionPostRepository
 			.searchQuestionPosts(condition, pageRequest)
 			.getContent();
 
@@ -112,7 +109,7 @@ class QuestionPostQueryRepositoryImplTest extends DataJpaTestSupport {
 		);
 
 		//when
-		List<QuestionPost> questionPosts = questionPostQueryRepository
+		List<QuestionPost> questionPosts = questionPostRepository
 			.searchQuestionPosts(condition, pageRequest)
 			.getContent();
 
