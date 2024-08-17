@@ -169,7 +169,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	private void interactPost(Long questionPostId, InteractionType type){
+	private void interactPost(Long questionPostId, InteractionType type) {
 		Interaction interaction =
 			InteractionFixture.interaction(type, 2L, questionPostId);
 		interactionRepository.save(interaction);

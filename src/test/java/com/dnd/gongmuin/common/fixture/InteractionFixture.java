@@ -22,7 +22,7 @@ public class InteractionFixture {
 			memberId,
 			questionPostId
 		);
-		ReflectionTestUtils.setField(interaction, "id",id);
+		ReflectionTestUtils.setField(interaction, "id", id);
 		return interaction;
 	}
 
