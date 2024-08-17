@@ -44,8 +44,8 @@ public class QuestionPostMapper {
 				member.getNickname(),
 				member.getJobGroup().getLabel()
 			),
-			recommendCount,
 			savedCount,
+			recommendCount,
 			questionPost.getCreatedAt().toString()
 		);
 	}
