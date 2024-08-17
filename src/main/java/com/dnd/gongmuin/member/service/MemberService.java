@@ -217,7 +217,7 @@ public class MemberService {
 
 			return PageMapper.toPageResponse(responsePage);
 		} catch (Exception e) {
-			throw new NotFoundException(MemberErrorCode.ANSWERED_QUESTION_POSTS_BY_MEMBER_FAILED);
+			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
 	}
 
@@ -229,7 +229,7 @@ public class MemberService {
 
 			return PageMapper.toPageResponse(responsePage);
 		} catch (Exception e) {
-			throw new NotFoundException(MemberErrorCode.BOOKMARK_QUESTION_POSTS_BY_MEMBER_FAILED);
+			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
 	}
 }
