@@ -42,7 +42,7 @@ public class MemberCustomImpl implements MemberCustom {
 			.leftJoin(recommend)
 			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(qp.member.eq(member))
-			.orderBy(qp.updatedAt.desc())
+			.orderBy(qp.createdAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1L)
 			.fetch();
@@ -84,7 +84,7 @@ public class MemberCustomImpl implements MemberCustom {
 				.on(qp.id.eq(saved.questionPostId).and(saved.type.eq(InteractionType.SAVED)))
 				.leftJoin(recommend)
 				.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
-				.orderBy(qp.updatedAt.desc())
+				.orderBy(qp.createdAt.desc())
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize() + 1L)
 				.fetch();
@@ -111,7 +111,7 @@ public class MemberCustomImpl implements MemberCustom {
 			.leftJoin(recommend)
 			.on(qp.id.eq(recommend.questionPostId).and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(ir.memberId.eq(member.getId()))
-			.orderBy(qp.updatedAt.desc())
+			.orderBy(qp.createdAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1L)
 			.fetch();
