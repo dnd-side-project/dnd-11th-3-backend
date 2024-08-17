@@ -22,7 +22,7 @@ public class InteractionController {
 
 	@PostMapping("/api/question-posts/{questionPostId}/activated")
 	public ResponseEntity<InteractionResponse> activateInteraction(
-		@PathVariable Long questionPostId,
+		@PathVariable("questionPostId") Long questionPostId,
 		@RequestParam String type,
 		@AuthenticationPrincipal Member member
 	) {
