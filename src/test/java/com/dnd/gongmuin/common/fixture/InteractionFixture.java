@@ -24,4 +24,17 @@ public class InteractionFixture {
 		ReflectionTestUtils.setField(interaction, "id", 1L);
 		return interaction;
 	}
+
+	public static Interaction interaction2(
+		InteractionType type,
+		Long memberId,
+		Long questionPostId
+	) {
+		Interaction interaction = Interaction.of(
+			type,
+			memberId,
+			questionPostId
+		);
+		return interaction;
+	}
 }
