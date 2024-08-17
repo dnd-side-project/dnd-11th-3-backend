@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.post_interaction.domain;
 
+import java.util.Objects;
+
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.post_interaction.exception.InteractionErrorCode;
@@ -49,17 +51,10 @@ public class Interaction extends TimeBaseEntity {
 		return new Interaction(type, memberId, questionPostId);
 	}
 
-	public void updateIsInteractedTrue() {
-		if (Boolean.TRUE.equals(isInteracted)) {
+	public void updateIsInteracted(boolean updateStatus) {
+		if (Objects.equals(isInteracted, updateStatus)) {
 			throw new ValidationException(InteractionErrorCode.ALREADY_INTERACTED);
 		}
-		isInteracted = true;
-	}
-
-	public void updateIsInteractedFalse() {
-		if (Boolean.FALSE.equals(isInteracted)) {
-			throw new ValidationException(InteractionErrorCode.ALREADY_UNINTERACTED);
-		}
-		isInteracted = false;
+		isInteracted = updateStatus;
 	}
 }

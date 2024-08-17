@@ -83,7 +83,7 @@ public class InteractionService {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		if (questionPost.isQuestioner(memberId)) {
-			throw new ValidationException(InteractionErrorCode.ALREADY_UNINTERACTED);
+			throw new ValidationException(InteractionErrorCode.INTERACTION_NOT_ALLOWED);
 		}
 	}
 
@@ -98,10 +98,10 @@ public class InteractionService {
 		InteractionCount interactionCount = getPostInteractionCount(questionPostId, type);
 
 		if (isActivate) { //활성화
-			interaction.updateIsInteractedTrue();
+			interaction.updateIsInteracted(true);
 			count = interactionCount.increaseCount();
 		} else { // 비활성화
-			interaction.updateIsInteractedFalse();
+			interaction.updateIsInteracted(false);
 			count = interactionCount.decreaseCount();
 		}
 		return count;

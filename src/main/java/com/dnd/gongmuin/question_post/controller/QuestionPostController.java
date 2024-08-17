@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.common.dto.PageResponse;
@@ -29,14 +28,13 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "질문글 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/question-posts")
 public class QuestionPostController {
 
 	private final QuestionPostService questionPostService;
 
 	@Operation(summary = "질문글 등록 API", description = "질문글을 등록한다")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping
+	@PostMapping("/api/question-posts")
 	public ResponseEntity<RegisterQuestionPostResponse> registerQuestionPost(
 		@Valid @RequestBody RegisterQuestionPostRequest request,
 		@AuthenticationPrincipal Member member
@@ -47,7 +45,7 @@ public class QuestionPostController {
 
 	@Operation(summary = "질문글 상세 조회 API", description = "질문글을 아이디로 상세조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@GetMapping("/{questionPostId}")
+	@GetMapping("/api/question-posts/{questionPostId}")
 	public ResponseEntity<QuestionPostDetailResponse> getQuestionPostById(
 		@PathVariable("questionPostId") Long questionPostId
 	) {
@@ -57,7 +55,7 @@ public class QuestionPostController {
 
 	@Operation(summary = "질문글 검색 API", description = "질문글을 키워드로 검색하고 정렬, 필터링을 한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@GetMapping("/search")
+	@GetMapping("/api/question-posts/search")
 	public ResponseEntity<PageResponse<QuestionPostSimpleResponse>> searchQuestionPost(
 		@Valid @ModelAttribute QuestionPostSearchCondition condition,
 		Pageable pageable

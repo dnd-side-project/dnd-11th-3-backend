@@ -118,7 +118,7 @@ class InteractionServiceTest {
 			questionPost.getId());
 		InteractionCount interactionCount = InteractionCountFixture.interactionCount(type,
 			interactor.getId());
-		interaction.updateIsInteractedFalse();
+		interaction.updateIsInteracted(false);
 		interactionCount.decreaseCount();
 
 		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(

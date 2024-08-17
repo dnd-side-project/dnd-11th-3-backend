@@ -1,6 +1,8 @@
 package com.dnd.gongmuin.post_interaction.domain;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.post_interaction.exception.InteractionErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,6 +50,9 @@ public class InteractionCount extends TimeBaseEntity {
 	}
 
 	public int decreaseCount() {
+		if (count == 0) {
+			throw new ValidationException(InteractionErrorCode.UNINTERACTION_NOT_ALLOWED);
+		}
 		return --count;
 	}
 }
