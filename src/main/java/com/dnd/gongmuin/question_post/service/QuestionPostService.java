@@ -65,8 +65,7 @@ public class QuestionPostService {
 		Pageable pageable
 	) {
 		Slice<QuestionPostSimpleResponse> responsePage = questionPostRepository
-			.searchQuestionPosts(condition, pageable)
-			.map(QuestionPostMapper::toQuestionPostSimpleResponse);
+			.searchQuestionPosts(condition, pageable);
 		return PageMapper.toPageResponse(responsePage);
 	}
 
