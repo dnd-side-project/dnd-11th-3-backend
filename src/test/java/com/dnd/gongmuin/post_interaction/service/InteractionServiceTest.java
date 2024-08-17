@@ -114,9 +114,9 @@ class InteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		Interaction interaction = InteractionFixture.interaction(type, interactor.getId(),
+		Interaction interaction = InteractionFixture.interaction(1L, type, interactor.getId(),
 			questionPost.getId());
-		InteractionCount interactionCount = InteractionCountFixture.interactionCount(type,
+		InteractionCount interactionCount = InteractionCountFixture.interactionCount(1L, type,
 			interactor.getId());
 		interaction.updateIsInteracted(false);
 		interactionCount.decreaseCount();
@@ -150,9 +150,9 @@ class InteractionServiceTest {
 		//given
 		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		Interaction interaction = InteractionFixture.interaction(type, interactor.getId(),
+		Interaction interaction = InteractionFixture.interaction(1L, type, interactor.getId(),
 			questionPost.getId());
-		InteractionCount interactionCount = InteractionCountFixture.interactionCount(type,
+		InteractionCount interactionCount = InteractionCountFixture.interactionCount(1L, type,
 			interactor.getId());
 
 		given(interactionRepository.findByQuestionPostIdAndMemberIdAndType(
