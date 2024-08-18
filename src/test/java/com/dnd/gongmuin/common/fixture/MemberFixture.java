@@ -48,8 +48,12 @@ public class MemberFixture {
 
 	public static Member member4() {
 		return Member.of(
+			"회원",
 			"소셜회원",
+			JobGroup.ADMINISTRATION,
+			JobCategory.GAS,
 			"KAKAO1234/member2@daum.net",
+			"member@korea.kr",
 			20000
 		);
 	}

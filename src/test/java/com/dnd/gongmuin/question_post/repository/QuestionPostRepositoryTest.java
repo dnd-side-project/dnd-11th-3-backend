@@ -170,10 +170,35 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
+	@DisplayName("추천 게시물들을 직군으로 필터링할 수 있다.")
+	@Test
+	void getRecommendPost_jobGroup_filter() {
+		//given
+		Member viewer = memberRepository.save(MemberFixture.member4());
+
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		ReflectionTestUtils.setField(questionPost1, "jobGroup", viewer.getJobGroup());
+		questionPostRepository.save(QuestionPostFixture.questionPost(member));
+
+		//when
+		List<RecQuestionPostResponse> responses = questionPostRepository
+			.getRecommendQuestionPosts(viewer.getJobGroup(), pageRequest)
+			.getContent();
+
+		//then
+		Assertions.assertAll(
+			() -> assertThat(responses).hasSize(1),
+
+			() -> assertThat(responses.get(0).questionPostId())
+				.isEqualTo(questionPost1.getId())
+		);
+	}
+
 	@DisplayName("추천수로 내림차순 정렬된 추천 게시물들을 조회할 수 있다.")
 	@Test
 	void getRecommendPost_recCnt_sort() {
 		//given
+
 		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
 		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
 
@@ -181,7 +206,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<RecQuestionPostResponse> responses = questionPostRepository
-			.getRecommendQuestionPosts(pageRequest)
+			.getRecommendQuestionPosts(member.getJobGroup(), pageRequest)
 			.getContent();
 
 		//then
@@ -209,7 +234,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<RecQuestionPostResponse> responses = questionPostRepository
-			.getRecommendQuestionPosts(pageRequest)
+			.getRecommendQuestionPosts(member.getJobGroup(), pageRequest)
 			.getContent();
 
 		//then
@@ -233,5 +258,4 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			InteractionCountFixture.interactionCount(type, questionPostId);
 		interactionCountRepository.save(interactionCount);
 	}
-
 }
