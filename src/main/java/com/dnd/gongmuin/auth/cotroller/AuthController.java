@@ -28,6 +28,7 @@ import com.dnd.gongmuin.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -89,9 +90,11 @@ public class AuthController {
 	@Operation(summary = "토큰 재발급 API", description = "토큰을 재발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/reissue/token")
-	public ResponseEntity<ReissueResponse> reissue(@RequestBody @Valid ReissueRequest request) {
-		ReissueResponse response = memberService.reissue(request);
-		return ResponseEntity.ok(response);
+	public void reissue(@RequestBody @Valid ReissueRequest request, HttpServletResponse response) {
+		ReissueResponse token = memberService.reissue(request);
+		response.setHeader("Authorization", token.accessToken());
+
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 }
 
