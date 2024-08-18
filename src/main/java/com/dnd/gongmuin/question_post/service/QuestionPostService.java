@@ -72,10 +72,11 @@ public class QuestionPostService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<RecQuestionPostResponse> getRecommendQuestionPosts(
+		Member member,
 		Pageable pageable
 	) {
-		Slice<RecQuestionPostResponse> responsePage =
-			questionPostRepository.getRecommendQuestionPosts(pageable);
+		Slice<RecQuestionPostResponse> responsePage
+			= questionPostRepository.getRecommendQuestionPosts(member.getJobGroup(), pageable);
 		return PageMapper.toPageResponse(responsePage);
 	}
 

@@ -65,6 +65,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 
 	@Override
 	public Slice<RecQuestionPostResponse> getRecommendQuestionPosts(
+		JobGroup targetJobGroup,
 		Pageable pageable
 	) {
 		QQuestionPost questionPost = QQuestionPost.questionPost;
@@ -85,7 +86,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 			.on(questionPost.id.eq(recommend.questionPostId)
 				.and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(
-				questionPost.jobGroup.eq(questionPost.member.jobGroup)
+				questionPost.jobGroup.eq(targetJobGroup)
 			)
 			.orderBy(
 				recommend.count.coalesce(0).desc(),

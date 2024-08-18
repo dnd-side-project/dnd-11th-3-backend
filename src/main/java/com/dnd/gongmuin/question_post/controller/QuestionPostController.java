@@ -66,14 +66,13 @@ public class QuestionPostController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "추천글 조회 API", description = "직군에 해당하는 추천글을 조회할 수 있다.")
-	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/recommends")
 	public ResponseEntity<PageResponse<RecQuestionPostResponse>> getRecommendQuestionPosts(
+		@AuthenticationPrincipal Member member,
 		Pageable pageable
 	) {
 		PageResponse<RecQuestionPostResponse> response
-			= questionPostService.getRecommendQuestionPosts(pageable);
+			= questionPostService.getRecommendQuestionPosts(member, pageable);
 		return ResponseEntity.ok(response);
 	}
 }
