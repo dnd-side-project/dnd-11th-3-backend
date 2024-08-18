@@ -49,7 +49,7 @@ class QuestionPostServiceTest {
 		//given
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 		RegisterQuestionPostRequest request =
-			RegisterQuestionPostRequest.of(
+			new RegisterQuestionPostRequest(
 				"제목",
 				"내용",
 				List.of("image1.jpg", "image2.jpg"),

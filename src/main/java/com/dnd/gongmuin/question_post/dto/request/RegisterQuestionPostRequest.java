@@ -20,15 +20,4 @@ public record RegisterQuestionPostRequest(
 	@NotBlank(message = "직군을 입력해주세요.")
 	String targetJobGroup
 ) {
-	public static RegisterQuestionPostRequest of(
-		String title,
-		String content,
-		List<String> imageUrls,
-		int reward,
-		String targetJobGroup
-	) {
-		return new RegisterQuestionPostRequest(
-			title, content, imageUrls, reward, targetJobGroup
-		);
-	}
 }

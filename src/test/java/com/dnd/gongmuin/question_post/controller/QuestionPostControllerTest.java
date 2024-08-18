@@ -51,7 +51,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[질문글을 등록할 수 있다.]")
 	@Test
 	void registerQuestionPost() throws Exception {
-		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
+		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
@@ -82,7 +82,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		loginMember.decreaseCredit(5000);
 		memberRepository.save(loginMember); // 크레딧
 
-		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
+		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
