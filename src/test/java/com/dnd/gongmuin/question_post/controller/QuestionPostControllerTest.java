@@ -135,8 +135,8 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(2))
-			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost1.getId()))
-			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost2.getId()));
+			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost2.getId())) //최신순 정렬
+			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost1.getId()));
 	}
 
 	@DisplayName("[질문글을 여러 직군들로 필터링할 수 있다.]")

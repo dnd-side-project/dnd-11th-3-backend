@@ -55,7 +55,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		member = memberRepository.save(MemberFixture.member());
 	}
 
-	@DisplayName("검색어로 필터링할 수 있다.")
+	@DisplayName("검색어로 필터링할 수 있다. 최신순으로 조회한다.")
 	@Test
 	void question_post_search_filter() {
 		//given
@@ -78,8 +78,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		Assertions.assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost2.getId())
+			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -107,8 +107,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		Assertions.assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost2.getId())
+			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
