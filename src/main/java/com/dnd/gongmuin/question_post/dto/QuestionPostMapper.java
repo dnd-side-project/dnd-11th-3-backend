@@ -11,6 +11,7 @@ import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
+import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,7 @@ public class QuestionPostMapper {
 		);
 	}
 
-	public static RegisterQuestionPostResponse toQuestionPostDetailResponse(
+	public static RegisterQuestionPostResponse toRegisterQuestionPostResponse(
 		QuestionPost questionPost
 	) {
 		Member member = questionPost.getMember();
@@ -65,6 +66,19 @@ public class QuestionPostMapper {
 				member.getJobGroup().getLabel()
 			),
 			questionPost.getCreatedAt().toString()
+		);
+	}
+
+	public static UpdateQuestionPostResponse toUpdateQuestionPostResponse(
+		QuestionPost questionPost
+	) {
+		return new UpdateQuestionPostResponse(
+			questionPost.getId(),
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			imagesToUrls(questionPost.getImages()),
+			questionPost.getReward(),
+			questionPost.getJobGroup().getLabel()
 		);
 	}
 
