@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.credit_history;
+package com.dnd.gongmuin.credit_history.domain;
 
 import java.util.Arrays;
 

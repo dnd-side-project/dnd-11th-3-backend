@@ -1,7 +1,7 @@
 package com.dnd.gongmuin.credit_history.dto;
 
-import com.dnd.gongmuin.credit_history.CreditHistory;
-import com.dnd.gongmuin.credit_history.CreditType;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.member.domain.Member;
 
 import lombok.AccessLevel;
