@@ -365,13 +365,13 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		QuestionPost questionPost3 = QuestionPostFixture.questionPost(member2, "세 번째 게시글입니다.");
 		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
 
-		Interaction interaction1 = InteractionFixture.interaction2(InteractionType.SAVED, member1.getId(),
+		Interaction interaction1 = InteractionFixture.interaction(InteractionType.SAVED, member1.getId(),
 			questionPost1.getId());
-		Interaction interaction2 = InteractionFixture.interaction2(InteractionType.SAVED, member1.getId(),
+		Interaction interaction2 = InteractionFixture.interaction(InteractionType.SAVED, member1.getId(),
 			questionPost2.getId());
-		Interaction interaction3 = InteractionFixture.interaction2(InteractionType.RECOMMEND, member1.getId(),
+		Interaction interaction3 = InteractionFixture.interaction(InteractionType.RECOMMEND, member1.getId(),
 			questionPost2.getId());
-		Interaction interaction4 = InteractionFixture.interaction2(InteractionType.RECOMMEND, member1.getId(),
+		Interaction interaction4 = InteractionFixture.interaction(InteractionType.RECOMMEND, member1.getId(),
 			questionPost3.getId());
 		interactionRepository.saveAll(List.of(interaction1, interaction2, interaction3, interaction4));
 
