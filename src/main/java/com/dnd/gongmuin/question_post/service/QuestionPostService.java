@@ -20,6 +20,7 @@ import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -64,8 +65,17 @@ public class QuestionPostService {
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
-		Slice<QuestionPostSimpleResponse> responsePage = questionPostRepository
-			.searchQuestionPosts(condition, pageable);
+		Slice<QuestionPostSimpleResponse> responsePage =
+			questionPostRepository.searchQuestionPosts(condition, pageable);
+		return PageMapper.toPageResponse(responsePage);
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<RecQuestionPostResponse> getRecommendQuestionPosts(
+		Pageable pageable
+	) {
+		Slice<RecQuestionPostResponse> responsePage =
+			questionPostRepository.getRecommendQuestionPosts(pageable);
 		return PageMapper.toPageResponse(responsePage);
 	}
 
