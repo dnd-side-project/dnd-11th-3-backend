@@ -27,6 +27,7 @@ import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
@@ -231,5 +232,18 @@ public class MemberService {
 		} catch (Exception e) {
 			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
+	}
+
+	public PageResponse<CreditHistoryByMemberResponse> getCreditHistoryByMember(String type, Member member,
+		Pageable pageable) {
+		try {
+			Slice<CreditHistoryByMemberResponse> responsePage =
+				memberRepository.getCreditHistoryByMember(type, member, pageable);
+
+			return PageMapper.toPageResponse(responsePage);
+		} catch (Exception e) {
+			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
+		}
+
 	}
 }

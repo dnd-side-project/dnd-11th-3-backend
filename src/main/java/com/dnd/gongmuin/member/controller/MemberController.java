@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.common.dto.PageResponse;
@@ -14,6 +15,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -83,6 +85,19 @@ public class MemberController {
 		Pageable pageable) {
 		PageResponse<BookmarksByMemberResponse> response =
 			memberService.getBookmarksByMember(member, pageable);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "크레딧 목록 전체 조회 API", description = "타입에 맞는 크레딧 목록을 전체 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/credit/histories")
+	public ResponseEntity<PageResponse<CreditHistoryByMemberResponse>> getCreditHistoryByMember(
+		@RequestParam("type") String type,
+		@AuthenticationPrincipal Member member,
+		Pageable pageable) {
+		PageResponse<CreditHistoryByMemberResponse> response =
+			memberService.getCreditHistoryByMember(type, member, pageable);
 
 		return ResponseEntity.ok(response);
 	}
