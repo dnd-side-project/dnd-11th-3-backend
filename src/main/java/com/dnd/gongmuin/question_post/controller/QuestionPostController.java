@@ -66,6 +66,8 @@ public class QuestionPostController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "질문글 추천 API", description = "직군에 맞는 질문글을 추천순으로 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/recommends")
 	public ResponseEntity<PageResponse<RecQuestionPostResponse>> getRecommendQuestionPosts(
 		@AuthenticationPrincipal Member member,
