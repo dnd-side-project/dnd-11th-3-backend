@@ -3,7 +3,7 @@ package com.dnd.gongmuin.member.dto.response;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.querydsl.core.annotations.QueryProjection;
 
-public record QuestionPostsByMemberResponse(
+public record BookmarksByMemberResponse(
 	Long questionPostId,
 	String title,
 	String content,
@@ -14,9 +14,8 @@ public record QuestionPostsByMemberResponse(
 	int savedTotalCount,
 	int recommendTotalCount
 ) {
-
 	@QueryProjection
-	public QuestionPostsByMemberResponse(
+	public BookmarksByMemberResponse(
 		QuestionPost questionPost,
 		int savedTotalCount,
 		int recommendTotalCount
