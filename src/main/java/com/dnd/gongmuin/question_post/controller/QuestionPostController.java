@@ -14,10 +14,12 @@ import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
+import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,6 +77,18 @@ public class QuestionPostController {
 	) {
 		PageResponse<RecQuestionPostResponse> response
 			= questionPostService.getRecommendQuestionPosts(member, pageable);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "질문글 업데이트 API", description = "질문자가 질문글을 업데이트 한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/api/question-posts/{questionPostId}/edit")
+	public ResponseEntity<UpdateQuestionPostResponse> updateQuestionPosts(
+		@PathVariable("questionPostId") Long questionPostId,
+		UpdateQuestionPostRequest request
+	) {
+		UpdateQuestionPostResponse response
+			= questionPostService.updateQuestionPost(questionPostId, request);
 		return ResponseEntity.ok(response);
 	}
 }
