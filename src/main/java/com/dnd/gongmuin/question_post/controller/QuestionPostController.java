@@ -16,6 +16,7 @@ import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
@@ -62,6 +63,17 @@ public class QuestionPostController {
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
 			condition, pageable);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "추천글 조회 API", description = "직군에 해당하는 추천글을 조회할 수 있다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/api/question-posts/recommends")
+	public ResponseEntity<PageResponse<RecQuestionPostResponse>> getRecommendQuestionPosts(
+		Pageable pageable
+	) {
+		PageResponse<RecQuestionPostResponse> response
+			= questionPostService.getRecommendQuestionPosts(pageable);
 		return ResponseEntity.ok(response);
 	}
 }
