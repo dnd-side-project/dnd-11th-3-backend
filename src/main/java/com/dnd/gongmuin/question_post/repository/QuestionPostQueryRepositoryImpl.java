@@ -10,8 +10,12 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.post_interaction.domain.InteractionType;
+import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
+import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
+import com.dnd.gongmuin.question_post.dto.response.QQuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -24,9 +28,27 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Slice<QuestionPost> searchQuestionPosts(QuestionPostSearchCondition condition, Pageable pageable) {
-		List<QuestionPost> content = queryFactory.select(questionPost)
+	public Slice<QuestionPostSimpleResponse> searchQuestionPosts(
+		QuestionPostSearchCondition condition,
+		Pageable pageable
+	) {
+		QQuestionPost questionPost = QQuestionPost.questionPost;
+		QInteractionCount saved = new QInteractionCount("saved");
+		QInteractionCount recommend = new QInteractionCount("recommend");
+
+		List<QuestionPostSimpleResponse> content = queryFactory
+			.select(new QQuestionPostSimpleResponse(
+				questionPost,
+				saved.count.coalesce(0),
+				recommend.count.coalesce(0)
+			))
 			.from(questionPost)
+			.leftJoin(saved)
+			.on(questionPost.id.eq(saved.questionPostId)
+				.and(saved.type.eq(InteractionType.SAVED)))
+			.leftJoin(recommend)
+			.on(questionPost.id.eq(recommend.questionPostId)
+				.and(recommend.type.eq(InteractionType.RECOMMEND)))
 			.where(
 				keywordContains(condition.keyword()),
 				jobGroupContains(condition.jobGroups()),
@@ -61,7 +83,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		return keyword != null ? questionPost.title.contains(keyword) : null;
 	}
 
-	private boolean hasNext(int pageSize, List<QuestionPost> questionPosts) {
+	private boolean hasNext(int pageSize, List<QuestionPostSimpleResponse> questionPosts) {
 		if (questionPosts.size() <= pageSize) {
 			return false;
 		}

@@ -22,7 +22,6 @@ import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
-import com.dnd.gongmuin.question_post.repository.QuestionPostQueryRepository;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostService {
 
 	private final QuestionPostRepository questionPostRepository;
-	private final QuestionPostQueryRepository questionPostQueryRepository;
 
 	private final InteractionCountRepository interactionCountRepository;
 
@@ -66,9 +64,8 @@ public class QuestionPostService {
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
-		Slice<QuestionPostSimpleResponse> responsePage = questionPostQueryRepository
-			.searchQuestionPosts(condition, pageable)
-			.map(QuestionPostMapper::toQuestionPostSimpleResponse);
+		Slice<QuestionPostSimpleResponse> responsePage = questionPostRepository
+			.searchQuestionPosts(condition, pageable);
 		return PageMapper.toPageResponse(responsePage);
 	}
 

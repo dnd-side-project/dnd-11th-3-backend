@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class InteractionCountFixture {
 
 	public static InteractionCount interactionCount(
+		Long id,
 		InteractionType type,
 		Long questionPostId
 	) {
@@ -19,7 +20,17 @@ public class InteractionCountFixture {
 			type,
 			questionPostId
 		);
-		ReflectionTestUtils.setField(interactionCount, "id", 1L);
+		ReflectionTestUtils.setField(interactionCount, "id", id);
 		return interactionCount;
+	}
+
+	public static InteractionCount interactionCount(
+		InteractionType type,
+		Long questionPostId
+	) {
+		return InteractionCount.of(
+			type,
+			questionPostId
+		);
 	}
 }
