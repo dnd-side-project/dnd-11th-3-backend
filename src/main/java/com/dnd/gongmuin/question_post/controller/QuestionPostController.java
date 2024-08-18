@@ -16,6 +16,7 @@ import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.service.QuestionPostService;
 
@@ -62,6 +63,16 @@ public class QuestionPostController {
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
 			condition, pageable);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/api/question-posts/recommends")
+	public ResponseEntity<PageResponse<RecQuestionPostResponse>> getRecommendQuestionPosts(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable
+	) {
+		PageResponse<RecQuestionPostResponse> response
+			= questionPostService.getRecommendQuestionPosts(member, pageable);
 		return ResponseEntity.ok(response);
 	}
 }

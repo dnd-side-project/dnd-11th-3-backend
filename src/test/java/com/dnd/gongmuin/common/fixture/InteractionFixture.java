@@ -25,8 +25,8 @@ public class InteractionFixture {
 		ReflectionTestUtils.setField(interaction, "id", id);
 		return interaction;
 	}
-  
-  public static Interaction interaction(
+
+	public static Interaction interaction(
 		InteractionType type,
 		Long memberId,
 		Long questionPostId
@@ -36,18 +36,5 @@ public class InteractionFixture {
 			memberId,
 			questionPostId
 		);
-	}
-  
-  public static Interaction interaction2(
-		InteractionType type,
-		Long memberId,
-		Long questionPostId
-	) {
-		Interaction interaction = Interaction.of(
-			type,
-			memberId,
-			questionPostId
-		);
-		return interaction;
 	}
 }

@@ -27,6 +27,7 @@ import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
+import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +55,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		member = memberRepository.save(MemberFixture.member());
 	}
 
-	@DisplayName("검색어로 필터링할 수 있다.")
+	@DisplayName("검색어로 필터링할 수 있다. 최신순으로 조회한다.")
 	@Test
 	void question_post_search_filter() {
 		//given
@@ -77,8 +78,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		Assertions.assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost2.getId())
+			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -106,8 +107,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		Assertions.assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost2.getId())
+			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -169,6 +170,86 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
+	@DisplayName("추천 게시물들을 직군으로 필터링할 수 있다.")
+	@Test
+	void getRecommendPost_jobGroup_filter() {
+		//given
+		Member viewer = memberRepository.save(MemberFixture.member4());
+
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		ReflectionTestUtils.setField(questionPost1, "jobGroup", viewer.getJobGroup());
+		questionPostRepository.save(QuestionPostFixture.questionPost(member));
+
+		//when
+		List<RecQuestionPostResponse> responses = questionPostRepository
+			.getRecommendQuestionPosts(viewer.getJobGroup(), pageRequest)
+			.getContent();
+
+		//then
+		Assertions.assertAll(
+			() -> assertThat(responses).hasSize(1),
+
+			() -> assertThat(responses.get(0).questionPostId())
+				.isEqualTo(questionPost1.getId())
+		);
+	}
+
+	@DisplayName("추천수로 내림차순 정렬된 추천 게시물들을 조회할 수 있다.")
+	@Test
+	void getRecommendPost_recCnt_sort() {
+		//given
+
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+
+		interactPost(questionPost2.getId(), InteractionType.RECOMMEND);
+
+		//when
+		List<RecQuestionPostResponse> responses = questionPostRepository
+			.getRecommendQuestionPosts(member.getJobGroup(), pageRequest)
+			.getContent();
+
+		//then
+		Assertions.assertAll(
+			() -> assertThat(responses).hasSize(2),
+
+			() -> assertThat(responses.get(0).questionPostId())
+				.isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId())
+				.isEqualTo(questionPost1.getId())
+		);
+	}
+
+	@DisplayName("추천 수가 동일할 경우, 북마크 수 기준으로 내림차순 정렬한다.")
+	@Test
+	void getRecommendPost_savedCnt_sort() {
+		//given
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+
+		interactPost(questionPost2.getId(), InteractionType.RECOMMEND);
+		interactPost(questionPost3.getId(), InteractionType.RECOMMEND);
+		interactPost(questionPost2.getId(), InteractionType.SAVED);
+
+		//when
+		List<RecQuestionPostResponse> responses = questionPostRepository
+			.getRecommendQuestionPosts(member.getJobGroup(), pageRequest)
+			.getContent();
+
+		//then
+		Assertions.assertAll(
+			() -> assertThat(responses).hasSize(3),
+
+			() -> assertThat(responses.get(0).questionPostId())
+				.isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).questionPostId())
+				.isEqualTo(questionPost3.getId()),
+			() -> assertThat(responses.get(2).questionPostId())
+				.isEqualTo(questionPost1.getId())
+		);
+	}
+
 	private void interactPost(Long questionPostId, InteractionType type) {
 		Interaction interaction =
 			InteractionFixture.interaction(type, 2L, questionPostId);
@@ -177,5 +258,4 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			InteractionCountFixture.interactionCount(type, questionPostId);
 		interactionCountRepository.save(interactionCount);
 	}
-
 }
