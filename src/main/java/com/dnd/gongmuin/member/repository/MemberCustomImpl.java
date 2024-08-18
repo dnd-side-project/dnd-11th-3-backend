@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.member.repository;
 
+import static com.dnd.gongmuin.credit_history.domain.QCreditHistory.*;
+
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -7,17 +9,21 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
 import com.dnd.gongmuin.answer.domain.QAnswer;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QBookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.QCreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -134,7 +140,32 @@ public class MemberCustomImpl implements MemberCustom {
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
-	// .on(qp.id.eq(ir.questionPostId).and(ir.type.eq(InteractionType.SAVED)))
+	@Override
+	public Slice<CreditHistoryByMemberResponse> getCreditHistoryByMember(String type, Member member,
+		Pageable pageable) {
+		List<CreditHistoryByMemberResponse> content = queryFactory
+			.select(new QCreditHistoryByMemberResponse(
+				creditHistory
+			))
+			.from(creditHistory)
+			.where(
+				creditHistory.member.eq(member),
+				creditTypeEq(type)
+			)
+			.orderBy(creditHistory.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize() + 1L)
+			.fetch();
+
+		boolean hasNext = hasNext(pageable.getPageSize(), content);
+
+		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	private BooleanExpression creditTypeEq(String type) {
+		return type != null ? creditHistory.type.in(CreditType.fromDetail(type)) : null;
+	}
+
 	private <T> boolean hasNext(int pageSize, List<T> content) {
 		if (content.size() <= pageSize) {
 			return false;

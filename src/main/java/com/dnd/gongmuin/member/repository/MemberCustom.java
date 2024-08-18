@@ -6,6 +6,7 @@ import org.springframework.data.domain.Slice;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 
 public interface MemberCustom {
@@ -14,4 +15,6 @@ public interface MemberCustom {
 	Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(Member member, Pageable pageable);
 
 	Slice<BookmarksByMemberResponse> getBookmarksByMember(Member member, Pageable pageable);
+
+	Slice<CreditHistoryByMemberResponse> getCreditHistoryByMember(String type, Member member, Pageable pageable);
 }
