@@ -56,6 +56,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 				jobGroupContains(condition.jobGroups()),
 				isChosenEq(condition.isChosen())
 			)
+			.orderBy(questionPost.createdAt.desc())
 			.limit(pageable.getPageSize() + 1L)
 			.offset(pageable.getOffset())
 			.fetch();
