@@ -73,7 +73,7 @@ public class QuestionPost extends TimeBaseEntity {
 		this.reward = reward;
 		this.jobGroup = jobGroup;
 		this.member = member;
-		addImages(images);
+		initPostImages(images);
 	}
 
 	public static QuestionPost of(String title, String content, int reward, JobGroup jobGroup,
@@ -82,11 +82,25 @@ public class QuestionPost extends TimeBaseEntity {
 	}
 
 	//==양방향 편의 메서드==//
-	private void addImages(List<QuestionPostImage> images) {
+	private void initPostImages(List<QuestionPostImage> images) {
 		images.forEach(image -> {
 			this.images.add(image);
 			image.addQuestionPost(this);
 		});
+	}
+
+	public void updatePostImages(List<String> imageUrls) {
+		List<QuestionPostImage> questionPostImages = new ArrayList<>();
+		imageUrls.stream().map(QuestionPostImage::from)
+			.forEach(questionPostImage -> {
+				questionPostImage.addQuestionPost(this);
+				questionPostImages.add(questionPostImage);
+			});
+		this.images = questionPostImages;
+	}
+
+	public void clearPostImages() {
+		this.images.clear();
 	}
 
 	public boolean isQuestioner(Long memberId) {
@@ -107,12 +121,5 @@ public class QuestionPost extends TimeBaseEntity {
 		this.content = content;
 		this.reward = reward;
 		this.jobGroup = jobGroup;
-	}
-
-	public void addPostImages(List<String> imageUrls) {
-		this.images = imageUrls.stream()
-			.map(QuestionPostImage::from)
-			.toList();
-		addImages(images);
 	}
 }
