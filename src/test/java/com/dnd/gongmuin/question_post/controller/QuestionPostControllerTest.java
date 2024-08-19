@@ -217,5 +217,4 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			InteractionCountFixture.interactionCount(type, questionPostId);
 		interactionCountRepository.save(interactionCount);
 	}
-
 }
