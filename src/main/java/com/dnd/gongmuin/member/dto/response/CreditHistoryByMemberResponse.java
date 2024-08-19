@@ -5,7 +5,6 @@ import com.querydsl.core.annotations.QueryProjection;
 
 public record CreditHistoryByMemberResponse(
 	Long id,
-	String typeMessage,
 	String type,
 	String detail,
 	int amount
@@ -14,7 +13,6 @@ public record CreditHistoryByMemberResponse(
 	public CreditHistoryByMemberResponse(CreditHistory creditHistory) {
 		this(
 			creditHistory.getId(),
-			creditHistory.getType().getLabel(),
 			creditHistory.getType().getDetail(),
 			creditHistory.getDetail(),
 			creditHistory.getAmount()
