@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.answer.controller;
 
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -59,7 +58,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken) //loginMember
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content").value(request.content()))
@@ -81,7 +80,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken) //loginMember
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content").value(request.content()))
@@ -109,7 +108,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		mockMvc.perform(get("/api/question-posts/{questionPostId}/answers", questionPost.getId())
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken) //loginMember
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.size").value(2))
@@ -128,7 +127,7 @@ class AnswerControllerTest extends ApiTestSupport {
 		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
 
 		mockMvc.perform(post("/api/question-posts/answers/{answerId}", answer.getId())
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.content").value(answer.getContent()))

@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.question_post.controller;
 
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,7 +61,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/question-posts")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.title").value(request.title()))
@@ -93,7 +92,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/question-posts")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.code")
@@ -106,7 +105,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 
 		mockMvc.perform(get("/api/question-posts/{questionPostId}", questionPost.getId())
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
 			.andExpect(jsonPath("$.content").value(questionPost.getContent()))
@@ -131,7 +130,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(get("/api/question-posts/search")
 				.param("keyword", "발령")
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(2))
@@ -149,7 +148,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(get("/api/question-posts/search")
 				.param("jobGroups", "공업", "행정")
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(1))
@@ -166,7 +165,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(get("/api/question-posts/search")
 				.param("jobGroups", "공업", "행정", "기계", "우정")
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.message")
 				.value("직군은 3개까지 선택 가능합니다."));
@@ -183,7 +182,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(get("/api/question-posts/search")
 				.param("isChosen", "true")
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(1))
@@ -201,7 +200,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		interactPost(questionPost3.getId(), InteractionType.RECOMMEND);
 		interactPost(questionPost1.getId(), InteractionType.SAVED);
 		mockMvc.perform(get("/api/question-posts/recommends")
-				.header(AUTHORIZATION, accessToken))
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(3))

@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.post_interaction.controller;
 
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,7 +49,7 @@ class InteractionControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/activated", questionPost.getId())
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 				.param("type", "추천")
 			)
 			.andExpect(status().isOk());
@@ -71,7 +70,7 @@ class InteractionControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 				.param("type", "추천")
 			)
 			.andExpect(status().isOk());
@@ -92,7 +91,7 @@ class InteractionControllerTest extends ApiTestSupport {
 
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 				.param("type", "추천")
 			)
 			.andExpect(status().isOk());
