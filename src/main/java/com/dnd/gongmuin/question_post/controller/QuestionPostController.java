@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,10 +83,10 @@ public class QuestionPostController {
 
 	@Operation(summary = "질문글 업데이트 API", description = "질문자가 질문글을 업데이트 한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@GetMapping("/api/question-posts/{questionPostId}/edit")
+	@PatchMapping("/api/question-posts/{questionPostId}/edit")
 	public ResponseEntity<UpdateQuestionPostResponse> updateQuestionPosts(
 		@PathVariable("questionPostId") Long questionPostId,
-		UpdateQuestionPostRequest request
+		@Valid @RequestBody UpdateQuestionPostRequest request
 	) {
 		UpdateQuestionPostResponse response
 			= questionPostService.updateQuestionPost(questionPostId, request);
