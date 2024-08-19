@@ -120,6 +120,8 @@ public class TokenProvider {
 			throw new CustomJwtException(JwtErrorCode.MALFORMED_TOKEN);
 		} catch (JwtException e) {
 			throw new CustomJwtException(JwtErrorCode.INVALID_TOKEN);
+		} catch (Exception e) {
+			throw new CustomJwtException(JwtErrorCode.INVALID_TOKEN);
 		}
 	}
 
