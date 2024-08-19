@@ -168,7 +168,7 @@ public class AuthService {
 		return new ReissueResponse(true);
 	}
 
-	private boolean isOfficialEmail(Member member) {
+	public boolean isOfficialEmail(Member member) {
 		return Objects.isNull(member.getOfficialEmail());
 	}
 
