@@ -16,6 +16,7 @@ import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,17 +42,25 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(customOauth2User, new Date());
 
-		response.setHeader("Authorization", token);
+		response.addCookie(createCookie(token));
 
 		if (!isAuthStatusOld(findmember)) {
-			response.sendRedirect("/additional-info");
+			response.sendRedirect("http://localhost:3000/signup");
 		} else {
-			response.sendRedirect("/");
+			response.sendRedirect("http://localhost:3000/home");
 		}
 	}
 
 	private boolean isAuthStatusOld(Member member) {
 		return authService.isAuthStatusOld(member);
+	}
+
+	private static Cookie createCookie(String token) {
+		Cookie cookie = new Cookie("Authorization", token);
+		cookie.setPath("/");
+		cookie.setMaxAge(1000 * 60 * 60);
+		cookie.setHttpOnly(true);
+		return cookie;
 	}
 
 }
