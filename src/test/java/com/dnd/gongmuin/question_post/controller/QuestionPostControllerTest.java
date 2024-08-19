@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +19,7 @@ import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
@@ -26,6 +28,7 @@ import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
@@ -52,7 +55,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[질문글을 등록할 수 있다.]")
 	@Test
 	void registerQuestionPost() throws Exception {
-		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
+		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
@@ -83,7 +86,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 		loginMember.decreaseCredit(5000);
 		memberRepository.save(loginMember); // 크레딧
 
-		RegisterQuestionPostRequest request = RegisterQuestionPostRequest.of(
+		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
@@ -209,6 +212,95 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()))
 			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost1.getId()))
 			.andExpect(jsonPath("$.content[2].questionPostId").value(questionPost2.getId()));
+	}
+
+	@DisplayName("[질문글 업데이트해 게시물 정보를 수정할 수 있다..]")
+	@Test
+	void updateQuestionPost() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		UpdateQuestionPostRequest request = new UpdateQuestionPostRequest(
+			questionPost.getTitle(),
+			questionPost.getContent() + "ts",
+			null,
+			questionPost.getReward() + 1000,
+			JobGroup.ADMINISTRATION.getLabel()
+		);
+		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
+				.header(AUTHORIZATION, accessToken)
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.title").value(request.title()))
+			.andExpect(jsonPath("$.content").value(request.content()))
+			.andExpect(jsonPath("$.reward").value(request.reward()))
+			.andExpect(jsonPath("$.targetJobGroup").value(request.targetJobGroup()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글 업데이트 시 이미지를 업데이트할 수 있다.]")
+	@Test
+	void updateQuestionPost_images() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		List<String> updateImageUrls = List.of("img.url");
+		UpdateQuestionPostRequest request = new UpdateQuestionPostRequest(
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			updateImageUrls,
+			3000,
+			questionPost.getJobGroup().getLabel()
+		);
+		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
+				.header(AUTHORIZATION, accessToken)
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.imageUrls[0]").value(updateImageUrls.get(0)))
+			.andExpect(jsonPath("$.imageUrls.length()").value(updateImageUrls.size()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글 업데이트 시 이미지 필드가 null이면 변경 사항이 없다.]")
+	@Test
+	void updateQuestionPost_images_null() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		UpdateQuestionPostRequest request = new UpdateQuestionPostRequest(
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			null,
+			3000,
+			questionPost.getJobGroup().getLabel()
+		);
+		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
+				.header(AUTHORIZATION, accessToken)
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.imageUrls[0]")
+				.value(questionPost.getImages().get(0).getImageUrl()))
+			.andExpect(jsonPath("$.imageUrls[1]")
+				.value(questionPost.getImages().get(1).getImageUrl()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글 업데이트 시 이미지 필드가 빈 리스트이면, 기존 이미지를 모두 지운다]")
+	@Test
+	void updateQuestionPost_images_empty() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		UpdateQuestionPostRequest request = new UpdateQuestionPostRequest(
+			questionPost.getTitle(),
+			questionPost.getContent(),
+			Collections.emptyList(),
+			3000,
+			questionPost.getJobGroup().getLabel()
+		);
+		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
+				.header(AUTHORIZATION, accessToken)
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.imageUrls.length()")
+				.value(0))
+			.andDo(MockMvcResultHandlers.print());
 	}
 
 	private void interactPost(Long questionPostId, InteractionType type) {

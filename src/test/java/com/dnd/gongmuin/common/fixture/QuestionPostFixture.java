@@ -19,8 +19,8 @@ public class QuestionPostFixture {
 	public static QuestionPost questionPost(Member member) {
 		return QuestionPost.of(
 			"제목",
-			"내용",
-			1000,
+			"내용내용내용내용내용",
+			2000,
 			JobGroup.from("공업"),
 			List.of(
 				QuestionPostImage.from("image1.jpg"),
