@@ -51,16 +51,16 @@ public class AuthService {
 	private final RedisUtil redisUtil;
 
 	public void saveOrUpdate(Member savedMember) {
-		Auth findedOrCreatedAuth = authRepository.findByMember(savedMember)
+		Auth foundOrCreatedAuth = authRepository.findByMember(savedMember)
 			.map(auth -> {
 				if (!isOfficialEmail(savedMember)) {
-					auth.updateStatus();
+					auth.updateStatusToOld();
 				}
 				return auth;
 			})
 			.orElseGet(() -> createAuth(savedMember));
 
-		authRepository.save(findedOrCreatedAuth);
+		authRepository.save(foundOrCreatedAuth);
 	}
 
 	public boolean isAuthStatusOld(Member member) {
