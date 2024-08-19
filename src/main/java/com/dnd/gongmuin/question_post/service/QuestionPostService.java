@@ -38,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostService {
 
 	private final QuestionPostRepository questionPostRepository;
-
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
 
@@ -102,8 +101,8 @@ public class QuestionPostService {
 	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
 		if (imageUrls != null) { // 수정 사항 존재
 			deleteImages(questionPost); // 기존 이미지 객체 삭제 (새로 비우기 || 수정할 값 존재)
-			if (imageUrls.isEmpty()) { //수정할 값 담아보냄
-				questionPost.addPostImages(imageUrls);
+			if (!imageUrls.isEmpty()) { //수정할 값 담아보냄
+				questionPost.updatePostImages(imageUrls);
 			}
 		}
 	}
@@ -119,6 +118,7 @@ public class QuestionPostService {
 
 	private void deleteImages(QuestionPost questionPost) {
 		questionPostImageRepository.deleteByQuestionPost(questionPost);
+		questionPost.clearPostImages();
 	}
 
 	private int getCountByType(Long questionPostId, InteractionType type) {
