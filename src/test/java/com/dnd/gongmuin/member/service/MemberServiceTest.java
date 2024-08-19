@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.member.service;
 
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -38,12 +36,16 @@ class MemberServiceTest {
 	@Test
 	void parseProviderFromSocialEmail() {
 		// given
-		Member kakaoMember = createMember("김철수", "철수", "kakao123/kim@daum.net", "abc123@korea.com");
-		Member naverMember = createMember("박철수", "철수", "naver123/park@naver.com", "abc321@korea.com");
+		Member kakaoMember = MemberFixture.member();
+		Member naverMember = MemberFixture.member2();
+		kakaoMember.updateSocialEmail("kakao123/kim@daum.net");
+		naverMember.updateSocialEmail("naver123/park@naver.com");
 
 		try (MockedStatic<Provider> mockedProvider = mockStatic(Provider.class)) {
-			mockedProvider.when(() -> Provider.fromSocialEmail("kakao123/kim@daum.net")).thenReturn(Provider.KAKAO);
-			mockedProvider.when(() -> Provider.fromSocialEmail("naver123/park@naver.com")).thenReturn(Provider.NAVER);
+			mockedProvider.when(() -> Provider.fromSocialEmail(kakaoMember.getSocialEmail()))
+				.thenReturn(Provider.KAKAO);
+			mockedProvider.when(() -> Provider.fromSocialEmail(naverMember.getSocialEmail()))
+				.thenReturn(Provider.NAVER);
 
 			// when
 			Provider kakaoProvider = memberService.parseProviderFromSocialEmail(kakaoMember);
@@ -59,17 +61,17 @@ class MemberServiceTest {
 	@Test
 	void getMemberBySocialEmail() {
 		// given
-		Member member = createMember(null, "김회원", "kakao123/kakao123@daum.net", null);
-		given(memberRepository.findBySocialEmail("kakao123/kakao123@daum.net")).willReturn(Optional.ofNullable(member));
+		Member member = MemberFixture.member();
+		given(memberRepository.findBySocialEmail(member.getSocialEmail())).willReturn(Optional.ofNullable(member));
 
 		// when
-		Member findMember = memberService.getMemberBySocialEmail("kakao123/kakao123@daum.net");
+		Member findMember = memberService.getMemberBySocialEmail(member.getSocialEmail());
 
 		// then
 		assertThat(findMember).extracting("socialName", "socialEmail")
 			.containsExactlyInAnyOrder(
-				"김회원",
-				"kakao123/kakao123@daum.net"
+				"회원123",
+				"KAKAO123/gongmuin@daum.net"
 			);
 	}
 
@@ -132,19 +134,6 @@ class MemberServiceTest {
 
 		// when  // then
 		assertThrows(ValidationException.class, () -> memberService.updateMemberProfile(request, member));
-
-	}
-
-	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
-		return Member.builder()
-			.nickname(nickname)
-			.socialName(socialName)
-			.socialEmail(socialEmail)
-			.officialEmail(officialEmail)
-			.jobCategory(GAS)
-			.jobGroup(ENGINEERING)
-			.credit(10000)
-			.build();
 
 	}
 }

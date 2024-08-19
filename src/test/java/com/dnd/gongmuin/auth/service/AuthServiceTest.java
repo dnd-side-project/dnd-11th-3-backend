@@ -32,8 +32,6 @@ import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.repository.AuthRepository;
 import com.dnd.gongmuin.common.fixture.AuthFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
-import com.dnd.gongmuin.member.domain.JobCategory;
-import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -229,18 +227,4 @@ class AuthServiceTest {
 				.containsExactly(tuple("Authorization", "reissueToken"))
 		);
 	}
-
-	private Member createMember() {
-		return Member.builder()
-			.nickname("김철수")
-			.socialName("철수")
-			.socialEmail("KAKAO123/abc@naver.com")
-			.officialEmail("abc123@korea.com")
-			.jobCategory(JobCategory.GAS)
-			.jobGroup(JobGroup.ENGINEERING)
-			.credit(10000)
-			.build();
-
-	}
-
 }
