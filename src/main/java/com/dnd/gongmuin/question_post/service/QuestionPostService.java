@@ -41,6 +41,15 @@ public class QuestionPostService {
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
 
+	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
+		questionPost.updateQuestionPost(
+			request.title(),
+			request.content(),
+			request.reward(),
+			JobGroup.from(request.targetJobGroup())
+		);
+	}
+
 	@Transactional
 	public RegisterQuestionPostResponse registerQuestionPost(
 		RegisterQuestionPostRequest request,
@@ -105,15 +114,6 @@ public class QuestionPostService {
 				questionPost.updatePostImages(imageUrls);
 			}
 		}
-	}
-
-	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
-		questionPost.updateQuestionPost(
-			request.title(),
-			request.content(),
-			request.reward(),
-			JobGroup.from(request.targetJobGroup())
-		);
 	}
 
 	private void deleteImages(QuestionPost questionPost) {
