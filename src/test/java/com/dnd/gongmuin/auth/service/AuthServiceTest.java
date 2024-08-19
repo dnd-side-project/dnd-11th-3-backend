@@ -173,6 +173,7 @@ class AuthServiceTest {
 		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
 
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 		mockRequest.setCookies(new Cookie("Authorization", "testtesttesttest"));
 
 		given(cookieUtil.getCookieValue(mockRequest)).willReturn("testtesttesttest");
@@ -185,10 +186,11 @@ class AuthServiceTest {
 		willDoNothing().given(redisUtil).setValues(anyString(), anyString(), any(Duration.class));
 
 		// when
-		LogoutResponse response = authService.logout(mockRequest);
+		LogoutResponse response = authService.logout(mockRequest, mockResponse);
 
 		// then
 		assertThat(response.result()).isTrue();
+		assertThat(mockResponse.getCookies()).isEmpty();
 	}
 
 	@DisplayName("refresh 토큰이 만료되지 않았다면 재발급 할 수 있다.")
