@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.question_post.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
@@ -18,11 +21,14 @@ import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.QuestionPostMapper;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
+import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
+import com.dnd.gongmuin.question_post.repository.QuestionPostImageRepository;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +38,17 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostService {
 
 	private final QuestionPostRepository questionPostRepository;
-
 	private final InteractionCountRepository interactionCountRepository;
+	private final QuestionPostImageRepository questionPostImageRepository;
+
+	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
+		questionPost.updateQuestionPost(
+			request.title(),
+			request.content(),
+			request.reward(),
+			JobGroup.from(request.targetJobGroup())
+		);
+	}
 
 	@Transactional
 	public RegisterQuestionPostResponse registerQuestionPost(
@@ -44,7 +59,7 @@ public class QuestionPostService {
 			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
 		}
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
-		return QuestionPostMapper.toQuestionPostDetailResponse(
+		return QuestionPostMapper.toRegisterQuestionPostResponse(
 			questionPostRepository.save(questionPost)
 		);
 	}
@@ -78,6 +93,32 @@ public class QuestionPostService {
 		Slice<RecQuestionPostResponse> responsePage
 			= questionPostRepository.getRecommendQuestionPosts(member.getJobGroup(), pageable);
 		return PageMapper.toPageResponse(responsePage);
+	}
+
+	@Transactional
+	public UpdateQuestionPostResponse updateQuestionPost(
+		Long questionPostId,
+		UpdateQuestionPostRequest request
+	) {
+		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+		updateQuestionPostImages(questionPost, request.imageUrls());
+		updateQuestionPost(request, questionPost);
+		return QuestionPostMapper.toUpdateQuestionPostResponse(questionPost);
+	}
+
+	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
+		if (imageUrls != null) { // 수정 사항 존재
+			deleteImages(questionPost); // 기존 이미지 객체 삭제 (새로 비우기 || 수정할 값 존재)
+			if (!imageUrls.isEmpty()) { //수정할 값 담아보냄
+				questionPost.updatePostImages(imageUrls);
+			}
+		}
+	}
+
+	private void deleteImages(QuestionPost questionPost) {
+		questionPostImageRepository.deleteByQuestionPost(questionPost);
+		questionPost.clearPostImages();
 	}
 
 	private int getCountByType(Long questionPostId, InteractionType type) {
