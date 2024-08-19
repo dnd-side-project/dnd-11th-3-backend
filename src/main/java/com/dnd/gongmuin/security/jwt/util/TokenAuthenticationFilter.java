@@ -15,7 +15,6 @@ import com.dnd.gongmuin.redis.util.RedisUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	private static final String TOKEN_PREFIX = "Bearer ";
 	private final TokenProvider tokenProvider;
 	private final RedisUtil redisUtil;
+	private final CookieUtil cookieUtil;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String accessToken = getCookieValue(request);
+		String accessToken = cookieUtil.getCookieValue(request);
 
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
@@ -58,15 +58,4 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		return token.substring(TOKEN_PREFIX.length());
 	}
 
-	private String getCookieValue(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if ("Authorization".equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
-	}
 }

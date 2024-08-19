@@ -12,11 +12,11 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +28,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 	private final AuthService authService;
 	private final MemberRepository memberRepository;
 	private final TokenProvider tokenProvider;
+	private final CookieUtil cookieUtil;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -42,7 +43,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(customOauth2User, new Date());
 
-		response.addCookie(createCookie(token));
+		response.addCookie(cookieUtil.createCookie(token));
 
 		if (!isAuthStatusOld(findmember)) {
 			response.sendRedirect("http://localhost:3000/signup");
@@ -54,13 +55,4 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 	private boolean isAuthStatusOld(Member member) {
 		return authService.isAuthStatusOld(member);
 	}
-
-	private static Cookie createCookie(String token) {
-		Cookie cookie = new Cookie("Authorization", token);
-		cookie.setPath("/");
-		cookie.setMaxAge(1000 * 60 * 60);
-		cookie.setHttpOnly(true);
-		return cookie;
-	}
-
 }
