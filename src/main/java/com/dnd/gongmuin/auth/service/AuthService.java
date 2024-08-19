@@ -116,7 +116,7 @@ public class AuthService {
 		return new SignUpResponse(foundMember.getNickname());
 	}
 
-	public LogoutResponse logout(HttpServletRequest request) {
+	public LogoutResponse logout(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = cookieUtil.getCookieValue(request);
 
 		if (!tokenProvider.validateToken(accessToken, new Date())) {
@@ -137,6 +137,8 @@ public class AuthService {
 		if (!Objects.equals(values, LOGOUT)) {
 			throw new NotFoundException(MemberErrorCode.LOGOUT_FAILED);
 		}
+
+		cookieUtil.deleteCookie(response);
 
 		return new LogoutResponse(true);
 	}

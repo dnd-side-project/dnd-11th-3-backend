@@ -66,9 +66,9 @@ public class AuthController {
 	@Operation(summary = "로그아웃 API", description = "로그아웃한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/logout")
-	public ResponseEntity<LogoutResponse> logout(HttpServletRequest request) {
-		LogoutResponse response = authService.logout(request);
-		return ResponseEntity.ok(response);
+	public ResponseEntity<LogoutResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+		LogoutResponse logoutResponse = authService.logout(request, response);
+		return ResponseEntity.ok(logoutResponse);
 	}
 
 	@Operation(summary = "토큰 재발급 API", description = "토큰을 재발급한다.")
