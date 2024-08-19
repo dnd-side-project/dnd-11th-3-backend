@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.member.dto.response;
+package com.dnd.gongmuin.auth.dto.response;
 
 public record ReissueResponse(
 

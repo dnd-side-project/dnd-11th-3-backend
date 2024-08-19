@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.gongmuin.auth.dto.TempLoginRequest;
+import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
+import com.dnd.gongmuin.auth.dto.request.TempLoginRequest;
+import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
+import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
+import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
+import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
-import com.dnd.gongmuin.member.dto.response.LogoutResponse;
-import com.dnd.gongmuin.member.dto.response.ReissueResponse;
-import com.dnd.gongmuin.member.dto.response.SignUpResponse;
-import com.dnd.gongmuin.member.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +49,7 @@ public class AuthController {
 	@PostMapping("/check-nickname")
 	public ResponseEntity<ValidateNickNameResponse> checkNickName(
 		@RequestBody @Valid ValidateNickNameRequest request) {
-		return ResponseEntity.ok(memberService.isDuplicatedNickname(request));
+		return ResponseEntity.ok(authService.isDuplicatedNickname(request));
 	}
 
 	@Operation(summary = "추가정보 API", description = "추가 정보를 저장한다.")
@@ -58,7 +58,7 @@ public class AuthController {
 	public ResponseEntity<SignUpResponse> signUp(
 		@RequestBody @Valid AdditionalInfoRequest request,
 		@AuthenticationPrincipal Member loginMember) {
-		SignUpResponse response = memberService.signUp(request, loginMember.getSocialEmail());
+		SignUpResponse response = authService.signUp(request, loginMember.getSocialEmail());
 
 		return ResponseEntity.ok(response);
 	}
@@ -67,7 +67,7 @@ public class AuthController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/logout")
 	public ResponseEntity<LogoutResponse> logout(HttpServletRequest request) {
-		LogoutResponse response = memberService.logout(request);
+		LogoutResponse response = authService.logout(request);
 		return ResponseEntity.ok(response);
 	}
 
@@ -75,7 +75,7 @@ public class AuthController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/reissue/token")
 	public ResponseEntity<ReissueResponse> reissue(HttpServletRequest request, HttpServletResponse response) {
-		ReissueResponse reissueResponse = memberService.reissue(request, response);
+		ReissueResponse reissueResponse = authService.reissue(request, response);
 
 		return ResponseEntity.ok(reissueResponse);
 	}
