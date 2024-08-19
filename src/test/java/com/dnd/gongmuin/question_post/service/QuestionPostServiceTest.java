@@ -23,9 +23,13 @@ import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
+import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
+import com.dnd.gongmuin.question_post.repository.QuestionPostImageRepository;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPostService 테스트]")
@@ -36,6 +40,9 @@ class QuestionPostServiceTest {
 
 	@Mock
 	private QuestionPostRepository questionPostRepository;
+
+	@Mock
+	private QuestionPostImageRepository questionPostImageRepository;
 
 	@Mock
 	private InteractionCountRepository interactionCountRepository;
@@ -138,6 +145,42 @@ class QuestionPostServiceTest {
 				.isEqualTo(recommendCount.getCount()).isEqualTo(1),
 			() -> assertThat(response.savedCount())
 				.isEqualTo(savedCount.getCount()).isEqualTo(1)
+		);
+	}
+
+	@DisplayName("[질문글 업데이트를 할 수 있다.]")
+	@Test
+	void updateQuestionPost() {
+		//given
+		Long questionPostId = 1L;
+		QuestionPost questionPost = QuestionPostFixture.questionPost(member);
+		UpdateQuestionPostRequest request =
+			new UpdateQuestionPostRequest(
+				questionPost.getTitle() + "ㅇㅇㅇ",
+				questionPost.getContent(),
+				null,
+				questionPost.getReward() * 2,
+				"행정"
+			);
+
+		given(questionPostRepository.findById(questionPostId))
+			.willReturn(Optional.of(questionPost));
+
+		//when
+		UpdateQuestionPostResponse response
+			= questionPostService.updateQuestionPost(questionPostId, request);
+
+		//then
+		assertAll(
+			() -> assertThat(response.title())
+				.isEqualTo(request.title()),
+			() -> assertThat(response.reward())
+				.isEqualTo(request.reward()),
+			() -> assertThat(response.targetJobGroup())
+				.isEqualTo(request.targetJobGroup()),
+			() -> assertThat(response.imageUrls())
+				.isEqualTo(questionPost.getImages().stream()
+					.map(QuestionPostImage::getImageUrl).toList())
 		);
 	}
 }
