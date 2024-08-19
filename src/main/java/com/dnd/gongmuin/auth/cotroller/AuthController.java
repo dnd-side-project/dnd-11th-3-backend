@@ -16,7 +16,6 @@ import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
-	private final MemberService memberService;
 
 	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "로그인 또는 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
