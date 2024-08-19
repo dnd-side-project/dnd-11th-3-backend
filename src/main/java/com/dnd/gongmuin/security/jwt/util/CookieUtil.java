@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -28,5 +29,13 @@ public class CookieUtil {
 			}
 		}
 		return null;
+	}
+
+	public void deleteCookie(HttpServletResponse response) {
+		Cookie cookie = new Cookie("Authorization", null);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+
+		response.addCookie(cookie);
 	}
 }
