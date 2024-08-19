@@ -58,7 +58,7 @@ public class AuthService {
 				}
 				return auth;
 			})
-			.orElse(createAuth(savedMember));
+			.orElseGet(() -> createAuth(savedMember));
 
 		authRepository.save(findedOrCreatedAuth);
 	}

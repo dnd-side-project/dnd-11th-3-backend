@@ -37,7 +37,7 @@ public class MemberService {
 				m.updateSocialEmail(oauth2Response.createSocialEmail());
 				return m;
 			})
-			.orElse(createMemberFromOauth2Response(oauth2Response));
+			.orElseGet(() -> createMemberFromOauth2Response(oauth2Response));
 
 		return memberRepository.save(member);
 	}
