@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 
 import com.dnd.gongmuin.auth.domain.Auth;
 import com.dnd.gongmuin.auth.domain.AuthStatus;
-import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
@@ -88,7 +87,6 @@ class AuthServiceTest {
 		Member member = MemberFixture.member();
 		Auth auth = AuthFixture.auth(member);
 		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.of(auth));
-		given(memberService.parseProviderFromSocialEmail(member)).willReturn(Provider.KAKAO);
 		given(authRepository.save(any(Auth.class))).willReturn(auth);
 
 		// when
@@ -105,7 +103,6 @@ class AuthServiceTest {
 		Member member = MemberFixture.member3();
 		Auth auth = AuthFixture.auth(member);
 		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.of(auth));
-		given(memberService.parseProviderFromSocialEmail(member)).willReturn(Provider.KAKAO);
 		given(authRepository.save(any(Auth.class))).willReturn(auth);
 
 		// when
