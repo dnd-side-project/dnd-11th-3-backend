@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.question_post.dto;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class QuestionPostMapper {
 	}
 
 	private static List<QuestionPostImage> urlsToImages(RegisterQuestionPostRequest request) {
-		List<QuestionPostImage> images = null;
+		List<QuestionPostImage> images = new ArrayList<>();
 		if (request.imageUrls() != null) {
 			images = request.imageUrls().stream()
 				.map(QuestionPostImage::from)
