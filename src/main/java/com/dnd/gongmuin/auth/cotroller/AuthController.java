@@ -16,8 +16,6 @@ import com.dnd.gongmuin.auth.dto.TempLoginRequest;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.member.dto.request.LogoutRequest;
-import com.dnd.gongmuin.member.dto.request.ReissueRequest;
 import com.dnd.gongmuin.member.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.ReissueResponse;
@@ -28,6 +26,7 @@ import com.dnd.gongmuin.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +81,7 @@ public class AuthController {
 	@Operation(summary = "로그아웃 API", description = "로그아웃한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/logout")
-	public ResponseEntity<LogoutResponse> logout(@RequestBody @Valid LogoutRequest request) {
+	public ResponseEntity<LogoutResponse> logout(HttpServletRequest request) {
 		LogoutResponse response = memberService.logout(request);
 		return ResponseEntity.ok(response);
 	}
@@ -90,11 +89,10 @@ public class AuthController {
 	@Operation(summary = "토큰 재발급 API", description = "토큰을 재발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/reissue/token")
-	public void reissue(@RequestBody @Valid ReissueRequest request, HttpServletResponse response) {
-		ReissueResponse token = memberService.reissue(request);
-		response.setHeader("Authorization", token.accessToken());
+	public ResponseEntity<ReissueResponse> reissue(HttpServletRequest request, HttpServletResponse response) {
+		ReissueResponse reissueResponse = memberService.reissue(request, response);
 
-		response.setStatus(HttpServletResponse.SC_OK);
+		return ResponseEntity.ok(reissueResponse);
 	}
 }
 
