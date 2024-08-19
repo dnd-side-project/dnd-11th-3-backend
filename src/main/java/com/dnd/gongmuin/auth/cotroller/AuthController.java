@@ -36,9 +36,11 @@ public class AuthController {
 	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "로그인 또는 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/token")
-	public ResponseEntity<String> getTempToken(@RequestBody @Valid TempLoginRequest request) {
-		String accessToken = authService.swaggerToken(request);
-		return ResponseEntity.ok(accessToken);
+	public ResponseEntity<String> getTempToken(
+		@RequestBody @Valid TempLoginRequest request,
+		HttpServletResponse response) {
+		authService.swaggerToken(request, response);
+		return ResponseEntity.ok("성공");
 
 	}
 

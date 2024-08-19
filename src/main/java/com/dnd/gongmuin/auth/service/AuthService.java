@@ -77,7 +77,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public String swaggerToken(TempLoginRequest tempLoginRequest) {
+	public void swaggerToken(TempLoginRequest tempLoginRequest, HttpServletResponse response) {
 		Date now = new Date();
 		Member member = Member.of(tempLoginRequest.socialName(), "kakao/" + tempLoginRequest.socialEmail(), 10000);
 
@@ -91,7 +91,8 @@ public class AuthService {
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
 		tokenProvider.generateRefreshToken(customOauth2User, now);
-		return tokenProvider.generateAccessToken(customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+		response.addCookie(cookieUtil.createCookie(accessToken));
 	}
 
 	@Transactional(readOnly = true)
