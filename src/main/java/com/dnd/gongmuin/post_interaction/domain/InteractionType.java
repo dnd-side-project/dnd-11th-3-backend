@@ -2,6 +2,9 @@ package com.dnd.gongmuin.post_interaction.domain;
 
 import java.util.Arrays;
 
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.post_interaction.exception.InteractionErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +21,7 @@ public enum InteractionType {
 		return Arrays.stream(values())
 			.filter(type -> type.isEqual(input))
 			.findAny()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new ValidationException(InteractionErrorCode.NOT_FOUND_TYPE));
 	}
 
 	private boolean isEqual(String input) {
