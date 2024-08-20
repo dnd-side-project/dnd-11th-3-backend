@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.member.repository;
 
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -66,14 +64,14 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 	@Test
 	void findMemberBySocialEmail() {
 		// given
-		Member 공무인1 = createMember("공무인1", "영태", "kakao1234/gongmuin@nate.com", "gongumin@korea.kr");
-		Member savedMember = memberRepository.save(공무인1);
+		Member member = MemberFixture.member();
+		Member savedMember = memberRepository.save(member);
 
 		// when
-		Member findMember = memberRepository.findBySocialEmail("kakao1234/gongmuin@nate.com").get();
+		Member findMember = memberRepository.findBySocialEmail(savedMember.getSocialEmail()).get();
 
 		// then
-		assertThat(findMember.getNickname()).isEqualTo("공무인1");
+		assertThat(findMember.getNickname()).isEqualTo(savedMember.getNickname());
 	}
 
 	@DisplayName("자신이 작성한 질문 목록만 조회할 수 있다.[상호작용 수 비포함]")
@@ -394,18 +392,4 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				)
 		);
 	}
-
-	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
-		return Member.builder()
-			.nickname(nickname)
-			.socialName(socialName)
-			.socialEmail(socialEmail)
-			.officialEmail(officialEmail)
-			.jobCategory(GAS)
-			.jobGroup(ENGINEERING)
-			.credit(10000)
-			.build();
-
-	}
-
 }
