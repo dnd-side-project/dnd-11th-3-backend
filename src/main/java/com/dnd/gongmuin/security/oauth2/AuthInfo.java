@@ -10,11 +10,13 @@ public class AuthInfo {
 
 	private String socialName;
 	private String socialEmail;
+	private String role;
 
 	@Builder
-	private AuthInfo(String socialName, String socialEmail) {
+	private AuthInfo(String socialName, String socialEmail, String role) {
 		this.socialName = socialName;
 		this.socialEmail = socialEmail;
+		this.role = role;
 	}
 
 	public static AuthInfo fromSocialEmail(String socialEmail) {
@@ -27,6 +29,14 @@ public class AuthInfo {
 		return AuthInfo.builder()
 			.socialName(socialName)
 			.socialEmail(socialEmail)
+			.build();
+	}
+
+	public static AuthInfo of(String socialName, String socialEmail, String role) {
+		return AuthInfo.builder()
+			.socialName(socialName)
+			.socialEmail(socialEmail)
+			.role(role)
 			.build();
 	}
 

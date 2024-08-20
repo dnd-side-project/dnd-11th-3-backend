@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.cotroller;
+package com.dnd.gongmuin.auth.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.auth.dto.request.TempLoginRequest;
+import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
+import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
@@ -33,15 +34,26 @@ public class AuthController {
 
 	private final AuthService authService;
 
-	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "로그인 또는 회원가입 후 토큰을 발급한다.")
+	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "임시 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/token")
-	public ResponseEntity<String> getTempToken(
-		@RequestBody @Valid TempLoginRequest request,
+	@PostMapping("/temp-signup")
+	public ResponseEntity<String> tempSignUp(
+		@RequestBody @Valid TempSignUpRequest request,
 		HttpServletResponse response) {
-		authService.swaggerToken(request, response);
-		return ResponseEntity.ok("성공");
 
+		authService.tempSignUp(request, response);
+		return ResponseEntity.ok("성공");
+	}
+
+	@Operation(summary = "임시 로그인(토큰 발급) API", description = "임시 로그인 후 토큰을 발급한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@PostMapping("/temp-signin")
+	public ResponseEntity<String> tempSignIn(
+		@RequestBody @Valid TempSignInRequest request,
+		HttpServletResponse response) {
+
+		authService.tempSignIn(request, response);
+		return ResponseEntity.ok("성공");
 	}
 
 	@Operation(summary = "닉네임 중복 검증 API", description = "닉네임 중복을 검증한다.")
@@ -57,10 +69,11 @@ public class AuthController {
 	@PostMapping("/member")
 	public ResponseEntity<SignUpResponse> signUp(
 		@RequestBody @Valid AdditionalInfoRequest request,
-		@AuthenticationPrincipal Member loginMember) {
-		SignUpResponse response = authService.signUp(request, loginMember.getSocialEmail());
+		@AuthenticationPrincipal Member loginMember,
+		HttpServletResponse response) {
+		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
 
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(signUpResponse);
 	}
 
 	@Operation(summary = "로그아웃 API", description = "로그아웃한다.")

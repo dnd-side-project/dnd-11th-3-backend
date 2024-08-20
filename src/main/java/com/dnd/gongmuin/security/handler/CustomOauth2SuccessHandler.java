@@ -45,7 +45,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 
 		response.addCookie(cookieUtil.createCookie(token));
 
-		if (!isAuthStatusOld(findmember)) {
+		if (!isAuthStatusOld(findmember) && isRoleGuest(findmember.getRole())) {
 			response.sendRedirect("http://localhost:3000/signup");
 		} else {
 			response.sendRedirect("http://localhost:3000/home");
@@ -54,5 +54,9 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 
 	private boolean isAuthStatusOld(Member member) {
 		return authService.isAuthStatusOld(member);
+	}
+
+	private boolean isRoleGuest(String role) {
+		return "ROLE_GUEST".equals(role);
 	}
 }

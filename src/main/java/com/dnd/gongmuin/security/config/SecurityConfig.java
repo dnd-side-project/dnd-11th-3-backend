@@ -13,6 +13,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.dnd.gongmuin.security.handler.CustomAccessDeniedHandler;
 import com.dnd.gongmuin.security.handler.CustomAuthenticationEntryPoint;
 import com.dnd.gongmuin.security.handler.CustomOauth2FailureHandler;
 import com.dnd.gongmuin.security.handler.CustomOauth2SuccessHandler;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 	private final CustomOauth2SuccessHandler customOauth2SuccessHandler;
 	private final CustomOauth2FailureHandler customOauth2FailureHandler;
 	private final TokenAuthenticationFilter tokenAuthenticationFilter;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +49,13 @@ public class SecurityConfig {
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
 					.requestMatchers("/api/auth/reissue/token").permitAll()
-					.anyRequest().authenticated()
+					.requestMatchers(
+						"/api/auth/member",
+						"/api/auth/check-nickname",
+						"/api/auth/check-email",
+						"/api/auth/check-email/authCode"
+					).hasAnyAuthority("ROLE_GUEST", "ROLE_USER")
+					.anyRequest().hasAuthority("ROLE_USER")
 			)
 			.oauth2Login((oauth2) -> oauth2
 				.userInfoEndpoint(
@@ -61,7 +69,9 @@ public class SecurityConfig {
 			.addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass())
 
 			.exceptionHandling((exception) -> exception
-				.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+				.accessDeniedHandler(customAccessDeniedHandler)
+			);
 
 		return http.build();
 	}
@@ -70,7 +80,7 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
 			.requestMatchers(
-				"/error", "/favicon.ico", "/api/auth/token",
+				"/error", "/favicon.ico", "/api/auth/temp-signup", "/api/auth/temp-signin",
 				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
 			);
 	}

@@ -145,13 +145,14 @@ class AuthServiceTest {
 	void signUp() {
 		// given
 		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "가스");
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
 		Member member1 = MemberFixture.member3();
 		given(memberRepository.findBySocialEmail(member1.getSocialEmail())).willReturn(
 			Optional.ofNullable(member1));
 
 		// when
-		authService.signUp(request, member1.getSocialEmail());
+		authService.signUp(request, member1.getSocialEmail(), mockResponse);
 
 		// then
 		assertThat(member1).extracting("officialEmail", "nickname", "jobGroup", "jobCategory")
