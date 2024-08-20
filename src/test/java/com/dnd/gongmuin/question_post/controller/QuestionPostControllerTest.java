@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
-@Disabled
 class QuestionPostControllerTest extends ApiTestSupport {
 
 	@Autowired
@@ -226,9 +224,10 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			JobGroup.ADMINISTRATION.getLabel()
 		);
 		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
-				.header(AUTHORIZATION, accessToken)
 				.content(toJson(request))
-				.contentType(APPLICATION_JSON))
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken))
+
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.title").value(request.title()))
 			.andExpect(jsonPath("$.content").value(request.content()))
@@ -250,9 +249,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			questionPost.getJobGroup().getLabel()
 		);
 		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
-				.header(AUTHORIZATION, accessToken)
 				.content(toJson(request))
-				.contentType(APPLICATION_JSON))
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.imageUrls[0]").value(updateImageUrls.get(0)))
 			.andExpect(jsonPath("$.imageUrls.length()").value(updateImageUrls.size()))
@@ -271,9 +270,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			questionPost.getJobGroup().getLabel()
 		);
 		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
-				.header(AUTHORIZATION, accessToken)
 				.content(toJson(request))
-				.contentType(APPLICATION_JSON))
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.imageUrls[0]")
 				.value(questionPost.getImages().get(0).getImageUrl()))
@@ -294,9 +293,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			questionPost.getJobGroup().getLabel()
 		);
 		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
-				.header(AUTHORIZATION, accessToken)
 				.content(toJson(request))
-				.contentType(APPLICATION_JSON))
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.imageUrls.length()")
 				.value(0))
