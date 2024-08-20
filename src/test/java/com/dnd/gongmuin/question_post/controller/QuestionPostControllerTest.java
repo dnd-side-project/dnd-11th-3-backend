@@ -227,7 +227,6 @@ class QuestionPostControllerTest extends ApiTestSupport {
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
 				.cookie(accessToken))
-
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.title").value(request.title()))
 			.andExpect(jsonPath("$.content").value(request.content()))
