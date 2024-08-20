@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.8'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
 }
 
 group = 'com.dnd'
@@ -21,6 +22,67 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+}
+
+def QDomains = []
+
+for (qPattern in '**/QA'..'**/QZ') {
+    QDomains.add(qPattern + '*')
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, excludes: [
+                '**/*Application*',
+                '**/exception/**',
+                '**/config/**',
+                '**/dto/**',
+                '**/s3/**'
+        ] + QDomains)
+    }))
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(true)
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                value = 'COVERERDRATIO'
+                minimum = 0.75
+            }
+        }
+
+        rule {
+            excludes = [
+                    '**/*Application*',
+                    '**/exception/**',
+                    '**/config/**',
+                    '**/dto/**',
+                    '**/s3/**'
+            ] + QDomains
+        }
+    }
 }
 
 dependencies {
@@ -66,7 +128,7 @@ dependencies {
 
     // mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    
+
     //swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
