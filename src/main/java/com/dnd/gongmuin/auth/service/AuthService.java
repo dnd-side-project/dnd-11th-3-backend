@@ -12,7 +12,8 @@ import com.dnd.gongmuin.auth.domain.Auth;
 import com.dnd.gongmuin.auth.domain.AuthStatus;
 import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
-import com.dnd.gongmuin.auth.dto.request.TempLoginRequest;
+import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
+import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
@@ -77,17 +78,41 @@ public class AuthService {
 	}
 
 	@Transactional
-	public void swaggerToken(TempLoginRequest tempLoginRequest, HttpServletResponse response) {
+	public void tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
 		Date now = new Date();
-		Member member = Member.of(tempLoginRequest.socialName(), "kakao/" + tempLoginRequest.socialEmail(), 10000);
+		Member member = Member.of(
+			tempSignUpRequest.socialName(),
+			"kakao/" + tempSignUpRequest.socialEmail(),
+			10000,
+			"ROLE_GUEST"
+		);
 
 		if (memberRepository.existsBySocialEmail(member.getSocialEmail())) {
-			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
+			throw new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER);
 		}
+
 		memberRepository.save(member);
 		saveOrUpdate(member);
 
-		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail());
+		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
+		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
+
+		tokenProvider.generateRefreshToken(customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+		response.addCookie(cookieUtil.createCookie(accessToken));
+	}
+
+	@Transactional
+	public void tempSignIn(TempSignInRequest tempSignInRequest, HttpServletResponse response) {
+		Date now = new Date();
+
+		String prefixSocialEmail = "kakao/" + tempSignInRequest.socialEmail();
+
+		Member member = memberRepository.findBySocialEmail(prefixSocialEmail)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+
+		saveOrUpdate(member);
+		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
 		tokenProvider.generateRefreshToken(customOauth2User, now);
@@ -103,7 +128,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public SignUpResponse signUp(AdditionalInfoRequest request, String email) {
+	public SignUpResponse signUp(AdditionalInfoRequest request, String email, HttpServletResponse response) {
 		Member foundMember = memberRepository.findBySocialEmail(email)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
@@ -112,6 +137,8 @@ public class AuthService {
 		}
 
 		updateAdditionalInfo(request, foundMember);
+
+		cookieUtil.deleteCookie(response);
 
 		return new SignUpResponse(foundMember.getNickname());
 	}
@@ -162,7 +189,7 @@ public class AuthService {
 		}
 
 		CustomOauth2User customUser = new CustomOauth2User(
-			AuthInfo.of(member.getSocialName(), member.getSocialEmail()));
+			AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole()));
 		String reissuedAccessToken = tokenProvider.generateAccessToken(customUser, new Date());
 		tokenProvider.generateRefreshToken(customUser, new Date());
 

@@ -24,7 +24,7 @@ public class CustomOauth2User implements OAuth2User {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		String role = "ROLE_USER";
+		String role = authInfo.getRole();
 		return Collections.singletonList(new SimpleGrantedAuthority(role));
 	}
 

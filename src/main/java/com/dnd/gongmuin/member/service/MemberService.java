@@ -48,7 +48,7 @@ public class MemberService {
 	}
 
 	private Member createMemberFromOauth2Response(Oauth2Response oauth2Response) {
-		return Member.of(oauth2Response.getName(), oauth2Response.createSocialEmail(), 10000);
+		return Member.of(oauth2Response.getName(), oauth2Response.createSocialEmail(), 10000, "ROLE_GUEST");
 	}
 
 	public Member getMemberBySocialEmail(String socialEmail) {

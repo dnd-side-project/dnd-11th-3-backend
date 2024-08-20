@@ -49,7 +49,11 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 			return;
 		}
 		Member savedMember = memberRepository.save(MemberFixture.member());
-		AuthInfo authInfo = AuthInfo.of(savedMember.getSocialName(), savedMember.getSocialEmail());
+		AuthInfo authInfo = AuthInfo.of(
+			savedMember.getSocialName(),
+			savedMember.getSocialEmail(),
+			savedMember.getRole()
+		);
 		String token = tokenProvider.generateAccessToken(new CustomOauth2User(authInfo), new Date());
 		tokenProvider.generateRefreshToken(new CustomOauth2User(authInfo), new Date());
 		this.loginMember = savedMember;
