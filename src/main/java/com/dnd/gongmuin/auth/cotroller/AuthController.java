@@ -57,10 +57,11 @@ public class AuthController {
 	@PostMapping("/member")
 	public ResponseEntity<SignUpResponse> signUp(
 		@RequestBody @Valid AdditionalInfoRequest request,
-		@AuthenticationPrincipal Member loginMember) {
-		SignUpResponse response = authService.signUp(request, loginMember.getSocialEmail());
+		@AuthenticationPrincipal Member loginMember,
+		HttpServletResponse response) {
+		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
 
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(signUpResponse);
 	}
 
 	@Operation(summary = "로그아웃 API", description = "로그아웃한다.")

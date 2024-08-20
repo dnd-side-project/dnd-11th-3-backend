@@ -79,7 +79,12 @@ public class AuthService {
 	@Transactional
 	public void swaggerToken(TempLoginRequest tempLoginRequest, HttpServletResponse response) {
 		Date now = new Date();
-		Member member = Member.of(tempLoginRequest.socialName(), "kakao/" + tempLoginRequest.socialEmail(), 10000);
+		Member member = Member.of(
+			tempLoginRequest.socialName(),
+			"kakao/" + tempLoginRequest.socialEmail(),
+			10000,
+			"ROLE_GUEST"
+		);
 
 		if (memberRepository.existsBySocialEmail(member.getSocialEmail())) {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
@@ -87,7 +92,7 @@ public class AuthService {
 		memberRepository.save(member);
 		saveOrUpdate(member);
 
-		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail());
+		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
 		tokenProvider.generateRefreshToken(customOauth2User, now);
@@ -103,7 +108,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public SignUpResponse signUp(AdditionalInfoRequest request, String email) {
+	public SignUpResponse signUp(AdditionalInfoRequest request, String email, HttpServletResponse response) {
 		Member foundMember = memberRepository.findBySocialEmail(email)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
@@ -112,6 +117,8 @@ public class AuthService {
 		}
 
 		updateAdditionalInfo(request, foundMember);
+
+		cookieUtil.deleteCookie(response);
 
 		return new SignUpResponse(foundMember.getNickname());
 	}
@@ -162,7 +169,7 @@ public class AuthService {
 		}
 
 		CustomOauth2User customUser = new CustomOauth2User(
-			AuthInfo.of(member.getSocialName(), member.getSocialEmail()));
+			AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole()));
 		String reissuedAccessToken = tokenProvider.generateAccessToken(customUser, new Date());
 		tokenProvider.generateRefreshToken(customUser, new Date());
 
