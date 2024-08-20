@@ -81,7 +81,7 @@ public class QuestionPostController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "질문글 업데이트 API", description = "질문자가 질문글을 업데이트 한다.")
+	@Operation(summary = "질문글 수정 API", description = "질문자가 질문글을 수정한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PatchMapping("/api/question-posts/{questionPostId}/edit")
 	public ResponseEntity<UpdateQuestionPostResponse> updateQuestionPosts(
