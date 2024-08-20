@@ -80,7 +80,7 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
 			.requestMatchers(
-				"/error", "/favicon.ico", "/api/auth/tempSignUp", "/api/auth/tempSignIn",
+				"/error", "/favicon.ico", "/api/auth/temp-signup", "/api/auth/temp-signin",
 				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
 			);
 	}

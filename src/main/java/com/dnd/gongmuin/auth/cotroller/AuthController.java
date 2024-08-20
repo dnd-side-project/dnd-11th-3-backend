@@ -36,7 +36,7 @@ public class AuthController {
 
 	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "임시 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/tempSignUp")
+	@PostMapping("/temp-signup")
 	public ResponseEntity<String> tempSignUp(
 		@RequestBody @Valid TempSignUpRequest request,
 		HttpServletResponse response) {
@@ -47,7 +47,7 @@ public class AuthController {
 
 	@Operation(summary = "임시 로그인(토큰 발급) API", description = "임시 로그인 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/tempSignIn")
+	@PostMapping("/temp-signin")
 	public ResponseEntity<String> tempSignIn(
 		@RequestBody @Valid TempSignInRequest request,
 		HttpServletResponse response) {
