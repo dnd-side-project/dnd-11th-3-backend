@@ -36,7 +36,7 @@ public class AuthController {
 
 	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "임시 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/tempSignUP")
+	@PostMapping("/tempSignUp")
 	public ResponseEntity<String> tempSignUp(
 		@RequestBody @Valid TempSignUpRequest request,
 		HttpServletResponse response) {
