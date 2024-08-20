@@ -67,7 +67,11 @@ public class AuthControllerTest extends ApiTestSupport {
 		AdditionalInfoRequest request = new AdditionalInfoRequest("dsaf@korea.kr", "회원", "공업", "가스");
 
 		Member savedMember = memberRepository.save(MemberFixture.member3());
-		AuthInfo authInfo = AuthInfo.of(savedMember.getSocialName(), savedMember.getSocialEmail());
+		AuthInfo authInfo = AuthInfo.of(
+			savedMember.getSocialName(),
+			savedMember.getSocialEmail(),
+			savedMember.getRole()
+		);
 		String token = tokenProvider.generateAccessToken(new CustomOauth2User(authInfo), new Date());
 		this.loginMember = savedMember;
 		this.accessToken = new Cookie("Authorization", token);

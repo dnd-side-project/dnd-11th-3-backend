@@ -53,7 +53,7 @@ class TokenProviderTest {
 
 		ReflectionTestUtils.setField(tokenProvider, "secretKey", secretKey);
 
-		this.authInfo = AuthInfo.of("김회원", "kakao123/daum.net");
+		this.authInfo = AuthInfo.of("김회원", "kakao123/daum.net", "ROLE_USER");
 	}
 
 	@DisplayName("만료일이 30분인 토큰이 생성된다.")

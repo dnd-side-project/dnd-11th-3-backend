@@ -22,7 +22,8 @@ public class MemberFixture {
 			JobCategory.GAS,
 			"KAKAO123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
-			10000
+			10000,
+			"ROLE_USER"
 		);
 	}
 
@@ -34,7 +35,8 @@ public class MemberFixture {
 			JobCategory.GAS,
 			"KAKAO123/member2@daum.net",
 			"member2@korea.kr",
-			20000
+			20000,
+			"ROLE_USER"
 		);
 	}
 
@@ -42,7 +44,8 @@ public class MemberFixture {
 		return Member.of(
 			"소셜회원",
 			"KAKAO123/member2@daum.net",
-			20000
+			20000,
+			"ROLE_GUEST"
 		);
 	}
 
@@ -54,7 +57,8 @@ public class MemberFixture {
 			JobCategory.GAS,
 			"KAKAO1234/member2@daum.net",
 			"member@korea.kr",
-			20000
+			20000,
+			"ROLE_USER"
 		);
 	}
 
@@ -66,7 +70,8 @@ public class MemberFixture {
 			JobCategory.GAS,
 			"KAKAO123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
-			10000
+			10000,
+			"ROLE_USER"
 		);
 
 		ReflectionTestUtils.setField(member, "id", memberId);
