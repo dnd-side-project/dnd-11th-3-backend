@@ -2,6 +2,9 @@ package com.dnd.gongmuin.member.domain;
 
 import java.util.Arrays;
 
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +20,7 @@ public enum JobCategory {
 		return Arrays.stream(values())
 			.filter(category -> category.isEqual(input))
 			.findAny()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new ValidationException(MemberErrorCode.NOT_FOUND_JOB_CATEGORY));
 	}
 
 	private boolean isEqual(String input) {
