@@ -12,6 +12,7 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
@@ -27,6 +28,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 	private final AuthService authService;
 	private final MemberRepository memberRepository;
 	private final TokenProvider tokenProvider;
+	private final CookieUtil cookieUtil;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -41,17 +43,16 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(customOauth2User, new Date());
 
-		response.setHeader("Authorization", token);
+		response.addCookie(cookieUtil.createCookie(token));
 
 		if (!isAuthStatusOld(findmember)) {
-			response.sendRedirect("/additional-info");
+			response.sendRedirect("http://localhost:3000/signup");
 		} else {
-			response.sendRedirect("/");
+			response.sendRedirect("http://localhost:3000/home");
 		}
 	}
 
 	private boolean isAuthStatusOld(Member member) {
 		return authService.isAuthStatusOld(member);
 	}
-
 }

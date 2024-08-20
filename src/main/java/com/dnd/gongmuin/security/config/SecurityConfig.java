@@ -46,9 +46,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
-					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-					.requestMatchers("/api/auth/signin/kakao", "/api/auth/token").permitAll()
-					.requestMatchers("/additional-info").permitAll()
+					.requestMatchers("/api/auth/reissue/token").permitAll()
 					.anyRequest().authenticated()
 			)
 			.oauth2Login((oauth2) -> oauth2
@@ -71,7 +69,10 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
-			.requestMatchers("/error", "/favicon.ico");
+			.requestMatchers(
+				"/error", "/favicon.ico", "/api/auth/token",
+				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
+			);
 	}
 
 	// Spring Security cors Bean 등록

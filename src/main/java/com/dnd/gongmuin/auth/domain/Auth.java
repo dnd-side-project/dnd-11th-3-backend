@@ -58,7 +58,7 @@ public class Auth {
 			.build();
 	}
 
-	public void updateStatus() {
+	public void updateStatusToOld() {
 		this.status = AuthStatus.OLD;
 	}
 }

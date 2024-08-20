@@ -26,12 +26,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	private static final String TOKEN_PREFIX = "Bearer ";
 	private final TokenProvider tokenProvider;
 	private final RedisUtil redisUtil;
+	private final CookieUtil cookieUtil;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String accessToken = resolveToken(request);
+		String accessToken = cookieUtil.getCookieValue(request);
 
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
@@ -56,4 +57,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		}
 		return token.substring(TOKEN_PREFIX.length());
 	}
+
 }

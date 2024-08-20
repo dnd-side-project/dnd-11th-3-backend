@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.dto;
+package com.dnd.gongmuin.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 
