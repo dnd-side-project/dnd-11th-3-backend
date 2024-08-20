@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.cotroller;
+package com.dnd.gongmuin.auth.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
