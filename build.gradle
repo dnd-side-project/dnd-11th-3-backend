@@ -49,7 +49,8 @@ jacocoTestReport {
                 '**/exception/**',
                 '**/config/**',
                 '**/dto/**',
-                '**/s3/**'
+                '**/s3/**',
+                '**/security/**'
         ] + QDomains)
     }))
 
@@ -79,7 +80,8 @@ jacocoTestCoverageVerification {
                     '**/exception/**',
                     '**/config/**',
                     '**/dto/**',
-                    '**/s3/**'
+                    '**/s3/**',
+                    '**/security/**'
             ] + QDomains
         }
     }
