@@ -3,6 +3,7 @@ package com.dnd.gongmuin.security.handler;
 import java.io.IOException;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,10 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 	private final MemberRepository memberRepository;
 	private final TokenProvider tokenProvider;
 	private final CookieUtil cookieUtil;
+	@Value("${direct.sign-up}")
+	private String REDIRECTION_SIGNUP;
+	@Value("${direct.home}")
+	private String REDIRECTION_HOME;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -46,9 +51,9 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		response.addCookie(cookieUtil.createCookie(token));
 
 		if (!isAuthStatusOld(findmember) && isRoleGuest(findmember.getRole())) {
-			response.sendRedirect("http://localhost:3000/signup");
+			response.sendRedirect(REDIRECTION_SIGNUP);
 		} else {
-			response.sendRedirect("http://localhost:3000/home");
+			response.sendRedirect(REDIRECTION_HOME);
 		}
 	}
 
