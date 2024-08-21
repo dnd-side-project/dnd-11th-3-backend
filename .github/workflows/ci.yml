@@ -47,7 +47,7 @@ jobs:
       - name: 빌드
         run: ./gradlew build
 
-      - name: Jacoco 테스트 결과 출력
+      - name: Jacoco Test Coverage Report 코멘트에 등록
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
