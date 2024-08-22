@@ -10,13 +10,13 @@ public record AnsweredQuestionPostsByMemberResponse(
 	String content,
 	String jobGroup,
 	int reward,
-	String questionPostUpdatedAt,
+	String questionPostCreatedAt,
 	boolean isChosen,
 	int savedTotalCount,
 	int recommendTotalCount,
 	Long answerId,
 	String answerContent,
-	String answerUpdatedAt
+	String answerCreatedAt
 ) {
 
 	@QueryProjection
@@ -31,13 +31,13 @@ public record AnsweredQuestionPostsByMemberResponse(
 			questionPost.getContent(),
 			questionPost.getJobGroup().getLabel(),
 			questionPost.getReward(),
-			questionPost.getUpdatedAt().toString(),
+			questionPost.getCreatedAt().toString(),
 			questionPost.getIsChosen(),
 			savedTotalCount,
 			recommendTotalCount,
 			answer.getId(),
 			answer.getContent(),
-			answer.getUpdatedAt().toString()
+			answer.getCreatedAt().toString()
 		);
 	}
 }
