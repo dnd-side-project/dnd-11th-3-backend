@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.member.controller;
 
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -71,7 +70,7 @@ class MemberControllerTest extends ApiTestSupport {
 	void getMemberProfile() throws Exception {
 		// when  // then
 		mockMvc.perform(get("/api/members/profile")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("nickname").value("김회원"))
@@ -90,7 +89,7 @@ class MemberControllerTest extends ApiTestSupport {
 		mockMvc.perform(patch("/api/members/profile/edit")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("nickname").value("박회원"))
@@ -134,7 +133,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/question-posts")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
@@ -167,7 +166,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/question-posts/answers")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
@@ -202,7 +201,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/question-posts/bookmarks")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())

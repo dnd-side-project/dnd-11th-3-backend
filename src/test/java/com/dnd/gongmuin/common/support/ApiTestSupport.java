@@ -11,11 +11,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.Cookie;
 
 // 컨트롤러 단 통합테스트용
 @SpringBootTest
@@ -23,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class ApiTestSupport extends TestContainerSupport {
 
 	protected Member loginMember;
-	protected String accessToken;
+	protected Cookie accessToken;
 	@Autowired
 	protected MemberRepository memberRepository;
 	@Autowired
@@ -32,6 +35,8 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	protected ObjectMapper objectMapper;
 	@Autowired
 	private TokenProvider tokenProvider;
+	@Autowired
+	protected CookieUtil cookieUtil;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);
@@ -44,11 +49,15 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 			return;
 		}
 		Member savedMember = memberRepository.save(MemberFixture.member());
-		AuthInfo authInfo = AuthInfo.of(savedMember.getSocialName(), savedMember.getSocialEmail());
+		AuthInfo authInfo = AuthInfo.of(
+			savedMember.getSocialName(),
+			savedMember.getSocialEmail(),
+			savedMember.getRole()
+		);
 		String token = tokenProvider.generateAccessToken(new CustomOauth2User(authInfo), new Date());
 		tokenProvider.generateRefreshToken(new CustomOauth2User(authInfo), new Date());
 		this.loginMember = savedMember;
-		this.accessToken = "Bearer " + token;
+		this.accessToken = cookieUtil.createCookie(token);
 	}
 
 	@BeforeEach

@@ -13,6 +13,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.dnd.gongmuin.security.handler.CustomAccessDeniedHandler;
 import com.dnd.gongmuin.security.handler.CustomAuthenticationEntryPoint;
 import com.dnd.gongmuin.security.handler.CustomOauth2FailureHandler;
 import com.dnd.gongmuin.security.handler.CustomOauth2SuccessHandler;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 	private final CustomOauth2SuccessHandler customOauth2SuccessHandler;
 	private final CustomOauth2FailureHandler customOauth2FailureHandler;
 	private final TokenAuthenticationFilter tokenAuthenticationFilter;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,10 +48,14 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
-					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-					.requestMatchers("/api/auth/signin/kakao", "/api/auth/token").permitAll()
-					.requestMatchers("/additional-info").permitAll()
-					.anyRequest().authenticated()
+					.requestMatchers("/api/auth/reissue/token").permitAll()
+					.requestMatchers(
+						"/api/auth/member",
+						"/api/auth/check-nickname",
+						"/api/auth/check-email",
+						"/api/auth/check-email/authCode"
+					).hasAnyAuthority("ROLE_GUEST", "ROLE_USER")
+					.anyRequest().hasAuthority("ROLE_USER")
 			)
 			.oauth2Login((oauth2) -> oauth2
 				.userInfoEndpoint(
@@ -63,7 +69,9 @@ public class SecurityConfig {
 			.addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass())
 
 			.exceptionHandling((exception) -> exception
-				.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+				.accessDeniedHandler(customAccessDeniedHandler)
+			);
 
 		return http.build();
 	}
@@ -71,7 +79,10 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
-			.requestMatchers("/error", "/favicon.ico");
+			.requestMatchers(
+				"/error", "/favicon.ico", "/api/auth/temp-signup", "/api/auth/temp-signin",
+				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
+			);
 	}
 
 	// Spring Security cors Bean 등록
@@ -79,11 +90,12 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app/",
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app",
 			"https://gongmuin.site/", "http://localhost:8080"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
+		configuration.setAllowCredentials(true);
 		configuration.setMaxAge(3000L);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

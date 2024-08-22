@@ -19,26 +19,22 @@ jobs:
       - name: Check the timezone
         run: date
 
-      # 자바 버전 설정
-      - name: Set up JDK 17
+      - name: 자바 버전 17 설정
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # test 경로 application.yml 파일 생성
-      - name: Generate application.yml
+      - name: test 경로 application.yml 파일 생성
         run: |
           mkdir -p ./src/test/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > ./src/test/resources/application.yml
 
-      # gradle 권한 부여
-      - name: Grant execute permission for gradlew
+      - name: gradle 권한 부여
         run: chmod +x ./gradlew
         shell: bash
 
-      # 빌드 시 캐시 적용
-      - name: Gradle Caching
+      - name: 빌드 시 캐시 적용
         uses: actions/cache@v3
         with:
           path: |
@@ -48,19 +44,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 빌드
-      - name: Build with Gradle
+      - name: 빌드
         run: ./gradlew build
 
-      # 테스트 결과 PR 코멘트에 등록
-      - name: Register the test results as PR comments
+      - name: Jacoco Test Coverage Report 코멘트에 등록
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          title: Code Coverage
+          paths: ${{ github.workspace }}/build/jacocoReport/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 65
+          min-coverage-changed-files: 65
+          update-comment: true
+
+      - name: 테스트 결과 PR 코멘트에 등록
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
 
-      # 테스트 실패시 코드 라인에 대한 체크 추가
-      - name: If test fail, add check comment on failed code line
+      - name: 테스트 실패시 코드 라인에 대한 체크 추가
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:

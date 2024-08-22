@@ -4,6 +4,7 @@ import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+import java.util.Random;
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends TimeBaseEntity {
+
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -50,9 +52,15 @@ public class Member extends TimeBaseEntity {
 	@Column(name = "credit", nullable = false)
 	private int credit;
 
-	@Builder
+	@Column(name = "role", nullable = false)
+	private String role;
+
+	@Column(name = "profile_image_no", nullable = false)
+	private final int profileImageNo = setRandomNumber();
+
+	@Builder(access = PRIVATE)
 	private Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
-		String officialEmail, int credit) {
+		String officialEmail, int credit, String role) {
 		this.nickname = nickname;
 		this.socialName = socialName;
 		this.jobGroup = jobGroup;
@@ -60,6 +68,7 @@ public class Member extends TimeBaseEntity {
 		this.socialEmail = socialEmail;
 		this.officialEmail = officialEmail;
 		this.credit = credit;
+		this.role = role;
 	}
 
 	public static Member of(String socialName, String socialEmail, int credit) {
@@ -70,8 +79,17 @@ public class Member extends TimeBaseEntity {
 			.build();
 	}
 
+	public static Member of(String socialName, String socialEmail, int credit, String role) {
+		return Member.builder()
+			.socialName(socialName)
+			.socialEmail(socialEmail)
+			.credit(credit)
+			.role(role)
+			.build();
+	}
+
 	public static Member of(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory,
-		String socialEmail, String officialEmail, int credit) {
+		String socialEmail, String officialEmail, int credit, String role) {
 		return Member.builder()
 			.nickname(nickname)
 			.socialName(socialName)
@@ -80,6 +98,7 @@ public class Member extends TimeBaseEntity {
 			.socialEmail(socialEmail)
 			.officialEmail(officialEmail)
 			.credit(credit)
+			.role(role)
 			.build();
 	}
 
@@ -93,6 +112,7 @@ public class Member extends TimeBaseEntity {
 		this.officialEmail = officialEmail;
 		this.jobGroup = jobGroup;
 		this.jobCategory = jobCategory;
+		this.role = "ROLE_USER";
 	}
 
 	public void decreaseCredit(int credit) {
@@ -112,4 +132,8 @@ public class Member extends TimeBaseEntity {
 		this.jobCategory = jobCategory;
 	}
 
+	private int setRandomNumber() {
+		Random random = new Random();
+		return random.nextInt(1, 10);
+	}
 }

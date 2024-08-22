@@ -3,6 +3,7 @@ package com.dnd.gongmuin.security.handler;
 import java.io.IOException;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
@@ -27,6 +29,11 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 	private final AuthService authService;
 	private final MemberRepository memberRepository;
 	private final TokenProvider tokenProvider;
+	private final CookieUtil cookieUtil;
+	@Value("${direct.sign-up}")
+	private String REDIRECTION_SIGNUP;
+	@Value("${direct.home}")
+	private String REDIRECTION_HOME;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -41,12 +48,12 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		String token = tokenProvider.generateAccessToken(customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(customOauth2User, new Date());
 
-		response.setHeader("Authorization", token);
+		response.addCookie(cookieUtil.createCookie(token));
 
-		if (!isAuthStatusOld(findmember)) {
-			response.sendRedirect("/additional-info");
+		if (!isAuthStatusOld(findmember) && isRoleGuest(findmember.getRole())) {
+			response.sendRedirect(REDIRECTION_SIGNUP);
 		} else {
-			response.sendRedirect("/");
+			response.sendRedirect(REDIRECTION_HOME);
 		}
 	}
 
@@ -54,4 +61,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		return authService.isAuthStatusOld(member);
 	}
 
+	private boolean isRoleGuest(String role) {
+		return "ROLE_GUEST".equals(role);
+	}
 }

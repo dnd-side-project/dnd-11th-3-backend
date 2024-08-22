@@ -24,7 +24,7 @@ public class TokenExceptionFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		} catch (CustomJwtException e) {
 
-			log.error("JWT 검증 실패로 인한 예외 발생", e.getStackTrace());
+			log.error("JWT 검증 실패로 인한 예외 발생 : {}", e.getMessage());
 
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 Unauthorized
 			response.setContentType("application/json");

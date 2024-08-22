@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.member.dto.request;
+package com.dnd.gongmuin.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

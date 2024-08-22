@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.mail.controller;
 
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,7 +46,7 @@ class MailControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/auth/check-email")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.targetEmail").value(request.targetEmail())
@@ -65,7 +64,7 @@ class MailControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/auth/check-email/authCode")
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON)
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.result").value(true)

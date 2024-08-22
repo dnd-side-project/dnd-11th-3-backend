@@ -35,23 +35,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuestionPost extends TimeBaseEntity {
 
-	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
-	private final List<QuestionPostImage> images = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "question_post_id", nullable = false)
 	private Long id;
+
 	@Column(name = "title", nullable = false)
 	private String title;
+
 	@Column(name = "content", nullable = false)
 	private String content;
+
 	@Column(name = "reward", nullable = false)
 	private int reward;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "job_group", nullable = false)
 	private JobGroup jobGroup;
+
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
+
+	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
+	private List<QuestionPostImage> images = new ArrayList<>();
+
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,
@@ -66,7 +73,7 @@ public class QuestionPost extends TimeBaseEntity {
 		this.reward = reward;
 		this.jobGroup = jobGroup;
 		this.member = member;
-		addImages(images);
+		initPostImages(images);
 	}
 
 	public static QuestionPost of(String title, String content, int reward, JobGroup jobGroup,
@@ -75,11 +82,25 @@ public class QuestionPost extends TimeBaseEntity {
 	}
 
 	//==양방향 편의 메서드==//
-	private void addImages(List<QuestionPostImage> images) {
+	private void initPostImages(List<QuestionPostImage> images) {
 		images.forEach(image -> {
 			this.images.add(image);
 			image.addQuestionPost(this);
 		});
+	}
+
+	public void updatePostImages(List<String> imageUrls) {
+		List<QuestionPostImage> questionPostImages = new ArrayList<>();
+		imageUrls.stream().map(QuestionPostImage::from)
+			.forEach(questionPostImage -> {
+				questionPostImage.addQuestionPost(this);
+				questionPostImages.add(questionPostImage);
+			});
+		this.images = questionPostImages;
+	}
+
+	public void clearPostImages() {
+		this.images.clear();
 	}
 
 	public boolean isQuestioner(Long memberId) {
@@ -91,5 +112,14 @@ public class QuestionPost extends TimeBaseEntity {
 			throw new ValidationException(AnswerErrorCode.ALREADY_CHOSEN_ANSWER_EXISTS);
 		this.isChosen = true;
 		answer.updateIsChosen();
+	}
+
+	public void updateQuestionPost(
+		String title, String content, int reward, JobGroup jobGroup
+	) {
+		this.title = title;
+		this.content = content;
+		this.reward = reward;
+		this.jobGroup = jobGroup;
 	}
 }
