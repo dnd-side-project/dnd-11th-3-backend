@@ -10,6 +10,8 @@ public record QuestionPostDetailResponse(
 	int reward,
 	String targetJobGroup,
 	MemberInfo memberInfo,
+	boolean isSaved,
+	boolean isRecommended,
 	int savedCount,
 	int recommendCount,
 	String createdAt
