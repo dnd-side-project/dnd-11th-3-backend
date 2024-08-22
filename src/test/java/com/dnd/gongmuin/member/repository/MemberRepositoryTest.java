@@ -23,9 +23,14 @@ import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.DataJpaTestSupport;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
+import com.dnd.gongmuin.credit_history.fixture.CreditHistoryFixture;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
@@ -53,6 +58,9 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	InteractionRepository interactionRepository;
+
+	@Autowired
+	private CreditHistoryRepository creditHistoryRepository;
 
 	@AfterEach
 	void tearDown() {
@@ -391,6 +399,153 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				.containsExactly(
 					questionPost2.getTitle(),
 					questionPost1.getTitle()
+				)
+		);
+	}
+
+	@DisplayName("회원의 전체 크리뎃 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMember() {
+		// given
+		Member member1 = MemberFixture.member();
+		Member member2 = MemberFixture.member2();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(member1);
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when
+		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+			null,
+			MemberFixture.member(1L),
+			pageRequest
+		);
+
+		// then
+		Assertions.assertAll(
+			() -> assertThat(creditHistoryByMember).hasSize(2),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+				.containsExactly(
+					ch4.getId(),
+					ch1.getId()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+				.containsExactly(
+					ch4.getType().getDetail(),
+					ch1.getType().getDetail()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+				.containsExactly(
+					ch4.getDetail(),
+					ch1.getDetail()
+				)
+		);
+	}
+
+	@DisplayName("회원의 전체 크레딧 출금 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMemberInWithdrawal() {
+		// given
+		Member member1 = MemberFixture.member();
+		Member member2 = MemberFixture.member2();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(member1);
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when
+		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+			"출금",
+			MemberFixture.member(1L),
+			pageRequest
+		);
+
+		// then
+		Assertions.assertAll(
+			() -> assertThat(creditHistoryByMember).hasSize(1),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+				.containsExactly(
+					ch1.getId()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+				.containsExactly(
+					ch1.getType().getDetail()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+				.containsExactly(
+					ch1.getDetail()
+				)
+		);
+	}
+
+	@DisplayName("회원의 전체 크리뎃 입금 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMemberInDeposit() {
+		// given
+		Member member1 = MemberFixture.member();
+		Member member2 = MemberFixture.member2();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(member1);
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when
+		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+			"입금",
+			MemberFixture.member(1L),
+			pageRequest
+		);
+
+		// then
+		Assertions.assertAll(
+			() -> assertThat(creditHistoryByMember).hasSize(1),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+				.containsExactly(
+					ch4.getId()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+				.containsExactly(
+					ch4.getType().getDetail()
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+				.containsExactly(
+					ch4.getDetail()
 				)
 		);
 	}
