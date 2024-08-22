@@ -193,6 +193,7 @@ class QuestionPostServiceTest {
 				.isTrue(),
 			() -> assertThat(response.questionPostId())
 				.isEqualTo(questionPost.getId()),
+			() -> assertThat(response.savedCount()).isZero(),
 			() -> assertThat(response.recommendCount())
 				.isEqualTo(recommendCount.getCount()).isEqualTo(1)
 		);
