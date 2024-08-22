@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.question_post.controller;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -118,9 +119,10 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.memberId").value(questionPost.getMember().getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(questionPost.getMember().getNickname()))
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.memberInfo.profileImageNo", is(greaterThanOrEqualTo(1))))
+			.andExpect(jsonPath("$.memberInfo.profileImageNo", is(lessThanOrEqualTo(9))))
 			.andExpect(jsonPath("$.recommendCount").value(0))
-			.andExpect(jsonPath("$.savedCount").value(0)
-			);
+			.andExpect(jsonPath("$.savedCount").value(0));
 	}
 
 	@DisplayName("[질문글을 키워드로 검색할 수 있다.]")
