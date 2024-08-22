@@ -163,7 +163,11 @@ public class MemberCustomImpl implements MemberCustom {
 	}
 
 	private BooleanExpression creditTypeEq(String type) {
-		return type != null ? creditHistory.type.in(CreditType.fromDetail(type)) : null;
+		if (type == null || type.isEmpty() || "전체".equals(type)) {
+			return null;
+		}
+
+		return creditHistory.type.in(CreditType.fromDetail(type));
 	}
 
 	private <T> boolean hasNext(int pageSize, List<T> content) {
