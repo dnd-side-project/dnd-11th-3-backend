@@ -547,17 +547,4 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				)
 		);
 	}
-
-	private Member createMember(String nickname, String socialName, String socialEmail, String officialEmail) {
-		return Member.builder()
-			.nickname(nickname)
-			.socialName(socialName)
-			.socialEmail(socialEmail)
-			.officialEmail(officialEmail)
-			.jobCategory(GAS)
-			.jobGroup(ENGINEERING)
-			.credit(10000)
-			.build();
-
-	}
 }
