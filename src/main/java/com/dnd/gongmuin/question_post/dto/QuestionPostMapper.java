@@ -42,7 +42,8 @@ public class QuestionPostMapper {
 			new MemberInfo(
 				member.getId(),
 				member.getNickname(),
-				member.getJobGroup().getLabel()
+				member.getJobGroup().getLabel(),
+				member.getProfileImageNo()
 			),
 			savedCount,
 			recommendCount,
@@ -64,7 +65,8 @@ public class QuestionPostMapper {
 			new MemberInfo(
 				member.getId(),
 				member.getNickname(),
-				member.getJobGroup().getLabel()
+				member.getJobGroup().getLabel(),
+				member.getProfileImageNo()
 			),
 			questionPost.getCreatedAt().toString()
 		);
