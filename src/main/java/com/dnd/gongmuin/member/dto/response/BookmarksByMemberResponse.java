@@ -9,7 +9,7 @@ public record BookmarksByMemberResponse(
 	String content,
 	String jobGroup,
 	int reward,
-	String updatedAt,
+	String createdAt,
 	boolean isChosen,
 	int savedTotalCount,
 	int recommendTotalCount
@@ -26,7 +26,7 @@ public record BookmarksByMemberResponse(
 			questionPost.getContent(),
 			questionPost.getJobGroup().getLabel(),
 			questionPost.getReward(),
-			questionPost.getUpdatedAt().toString(),
+			questionPost.getCreatedAt().toString(),
 			questionPost.getIsChosen(),
 			savedTotalCount,
 			recommendTotalCount

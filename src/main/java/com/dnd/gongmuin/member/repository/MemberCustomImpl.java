@@ -81,9 +81,9 @@ public class MemberCustomImpl implements MemberCustom {
 						.from(aw2)
 						.where(aw2.questionPostId.eq(qp.id)
 							.and(aw2.member.eq(member))
-							.and(aw2.updatedAt.eq(
+							.and(aw2.createdAt.eq(
 								JPAExpressions
-									.select(aw2.updatedAt.max())
+									.select(aw2.createdAt.max())
 									.from(aw2)
 									.where(aw2.questionPostId.eq(qp.id)
 										.and(aw2.member.eq(member)))
@@ -134,7 +134,6 @@ public class MemberCustomImpl implements MemberCustom {
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
 
-	// .on(qp.id.eq(ir.questionPostId).and(ir.type.eq(InteractionType.SAVED)))
 	private <T> boolean hasNext(int pageSize, List<T> content) {
 		if (content.size() <= pageSize) {
 			return false;

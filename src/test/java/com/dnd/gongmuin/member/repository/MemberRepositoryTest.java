@@ -339,7 +339,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				.containsExactly(
 					answer2.getId()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerUpdatedAt)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerCreatedAt)
 				.containsExactly(
 					answer2.getUpdatedAt().toString()
 				),
