@@ -237,7 +237,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/credit/histories?type=전체")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
@@ -279,7 +279,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/credit/histories?type=출금")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
@@ -317,7 +317,7 @@ class MemberControllerTest extends ApiTestSupport {
 
 		// when  // then
 		mockMvc.perform(get("/api/members/credit/histories?type=입금")
-				.header(AUTHORIZATION, accessToken)
+				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print())
