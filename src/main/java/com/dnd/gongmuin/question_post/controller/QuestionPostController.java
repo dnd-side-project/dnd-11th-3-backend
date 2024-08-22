@@ -51,9 +51,11 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/{questionPostId}")
 	public ResponseEntity<QuestionPostDetailResponse> getQuestionPostById(
-		@PathVariable("questionPostId") Long questionPostId
+		@PathVariable("questionPostId") Long questionPostId,
+		@AuthenticationPrincipal Member member
 	) {
-		QuestionPostDetailResponse response = questionPostService.getQuestionPostById(questionPostId);
+		QuestionPostDetailResponse response =
+			questionPostService.getQuestionPostById(questionPostId,member);
 		return ResponseEntity.ok(response);
 	}
 
