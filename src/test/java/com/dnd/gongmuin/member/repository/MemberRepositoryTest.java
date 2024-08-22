@@ -62,6 +62,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 
 	@AfterEach
 	void tearDown() {
+		creditHistoryRepository.deleteAll();
 		answerRepository.deleteAll();
 		interactionCountRepository.deleteAll();
 		questionPostRepository.deleteAll();
@@ -427,7 +428,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		// when
 		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			null,
-			MemberFixture.member(1L),
+			member1,
 			pageRequest
 		);
 
@@ -473,12 +474,16 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 			questionPost2.getMember());
 		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
-		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+		List<CreditHistory> creditHistories = creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+		for (CreditHistory ch : creditHistories) {
+			System.out.println("ch.getId() = " + ch.getId());
+			System.out.println("ch.getType().getDetail() = " + ch.getType().getDetail());
+		}
 
 		// when
 		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			"출금",
-			MemberFixture.member(1L),
+			member1,
 			pageRequest
 		);
 
@@ -526,7 +531,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		// when
 		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			"입금",
-			MemberFixture.member(1L),
+			member1,
 			pageRequest
 		);
 
