@@ -28,8 +28,10 @@ public class QuestionPostMapper {
 
 	public static QuestionPostDetailResponse toQuestionPostDetailResponse(
 		QuestionPost questionPost,
-		int recommendCount,
-		int savedCount
+		boolean isSaved,
+		boolean isRecommended,
+		int savedCount,
+		int recommendCount
 	) {
 		Member member = questionPost.getMember();
 		return new QuestionPostDetailResponse(
@@ -45,6 +47,8 @@ public class QuestionPostMapper {
 				member.getJobGroup().getLabel(),
 				member.getProfileImageNo()
 			),
+			isSaved,
+			isRecommended,
 			savedCount,
 			recommendCount,
 			questionPost.getCreatedAt().toString()
