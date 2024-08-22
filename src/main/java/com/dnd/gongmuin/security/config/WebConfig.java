@@ -13,9 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			// .allowedOrigins("http://localhost:3000", "https://gongmuin.netlify.app",
-			// 	"https://gongmuin.site", "http://localhost:8080")
-			.allowedOriginPatterns("*")
+			.allowedOrigins("http://localhost:3000", "https://gongmuin.netlify.app/", "https://gongmuin.netlify.app",
+				"https://gongmuin.site", "http://localhost:8080")
 			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 			.allowCredentials(true)
 			.allowedHeaders("*")
