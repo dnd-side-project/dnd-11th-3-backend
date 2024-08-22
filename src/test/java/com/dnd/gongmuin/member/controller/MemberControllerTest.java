@@ -22,6 +22,10 @@ import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
+import com.dnd.gongmuin.credit_history.fixture.CreditHistoryFixture;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.repository.MemberRepository;
@@ -51,8 +55,12 @@ class MemberControllerTest extends ApiTestSupport {
 	@Autowired
 	InteractionRepository interactionRepository;
 
+	@Autowired
+	CreditHistoryRepository creditHistoryRepository;
+
 	@AfterEach
 	void tearDown() {
+		creditHistoryRepository.deleteAll();
 		answerRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
@@ -201,5 +209,123 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.size").value(2))
 			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()))
 			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost1.getId()));
+	}
+
+	@DisplayName("회원의 전체 크레딧 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMember() throws Exception {
+		// given
+		Member member2 = MemberFixture.member2();
+		memberRepository.save(member2);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(loginMember);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2));
+
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
+		answerRepository.saveAll(List.of(answer1, answer2));
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when  // then
+		mockMvc.perform(get("/api/members/credit/histories?type=전체")
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.content[0].id").value(ch4.getId()))
+			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].detail").value(ch4.getDetail()))
+			.andExpect(jsonPath("$.content[0].amount").value(ch4.getAmount()))
+			.andExpect(jsonPath("$.content[1].id").value(ch1.getId()))
+			.andExpect(jsonPath("$.content[1].type").value(ch1.getType().getDetail()))
+			.andExpect(jsonPath("$.content[1].detail").value(ch1.getDetail()))
+			.andExpect(jsonPath("$.content[1].amount").value(ch1.getAmount()));
+	}
+
+	@DisplayName("회원의 전체 크레딧 출금 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMemberInWithdrawal() throws Exception {
+		// given
+		Member member2 = MemberFixture.member2();
+		memberRepository.save(member2);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(loginMember);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2));
+
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
+		answerRepository.saveAll(List.of(answer1, answer2));
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when  // then
+		mockMvc.perform(get("/api/members/credit/histories?type=출금")
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(1))
+			.andExpect(jsonPath("$.content[0].id").value(ch1.getId()))
+			.andExpect(jsonPath("$.content[0].type").value(ch1.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].detail").value(ch1.getDetail()))
+			.andExpect(jsonPath("$.content[0].amount").value(ch1.getAmount()));
+	}
+
+	@DisplayName("회원의 전체 크레딧 입금 내역을 조회한다.")
+	@Test
+	void getCreditHistoryByMemberInDeposit() throws Exception {
+		// given
+		Member member2 = MemberFixture.member2();
+		memberRepository.save(member2);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(loginMember);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2));
+
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), member2);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
+		answerRepository.saveAll(List.of(answer1, answer2));
+
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost1.getMember());
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer1.getMember());
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+			questionPost2.getMember());
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+			answer2.getMember());
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
+
+		// when  // then
+		mockMvc.perform(get("/api/members/credit/histories?type=입금")
+				.header(AUTHORIZATION, accessToken)
+			)
+			.andExpect(status().isOk())
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(jsonPath("$.size").value(1))
+			.andExpect(jsonPath("$.content[0].id").value(ch4.getId()))
+			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].detail").value(ch4.getDetail()))
+			.andExpect(jsonPath("$.content[0].amount").value(ch4.getAmount()));
 	}
 }
