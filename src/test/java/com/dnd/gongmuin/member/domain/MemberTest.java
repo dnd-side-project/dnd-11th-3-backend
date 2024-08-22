@@ -31,7 +31,10 @@ class MemberTest {
 		Member member = MemberFixture.member3();
 
 		// when
-		member.updateAdditionalInfo("김회원", "abcd@korea.kr", ENGINEERING, GAS);
+		member.updateAdditionalInfo("김회원",
+			"abcd@korea.kr",
+			JobGroup.ME,
+			JobCategory.ME);
 
 		// then
 		assertThat(member).extracting("nickname", "officialEmail")

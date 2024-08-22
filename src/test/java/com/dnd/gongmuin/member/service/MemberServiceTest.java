@@ -109,7 +109,7 @@ class MemberServiceTest {
 	void updateMemberProfile() {
 		// given
 		Member member = MemberFixture.member();
-		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "공업", "가스");
+		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "공업", "일반기계");
 
 		given(memberRepository.findByOfficialEmail(anyString())).willReturn(member);
 

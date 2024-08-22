@@ -18,8 +18,8 @@ public class MemberFixture {
 		return Member.of(
 			"김회원",
 			"회원123",
-			JobGroup.ENGINEERING,
-			JobCategory.GAS,
+			JobGroup.ENG,
+			JobCategory.ME,
 			"KAKAO123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
 			10000,
@@ -31,8 +31,8 @@ public class MemberFixture {
 		return Member.of(
 			"회원",
 			"소셜회원",
-			JobGroup.ENGINEERING,
-			JobCategory.GAS,
+			JobGroup.ENG,
+			JobCategory.ME,
 			"KAKAO123/member2@daum.net",
 			"member2@korea.kr",
 			20000,
@@ -53,8 +53,8 @@ public class MemberFixture {
 		return Member.of(
 			"회원",
 			"소셜회원",
-			JobGroup.ADMINISTRATION,
-			JobCategory.GAS,
+			JobGroup.AD,
+			JobCategory.ME,
 			"KAKAO1234/member2@daum.net",
 			"member@korea.kr",
 			20000,
@@ -66,8 +66,8 @@ public class MemberFixture {
 		Member member = Member.of(
 			"김회원",
 			"회원123",
-			JobGroup.ENGINEERING,
-			JobCategory.GAS,
+			JobGroup.ENG,
+			JobCategory.ME,
 			"KAKAO123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
 			10000,

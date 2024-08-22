@@ -25,7 +25,7 @@ import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import jakarta.servlet.http.Cookie;
 
 @DisplayName("[AuthController] 통합테스트")
-public class AuthControllerTest extends ApiTestSupport {
+class AuthControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private MemberRepository memberRepository;
@@ -64,7 +64,7 @@ public class AuthControllerTest extends ApiTestSupport {
 	@Test
 	void signUp() throws Exception {
 		// given
-		AdditionalInfoRequest request = new AdditionalInfoRequest("dsaf@korea.kr", "회원", "공업", "가스");
+		AdditionalInfoRequest request = new AdditionalInfoRequest("dsaf@korea.kr", "회원", "공업", "일반기계");
 
 		Member savedMember = memberRepository.save(MemberFixture.member3());
 		AuthInfo authInfo = AuthInfo.of(

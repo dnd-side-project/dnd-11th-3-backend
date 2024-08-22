@@ -31,6 +31,8 @@ import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.repository.AuthRepository;
 import com.dnd.gongmuin.common.fixture.AuthFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
+import com.dnd.gongmuin.member.domain.JobCategory;
+import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -144,7 +146,7 @@ class AuthServiceTest {
 	@Test
 	void signUp() {
 		// given
-		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "가스");
+		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "일반기계");
 		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
 		Member member1 = MemberFixture.member3();
@@ -159,8 +161,8 @@ class AuthServiceTest {
 			.containsExactlyInAnyOrder(
 				"abc123@korea.com",
 				"김신규",
-				GAS,
-				ENGINEERING
+				JobGroup.ME,
+				JobCategory.ME
 			);
 	}
 
