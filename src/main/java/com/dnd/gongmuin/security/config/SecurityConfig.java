@@ -48,7 +48,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
-					.requestMatchers("/api/auth/reissue/token", "/api/auth/check-nickname").permitAll()
+					.requestMatchers("/api/auth/reissue/token").permitAll()
 					.requestMatchers(
 						"/api/auth/member",
 						"/api/auth/check-nickname",
