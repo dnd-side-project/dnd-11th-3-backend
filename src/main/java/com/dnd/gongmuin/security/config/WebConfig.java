@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 			// .allowedOrigins("http://localhost:3000", "https://gongmuin.netlify.app",
 			// 	"https://gongmuin.site", "http://localhost:8080")
-			.allowedOrigins("*")
+			.allowedOriginPatterns("*")
 			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 			.allowCredentials(true)
 			.allowedHeaders("*")
