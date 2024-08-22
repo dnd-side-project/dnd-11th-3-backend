@@ -18,7 +18,6 @@ import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
 import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.LogoutResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
