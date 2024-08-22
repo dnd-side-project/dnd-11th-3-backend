@@ -34,7 +34,8 @@ public class AnswerMapper {
 			new MemberInfo(
 				member.getId(),
 				member.getNickname(),
-				member.getJobGroup().getLabel()
+				member.getJobGroup().getLabel(),
+				member.getProfileImageNo()
 			),
 			answer.getCreatedAt().toString()
 		);
