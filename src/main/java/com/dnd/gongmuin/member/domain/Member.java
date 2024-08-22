@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends TimeBaseEntity {
 
-	private final Random random = new Random();
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -134,6 +133,7 @@ public class Member extends TimeBaseEntity {
 	}
 
 	private int setRandomNumber() {
+		Random random = new Random();
 		return random.nextInt(1, 10);
 	}
 }

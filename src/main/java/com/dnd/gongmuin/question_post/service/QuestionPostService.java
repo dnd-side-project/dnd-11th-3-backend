@@ -17,6 +17,7 @@ import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.QuestionPostMapper;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostService {
 
 	private final QuestionPostRepository questionPostRepository;
+	private final InteractionRepository interactionRepository;
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
 
@@ -65,13 +67,15 @@ public class QuestionPostService {
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionPostDetailResponse getQuestionPostById(Long questionPostId) {
+	public QuestionPostDetailResponse getQuestionPostById(Long questionPostId, Member member) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		return QuestionPostMapper.toQuestionPostDetailResponse(
 			questionPost,
-			getCountByType(questionPostId, InteractionType.RECOMMEND),
-			getCountByType(questionPostId, InteractionType.SAVED)
+			getIsInteractedByType(questionPostId, member.getId(), InteractionType.SAVED),
+			getIsInteractedByType(questionPostId, member.getId(), InteractionType.RECOMMEND),
+			getCountByType(questionPostId, InteractionType.SAVED),
+			getCountByType(questionPostId, InteractionType.RECOMMEND)
 		);
 	}
 
@@ -119,6 +123,11 @@ public class QuestionPostService {
 	private void deleteImages(QuestionPost questionPost) {
 		questionPostImageRepository.deleteByQuestionPost(questionPost);
 		questionPost.clearPostImages();
+	}
+
+	private boolean getIsInteractedByType(Long questionPostId, Long memberId, InteractionType type) {
+		return interactionRepository
+			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, memberId, type);
 	}
 
 	private int getCountByType(Long questionPostId, InteractionType type) {

@@ -13,6 +13,10 @@ public interface InteractionRepository extends JpaRepository<Interaction, Long> 
 		Long questionPostId, Long memberId, InteractionType type
 	);
 
+	boolean existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+		Long questionPostId, Long memberId, InteractionType type
+	);
+
 	Optional<Interaction> findByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);

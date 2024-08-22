@@ -17,15 +17,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
+import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.JobGroup;
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
+import com.dnd.gongmuin.post_interaction.service.InteractionService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
@@ -42,6 +45,9 @@ class QuestionPostControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private InteractionCountRepository interactionCountRepository;
+
+	@Autowired
+	private InteractionService interactionService;
 
 	@AfterEach
 	void teardown() {
@@ -75,8 +81,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.targetJobGroup").value(request.targetJobGroup()))
 			.andExpect(jsonPath("$.memberInfo.memberId").value(loginMember.getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(loginMember.getNickname()))
-			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel())
-			);
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel()));
 	}
 
 	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
@@ -121,8 +126,26 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(questionPost.getMember().getJobGroup().getLabel()))
 			.andExpect(jsonPath("$.memberInfo.profileImageNo", is(greaterThanOrEqualTo(1))))
 			.andExpect(jsonPath("$.memberInfo.profileImageNo", is(lessThanOrEqualTo(9))))
+			.andExpect(jsonPath("$.isSaved").value(false))
+			.andExpect(jsonPath("$.isRecommended").value(false))
 			.andExpect(jsonPath("$.recommendCount").value(0))
 			.andExpect(jsonPath("$.savedCount").value(0));
+	}
+
+	@DisplayName("[질문글을 저장 후 조회 시, 저장 여부가 true가 되고 저장 수가 1 증가한다.]")
+	@Test
+	void getQuestionPostById_afterSaved() throws Exception {
+		Member questioner = memberRepository.save(MemberFixture.member4());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
+		interactionService.activateInteraction(questionPost.getId(), loginMember.getId(), InteractionType.SAVED);
+
+		mockMvc.perform(get("/api/question-posts/{questionPostId}", questionPost.getId())
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSaved").value(true))
+			.andExpect(jsonPath("$.isRecommended").value(false))
+			.andExpect(jsonPath("$.savedCount").value(1))
+			.andExpect(jsonPath("$.recommendCount").value(0));
 	}
 
 	@DisplayName("[질문글을 키워드로 검색할 수 있다.]")
