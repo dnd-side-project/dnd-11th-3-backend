@@ -48,7 +48,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(
 				(auth) -> auth
 					.requestMatchers("/").permitAll()
-					.requestMatchers("/api/auth/reissue/token").permitAll()
+					.requestMatchers("/api/auth/reissue/token", "/api/auth/check-nickname").permitAll()
 					.requestMatchers(
 						"/api/auth/member",
 						"/api/auth/check-nickname",
@@ -90,11 +90,12 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app/",
-			"https://gongmuin.site/", "http://localhost:8080"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app",
+			"https://gongmuin.site/", "http://localhost:8080", "https://gongmuin.netlify.app/"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
+		configuration.setAllowCredentials(true);
 		configuration.setMaxAge(3000L);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
