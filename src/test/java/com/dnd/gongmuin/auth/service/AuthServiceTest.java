@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.auth.service;
 
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -151,7 +149,7 @@ class AuthServiceTest {
 
 		Member member1 = MemberFixture.member3();
 		given(memberRepository.findBySocialEmail(member1.getSocialEmail())).willReturn(
-			Optional.ofNullable(member1));
+			Optional.of(member1));
 
 		// when
 		authService.signUp(request, member1.getSocialEmail(), mockResponse);
@@ -161,8 +159,8 @@ class AuthServiceTest {
 			.containsExactlyInAnyOrder(
 				"abc123@korea.com",
 				"김신규",
-				JobGroup.ME,
-				JobCategory.ME
+				JobGroup.ENG,
+				JobCategory.GME
 			);
 	}
 
