@@ -332,4 +332,23 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].detail").value(ch4.getDetail()))
 			.andExpect(jsonPath("$.content[0].amount").value(ch4.getAmount()));
 	}
+
+	@DisplayName("로그인 된 사용자 프로필 정보를 조회한다.")
+	@Test
+	void getMemberInformation() throws Exception {
+		// when  // then
+		mockMvc.perform(get("/api/members/information")
+				.cookie(accessToken)
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("memberId").value(loginMember.getId()))
+			.andExpect(jsonPath("nickname").value(loginMember.getNickname()))
+			.andExpect(jsonPath("socialName").value(loginMember.getSocialName()))
+			.andExpect(jsonPath("officialEmail").value(loginMember.getOfficialEmail()))
+			.andExpect(jsonPath("socialEmail").value(loginMember.getSocialEmail()))
+			.andExpect(jsonPath("jobGroup").value(loginMember.getJobGroup().getLabel()))
+			.andExpect(jsonPath("jobCategory").value(loginMember.getJobCategory().getLabel()))
+			.andExpect(jsonPath("profileImageNo").value(loginMember.getProfileImageNo()))
+			.andExpect(jsonPath("credit").value(10000));
+	}
 }

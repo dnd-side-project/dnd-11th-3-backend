@@ -16,6 +16,7 @@ import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
 import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.MemberInformationResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.member.service.MemberService;
@@ -102,4 +103,12 @@ public class MemberController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "회원 정보 전체 조회 API", description = "회원 정보를 전체 조회한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/information")
+	public ResponseEntity<MemberInformationResponse> getMemberInformation(@AuthenticationPrincipal Member member) {
+		MemberInformationResponse response = memberService.getMemberInformation(member);
+
+		return ResponseEntity.ok(response);
+	}
 }
