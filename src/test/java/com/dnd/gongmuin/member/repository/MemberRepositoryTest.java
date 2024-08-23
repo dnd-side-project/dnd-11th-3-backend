@@ -442,8 +442,8 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
 				.containsExactly(
-					ch4.getType().getDetail(),
-					ch1.getType().getDetail()
+					ch4.getType().getLabel(),
+					ch1.getType().getLabel()
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
 				.containsExactly(
@@ -496,7 +496,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
 				.containsExactly(
-					ch1.getType().getDetail()
+					ch1.getType().getLabel()
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
 				.containsExactly(
@@ -544,7 +544,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
 				.containsExactly(
-					ch4.getType().getDetail()
+					ch4.getType().getLabel()
 				),
 			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
 				.containsExactly(

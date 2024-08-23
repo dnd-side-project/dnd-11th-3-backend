@@ -243,11 +243,11 @@ class MemberControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(2))
 			.andExpect(jsonPath("$.content[0].id").value(ch4.getId()))
-			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getLabel()))
 			.andExpect(jsonPath("$.content[0].detail").value(ch4.getDetail()))
 			.andExpect(jsonPath("$.content[0].amount").value(ch4.getAmount()))
 			.andExpect(jsonPath("$.content[1].id").value(ch1.getId()))
-			.andExpect(jsonPath("$.content[1].type").value(ch1.getType().getDetail()))
+			.andExpect(jsonPath("$.content[1].type").value(ch1.getType().getLabel()))
 			.andExpect(jsonPath("$.content[1].detail").value(ch1.getDetail()))
 			.andExpect(jsonPath("$.content[1].amount").value(ch1.getAmount()));
 	}
@@ -285,7 +285,7 @@ class MemberControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(1))
 			.andExpect(jsonPath("$.content[0].id").value(ch1.getId()))
-			.andExpect(jsonPath("$.content[0].type").value(ch1.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].type").value(ch1.getType().getLabel()))
 			.andExpect(jsonPath("$.content[0].detail").value(ch1.getDetail()))
 			.andExpect(jsonPath("$.content[0].amount").value(ch1.getAmount()));
 	}
@@ -323,7 +323,7 @@ class MemberControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(1))
 			.andExpect(jsonPath("$.content[0].id").value(ch4.getId()))
-			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getDetail()))
+			.andExpect(jsonPath("$.content[0].type").value(ch4.getType().getLabel()))
 			.andExpect(jsonPath("$.content[0].detail").value(ch4.getDetail()))
 			.andExpect(jsonPath("$.content[0].amount").value(ch4.getAmount()));
 	}
