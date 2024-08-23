@@ -236,7 +236,8 @@ class MemberControllerTest extends ApiTestSupport {
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when  // then
-		mockMvc.perform(get("/api/members/credit/histories?type=전체")
+		mockMvc.perform(get("/api/members/credit/histories")
+				.param("type", "전체")
 				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
@@ -278,7 +279,8 @@ class MemberControllerTest extends ApiTestSupport {
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when  // then
-		mockMvc.perform(get("/api/members/credit/histories?type=출금")
+		mockMvc.perform(get("/api/members/credit/histories")
+				.param("type", "출금")
 				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
@@ -316,7 +318,8 @@ class MemberControllerTest extends ApiTestSupport {
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when  // then
-		mockMvc.perform(get("/api/members/credit/histories?type=입금")
+		mockMvc.perform(get("/api/members/credit/histories")
+				.param("type", "입금")
 				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
