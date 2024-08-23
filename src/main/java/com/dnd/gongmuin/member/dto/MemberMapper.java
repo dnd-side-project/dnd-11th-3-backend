@@ -11,10 +11,12 @@ public class MemberMapper {
 
 	public static MemberProfileResponse toMemberProfileResponse(Member member) {
 		return new MemberProfileResponse(
+			member.getId(),
 			member.getNickname(),
 			member.getJobGroup().getLabel(),
 			member.getJobCategory().getLabel(),
-			member.getCredit()
+			member.getCredit(),
+			member.getProfileImageNo()
 		);
 	}
 }
