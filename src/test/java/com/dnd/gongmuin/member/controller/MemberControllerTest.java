@@ -75,7 +75,7 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("nickname").value("김회원"))
 			.andExpect(jsonPath("jobGroup").value("공업"))
-			.andExpect(jsonPath("jobCategory").value("가스"))
+			.andExpect(jsonPath("jobCategory").value("기계"))
 			.andExpect(jsonPath("credit").value(10000));
 	}
 
@@ -83,7 +83,7 @@ class MemberControllerTest extends ApiTestSupport {
 	@Test
 	void updateMemberProfile() throws Exception {
 		// given
-		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "행정", "가스");
+		UpdateMemberProfileRequest request = new UpdateMemberProfileRequest("박회원", "행정", "세무");
 
 		// when  // then
 		mockMvc.perform(patch("/api/members/profile/edit")
@@ -94,7 +94,7 @@ class MemberControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("nickname").value("박회원"))
 			.andExpect(jsonPath("jobGroup").value("행정"))
-			.andExpect(jsonPath("jobCategory").value("가스"))
+			.andExpect(jsonPath("jobCategory").value("세무"))
 			.andExpect(jsonPath("credit").value(10000));
 	}
 

@@ -13,9 +13,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum JobGroup {
 
-	ENGINEERING("공업"),
-	ADMINISTRATION("행정"),
-	MACHINE("기계");
+	ENG("공업"),
+	ME("기계"),
+	CSM("법원경비관리"),
+	PH("보건"),
+	PHH("보건위생"),
+	JA("사법행정사무"),
+	ICT("정보통신"),
+	AD("행정");
 
 	private final String label;
 
