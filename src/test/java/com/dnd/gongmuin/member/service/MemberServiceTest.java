@@ -20,6 +20,7 @@ import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
+import com.dnd.gongmuin.member.dto.response.MemberInformationResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 
@@ -136,6 +137,39 @@ class MemberServiceTest {
 
 		// when  // then
 		assertThrows(ValidationException.class, () -> memberService.updateMemberProfile(request, member));
+	}
 
+	@DisplayName("회원 정보를 전체 조회한다.")
+	@Test
+	void getMemberInformation() {
+		// given
+		Member member = MemberFixture.member();
+		given(memberRepository.findByOfficialEmail(anyString())).willReturn(member);
+
+		// when
+		MemberInformationResponse memberInformation = memberService.getMemberInformation(member);
+
+		// then
+		assertAll(
+			() -> assertThat(memberInformation.memberId()).isEqualTo(member.getId()),
+			() -> assertThat(memberInformation.nickname()).isEqualTo(member.getNickname()),
+			() -> assertThat(memberInformation.socialName()).isEqualTo(member.getSocialName()),
+			() -> assertThat(memberInformation.officialEmail()).isEqualTo(member.getOfficialEmail()),
+			() -> assertThat(memberInformation.socialEmail()).isEqualTo(member.getSocialEmail()),
+			() -> assertThat(memberInformation.jobGroup()).isEqualTo(member.getJobGroup().getLabel()),
+			() -> assertThat(memberInformation.jobCategory()).isEqualTo(member.getJobCategory().getLabel()),
+			() -> assertThat(memberInformation.credit()).isEqualTo(member.getCredit()),
+			() -> assertThat(memberInformation.profileImageNo()).isEqualTo(member.getProfileImageNo())
+		);
+	}
+
+	@DisplayName("회원 정보를 전체 조회 시 회원을 찾을 수 없으면 예외가 발생한다.")
+	@Test
+	void getMemberInformationThrowException() {
+		// given
+		Member member = MemberFixture.member();
+
+		// when  // then
+		assertThrows(NotFoundException.class, () -> memberService.getMemberInformation(member));
 	}
 }
