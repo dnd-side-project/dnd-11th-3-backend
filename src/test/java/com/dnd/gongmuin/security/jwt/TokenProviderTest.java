@@ -56,12 +56,12 @@ class TokenProviderTest {
 		this.authInfo = AuthInfo.of("김회원", "kakao123/daum.net", "ROLE_USER");
 	}
 
-	@DisplayName("만료일이 30분인 토큰이 생성된다.")
+	@DisplayName("만료일이 1시간 30분인 토큰이 생성된다.")
 	@Test
 	void generateAccessToken() {
 		// given
 		Date now = new Date();
-		long expectedExpirationTime = now.getTime() + 30 * 60 * 1000;
+		long expectedExpirationTime = now.getTime() + 90 * 60 * 1000;
 
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
