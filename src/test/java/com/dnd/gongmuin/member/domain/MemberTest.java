@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.member.domain;
 
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +29,10 @@ class MemberTest {
 		Member member = MemberFixture.member3();
 
 		// when
-		member.updateAdditionalInfo("김회원", "abcd@korea.kr", ENGINEERING, GAS);
+		member.updateAdditionalInfo("김회원",
+			"abcd@korea.kr",
+			JobGroup.ME,
+			JobCategory.ME);
 
 		// then
 		assertThat(member).extracting("nickname", "officialEmail")

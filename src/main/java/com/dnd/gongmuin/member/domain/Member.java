@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 import java.util.Random;
+
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -23,40 +24,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends TimeBaseEntity {
 
-
+	@Column(name = "profile_image_no", nullable = false)
+	private final int profileImageNo = setRandomNumber();
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "member_id")
 	private Long id;
-
 	@Column(name = "nickname")
 	private String nickname;
-
 	@Column(name = "social_name", nullable = false)
 	private String socialName;
-
 	@Enumerated(STRING)
 	@Column(name = "job_group")
 	private JobGroup jobGroup;
-
 	@Enumerated(STRING)
 	@Column(name = "job_category")
 	private JobCategory jobCategory;
-
 	@Column(name = "social_email", nullable = false)
 	private String socialEmail;
-
 	@Column(name = "official_email")
 	private String officialEmail;
-
 	@Column(name = "credit", nullable = false)
 	private int credit;
-
 	@Column(name = "role", nullable = false)
 	private String role;
-
-	@Column(name = "profile_image_no", nullable = false)
-	private final int profileImageNo = setRandomNumber();
 
 	@Builder(access = PRIVATE)
 	private Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,

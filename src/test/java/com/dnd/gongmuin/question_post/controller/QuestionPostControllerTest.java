@@ -246,7 +246,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			questionPost.getContent() + "ts",
 			null,
 			questionPost.getReward() + 1000,
-			JobGroup.ADMINISTRATION.getLabel()
+			JobGroup.AD.getLabel()
 		);
 		mockMvc.perform(patch("/api/question-posts/{questionPostId}/edit", questionPost.getId())
 				.content(toJson(request))
