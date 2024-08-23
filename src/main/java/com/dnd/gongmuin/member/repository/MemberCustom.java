@@ -4,17 +4,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 
 public interface MemberCustom {
-	Slice<QuestionPostsByMemberResponse> getQuestionPostsByMember(Member member, Pageable pageable);
+	Slice<QuestionPostsResponse> getQuestionPostsByMember(Member member, Pageable pageable);
 
-	Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(Member member, Pageable pageable);
+	Slice<AnsweredQuestionPostsResponse> getAnsweredQuestionPostsByMember(Member member, Pageable pageable);
 
-	Slice<BookmarksByMemberResponse> getBookmarksByMember(Member member, Pageable pageable);
+	Slice<BookmarksResponse> getBookmarksByMember(Member member, Pageable pageable);
 
-	Slice<CreditHistoryByMemberResponse> getCreditHistoryByMember(String type, Member member, Pageable pageable);
+	Slice<CreditHistoryResponse> getCreditHistoryByMember(String type, Member member, Pageable pageable);
 }

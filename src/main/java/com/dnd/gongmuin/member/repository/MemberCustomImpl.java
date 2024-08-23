@@ -11,14 +11,14 @@ import org.springframework.data.domain.SliceImpl;
 import com.dnd.gongmuin.answer.domain.QAnswer;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QBookmarksByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QCreditHistoryByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.QAnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.QBookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.QCreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.QQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
@@ -35,13 +35,13 @@ public class MemberCustomImpl implements MemberCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Slice<QuestionPostsByMemberResponse> getQuestionPostsByMember(Member member, Pageable pageable) {
+	public Slice<QuestionPostsResponse> getQuestionPostsByMember(Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
 		QInteractionCount saved = new QInteractionCount("SAVED");
 		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 
-		List<QuestionPostsByMemberResponse> content = queryFactory
-			.select(new QQuestionPostsByMemberResponse(
+		List<QuestionPostsResponse> content = queryFactory
+			.select(new QQuestionPostsResponse(
 				qp,
 				saved.count.coalesce(0).as("savedTotalCount"),
 				recommend.count.coalesce(0).as("recommendTotalCount")
@@ -63,7 +63,7 @@ public class MemberCustomImpl implements MemberCustom {
 	}
 
 	@Override
-	public Slice<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(
+	public Slice<AnsweredQuestionPostsResponse> getAnsweredQuestionPostsByMember(
 		Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
 		QInteractionCount saved = new QInteractionCount("SAVED");
@@ -71,9 +71,9 @@ public class MemberCustomImpl implements MemberCustom {
 		QAnswer aw1 = new QAnswer("answer1");
 		QAnswer aw2 = new QAnswer("answer2");
 
-		List<AnsweredQuestionPostsByMemberResponse> content =
+		List<AnsweredQuestionPostsResponse> content =
 			queryFactory
-				.select(new QAnsweredQuestionPostsByMemberResponse(
+				.select(new QAnsweredQuestionPostsResponse(
 					qp,
 					saved.count.coalesce(0).as("savedTotalCount"),
 					recommend.count.coalesce(0).as("recommendTotalCount"),
@@ -110,14 +110,14 @@ public class MemberCustomImpl implements MemberCustom {
 	}
 
 	@Override
-	public Slice<BookmarksByMemberResponse> getBookmarksByMember(Member member, Pageable pageable) {
+	public Slice<BookmarksResponse> getBookmarksByMember(Member member, Pageable pageable) {
 		QQuestionPost qp = QQuestionPost.questionPost;
 		QInteraction ir = QInteraction.interaction;
 		QInteractionCount saved = new QInteractionCount("SAVED");
 		QInteractionCount recommend = new QInteractionCount("RECOMMEND");
 
-		List<BookmarksByMemberResponse> content = queryFactory
-			.select(new QBookmarksByMemberResponse(
+		List<BookmarksResponse> content = queryFactory
+			.select(new QBookmarksResponse(
 				qp,
 				saved.count.coalesce(0).as("savedTotalCount"),
 				recommend.count.coalesce(0).as("recommendTotalCount")
@@ -141,10 +141,10 @@ public class MemberCustomImpl implements MemberCustom {
 	}
 
 	@Override
-	public Slice<CreditHistoryByMemberResponse> getCreditHistoryByMember(String type, Member member,
+	public Slice<CreditHistoryResponse> getCreditHistoryByMember(String type, Member member,
 		Pageable pageable) {
-		List<CreditHistoryByMemberResponse> content = queryFactory
-			.select(new QCreditHistoryByMemberResponse(
+		List<CreditHistoryResponse> content = queryFactory
+			.select(new QCreditHistoryResponse(
 				creditHistory
 			))
 			.from(creditHistory)

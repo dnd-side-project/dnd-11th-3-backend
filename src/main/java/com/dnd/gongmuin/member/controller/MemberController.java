@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
-import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
-import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,10 +56,10 @@ public class MemberController {
 	@Operation(summary = "작성한 질문 전체 조회 API", description = "작성한 질문을 전체 조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/question-posts")
-	public ResponseEntity<PageResponse<QuestionPostsByMemberResponse>> getQuestionPostsByMember(
+	public ResponseEntity<PageResponse<QuestionPostsResponse>> getQuestionPostsByMember(
 		@AuthenticationPrincipal Member member,
 		Pageable pageable) {
-		PageResponse<QuestionPostsByMemberResponse> response =
+		PageResponse<QuestionPostsResponse> response =
 			memberService.getQuestionPostsByMember(member, pageable);
 
 		return ResponseEntity.ok(response);
@@ -68,10 +68,10 @@ public class MemberController {
 	@Operation(summary = "댓글 단 질문 전체 조회 API", description = "댓글 단 질문을 전체 조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/question-posts/answers")
-	public ResponseEntity<PageResponse<AnsweredQuestionPostsByMemberResponse>> getAnsweredQuestionPostsByMember(
+	public ResponseEntity<PageResponse<AnsweredQuestionPostsResponse>> getAnsweredQuestionPostsByMember(
 		@AuthenticationPrincipal Member member,
 		Pageable pageable) {
-		PageResponse<AnsweredQuestionPostsByMemberResponse> response =
+		PageResponse<AnsweredQuestionPostsResponse> response =
 			memberService.getAnsweredQuestionPostsByMember(member, pageable);
 
 		return ResponseEntity.ok(response);
@@ -80,10 +80,10 @@ public class MemberController {
 	@Operation(summary = "스크랩 질문 전체 조회 API", description = "스크랩한 질문을 전체 조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/question-posts/bookmarks")
-	public ResponseEntity<PageResponse<BookmarksByMemberResponse>> getBookmarksByMember(
+	public ResponseEntity<PageResponse<BookmarksResponse>> getBookmarksByMember(
 		@AuthenticationPrincipal Member member,
 		Pageable pageable) {
-		PageResponse<BookmarksByMemberResponse> response =
+		PageResponse<BookmarksResponse> response =
 			memberService.getBookmarksByMember(member, pageable);
 
 		return ResponseEntity.ok(response);
@@ -92,11 +92,11 @@ public class MemberController {
 	@Operation(summary = "크레딧 목록 전체 조회 API", description = "타입에 맞는 크레딧 목록을 전체 조회한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/credit/histories")
-	public ResponseEntity<PageResponse<CreditHistoryByMemberResponse>> getCreditHistoryByMember(
+	public ResponseEntity<PageResponse<CreditHistoryResponse>> getCreditHistoryByMember(
 		@RequestParam("type") String type,
 		@AuthenticationPrincipal Member member,
 		Pageable pageable) {
-		PageResponse<CreditHistoryByMemberResponse> response =
+		PageResponse<CreditHistoryResponse> response =
 			memberService.getCreditHistoryByMember(type, member, pageable);
 
 		return ResponseEntity.ok(response);

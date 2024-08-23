@@ -1,26 +1,30 @@
 package com.dnd.gongmuin.member.dto.response;
 
+import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.querydsl.core.annotations.QueryProjection;
 
-public record QuestionPostsByMemberResponse(
+public record AnsweredQuestionPostsResponse(
 	Long questionPostId,
-	String title,
-	String content,
+	String questionTitle,
+	String questionContent,
 	String jobGroup,
 	int reward,
-	String createdAt,
+	String questionPostCreatedAt,
 	boolean isChosen,
-	int savedTotalCount,
-	int recommendTotalCount
+	int bookmarkCount,
+	int recommendCount,
+	Long answerId,
+	String answerContent,
+	String answerCreatedAt
 ) {
 
 	@QueryProjection
-	public QuestionPostsByMemberResponse(
+	public AnsweredQuestionPostsResponse(
 		QuestionPost questionPost,
-		int savedTotalCount,
-		int recommendTotalCount
-	) {
+		int bookmarkCount,
+		int recommendCount,
+		Answer answer) {
 		this(
 			questionPost.getId(),
 			questionPost.getTitle(),
@@ -29,8 +33,11 @@ public record QuestionPostsByMemberResponse(
 			questionPost.getReward(),
 			questionPost.getCreatedAt().toString(),
 			questionPost.getIsChosen(),
-			savedTotalCount,
-			recommendTotalCount
+			bookmarkCount,
+			recommendCount,
+			answer.getId(),
+			answer.getContent(),
+			answer.getCreatedAt().toString()
 		);
 	}
 }
