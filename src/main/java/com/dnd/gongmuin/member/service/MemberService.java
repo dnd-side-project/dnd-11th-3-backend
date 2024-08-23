@@ -18,6 +18,7 @@ import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
 import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
 import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.MemberInformationResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -138,5 +139,14 @@ public class MemberService {
 			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
 
+	}
+
+	public MemberInformationResponse getMemberInformation(Member member) {
+		try {
+			Member findMember = memberRepository.findByOfficialEmail(member.getOfficialEmail());
+			return MemberMapper.toMemberInformationResponse(findMember);
+		} catch (Exception e) {
+			throw new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER);
+		}
 	}
 }
