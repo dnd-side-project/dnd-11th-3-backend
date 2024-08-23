@@ -26,10 +26,10 @@ import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.fixture.CreditHistoryFixture;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.CreditHistoryByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.post_interaction.domain.Interaction;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
@@ -97,18 +97,18 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
 
 		// when
-		Slice<QuestionPostsByMemberResponse> postsByMember = memberRepository.getQuestionPostsByMember(member1,
+		Slice<QuestionPostsResponse> postsByMember = memberRepository.getQuestionPostsByMember(member1,
 			pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(2),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::title)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::questionTitle)
 				.containsExactly(
 					questionPost2.getTitle(),
 					questionPost1.getTitle()
 				),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::questionPostId)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::questionPostId)
 				.containsExactly(
 					questionPost2.getId(),
 					questionPost1.getId()
@@ -140,28 +140,28 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		interactionCountRepository.saveAll(List.of(interactionCount1, interactionCount2));
 
 		// when
-		Slice<QuestionPostsByMemberResponse> postsByMember = memberRepository.getQuestionPostsByMember(member1,
+		Slice<QuestionPostsResponse> postsByMember = memberRepository.getQuestionPostsByMember(member1,
 			pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(2),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::questionPostId)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::questionPostId)
 				.containsExactly(
 					questionPost2.getId(),
 					questionPost1.getId()
 				),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::title)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::questionTitle)
 				.containsExactly(
 					questionPost2.getTitle(),
 					questionPost1.getTitle()
 				),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::savedTotalCount)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::bookmarkCount)
 				.containsExactly(
 					0,
 					10
 				),
-			() -> assertThat(postsByMember).extracting(QuestionPostsByMemberResponse::recommendTotalCount)
+			() -> assertThat(postsByMember).extracting(QuestionPostsResponse::recommendCount)
 				.containsExactly(
 					0,
 					20
@@ -189,23 +189,23 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		answerRepository.saveAll(List.of(answer1, answer2, answer3, answer4));
 
 		// when
-		Slice<AnsweredQuestionPostsByMemberResponse> postsByMember =
+		Slice<AnsweredQuestionPostsResponse> postsByMember =
 			memberRepository.getAnsweredQuestionPostsByMember(member1, pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(2),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::title)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::questionTitle)
 				.containsExactly(
 					questionPost3.getTitle(),
 					questionPost1.getTitle()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::questionPostId)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::questionPostId)
 				.containsExactly(
 					questionPost3.getId(),
 					questionPost1.getId()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::answerId)
 				.containsExactly(
 					answer4.getId(),
 					answer1.getId()
@@ -243,33 +243,33 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		interactionCountRepository.saveAll(List.of(interactionCount1, interactionCount2));
 
 		// when
-		Slice<AnsweredQuestionPostsByMemberResponse> postsByMember =
+		Slice<AnsweredQuestionPostsResponse> postsByMember =
 			memberRepository.getAnsweredQuestionPostsByMember(member1, pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(2),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::title)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::questionTitle)
 				.containsExactly(
 					questionPost3.getTitle(),
 					questionPost1.getTitle()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::questionPostId)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::questionPostId)
 				.containsExactly(
 					questionPost3.getId(),
 					questionPost1.getId()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::answerId)
 				.containsExactly(
 					answer4.getId(),
 					answer1.getId()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::savedTotalCount)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::bookmarkCount)
 				.containsExactly(
 					0,
 					10
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::recommendTotalCount)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::recommendCount)
 				.containsExactly(
 					0,
 					20
@@ -306,7 +306,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		interactionCountRepository.saveAll(List.of(interactionCount1, interactionCount2));
 
 		// when
-		Slice<AnsweredQuestionPostsByMemberResponse> postsByMember =
+		Slice<AnsweredQuestionPostsResponse> postsByMember =
 			memberRepository.getAnsweredQuestionPostsByMember(member2, pageRequest);
 
 		// then
@@ -338,21 +338,21 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		answerRepository.save(answer2);
 
 		// when
-		Slice<AnsweredQuestionPostsByMemberResponse> postsByMember =
+		Slice<AnsweredQuestionPostsResponse> postsByMember =
 			memberRepository.getAnsweredQuestionPostsByMember(member1, pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(postsByMember).hasSize(1),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerId)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::answerId)
 				.containsExactly(
 					answer2.getId()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerCreatedAt)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::answerCreatedAt)
 				.containsExactly(
 					answer2.getUpdatedAt().toString()
 				),
-			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsByMemberResponse::answerContent)
+			() -> assertThat(postsByMember).extracting(AnsweredQuestionPostsResponse::answerContent)
 				.containsExactly(
 					answer2.getContent()
 				)
@@ -383,18 +383,18 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		interactionRepository.saveAll(List.of(interaction1, interaction2, interaction3, interaction4));
 
 		// when
-		Slice<BookmarksByMemberResponse> bookmarksByMember = memberRepository.getBookmarksByMember(member1,
+		Slice<BookmarksResponse> bookmarksByMember = memberRepository.getBookmarksByMember(member1,
 			pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(bookmarksByMember).hasSize(2),
-			() -> assertThat(bookmarksByMember).extracting(BookmarksByMemberResponse::questionPostId)
+			() -> assertThat(bookmarksByMember).extracting(BookmarksResponse::questionPostId)
 				.containsExactly(
 					questionPost2.getId(),
 					questionPost1.getId()
 				),
-			() -> assertThat(bookmarksByMember).extracting(BookmarksByMemberResponse::title)
+			() -> assertThat(bookmarksByMember).extracting(BookmarksResponse::questionTitle)
 				.containsExactly(
 					questionPost2.getTitle(),
 					questionPost1.getTitle()
@@ -426,7 +426,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when
-		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+		Slice<CreditHistoryResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			null,
 			member1,
 			pageRequest
@@ -435,17 +435,17 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		// then
 		Assertions.assertAll(
 			() -> assertThat(creditHistoryByMember).hasSize(2),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::id)
 				.containsExactly(
 					ch4.getId(),
 					ch1.getId()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::type)
 				.containsExactly(
 					ch4.getType().getLabel(),
 					ch1.getType().getLabel()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::detail)
 				.containsExactly(
 					ch4.getDetail(),
 					ch1.getDetail()
@@ -481,7 +481,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		}
 
 		// when
-		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+		Slice<CreditHistoryResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			"출금",
 			member1,
 			pageRequest
@@ -490,15 +490,15 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		// then
 		Assertions.assertAll(
 			() -> assertThat(creditHistoryByMember).hasSize(1),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::id)
 				.containsExactly(
 					ch1.getId()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::type)
 				.containsExactly(
 					ch1.getType().getLabel()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::detail)
 				.containsExactly(
 					ch1.getDetail()
 				)
@@ -529,7 +529,7 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when
-		Slice<CreditHistoryByMemberResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
+		Slice<CreditHistoryResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
 			"입금",
 			member1,
 			pageRequest
@@ -538,15 +538,15 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		// then
 		Assertions.assertAll(
 			() -> assertThat(creditHistoryByMember).hasSize(1),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::id)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::id)
 				.containsExactly(
 					ch4.getId()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::type)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::type)
 				.containsExactly(
 					ch4.getType().getLabel()
 				),
-			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryByMemberResponse::detail)
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::detail)
 				.containsExactly(
 					ch4.getDetail()
 				)

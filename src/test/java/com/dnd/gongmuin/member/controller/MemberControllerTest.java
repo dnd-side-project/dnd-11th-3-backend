@@ -139,11 +139,11 @@ class MemberControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(jsonPath("$.size").value(2))
 			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()))
-			.andExpect(jsonPath("$.content[0].savedTotalCount").value(30))
-			.andExpect(jsonPath("$.content[0].recommendTotalCount").value(40))
+			.andExpect(jsonPath("$.content[0].bookmarkCount").value(30))
+			.andExpect(jsonPath("$.content[0].recommendCount").value(40))
 			.andExpect(jsonPath("$.content[1].questionPostId").value(questionPost1.getId()))
-			.andExpect(jsonPath("$.content[1].savedTotalCount").value(10))
-			.andExpect(jsonPath("$.content[1].recommendTotalCount").value(20));
+			.andExpect(jsonPath("$.content[1].bookmarkCount").value(10))
+			.andExpect(jsonPath("$.content[1].recommendCount").value(20));
 	}
 
 	@DisplayName("로그인 된 회원이 댓글 단 질문을 전체 조회한다.")
