@@ -46,7 +46,7 @@ public class Member extends TimeBaseEntity {
 	private int credit;
 	@Column(name = "role", nullable = false)
 	private String role;
-  @Column(name = "profile_image_no", nullable = false)
+	@Column(name = "profile_image_no", nullable = false)
 	private final int profileImageNo = setRandomNumber();
 
 	@Builder(access = PRIVATE)
