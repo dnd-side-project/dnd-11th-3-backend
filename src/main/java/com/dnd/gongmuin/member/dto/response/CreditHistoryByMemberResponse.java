@@ -13,7 +13,7 @@ public record CreditHistoryByMemberResponse(
 	public CreditHistoryByMemberResponse(CreditHistory creditHistory) {
 		this(
 			creditHistory.getId(),
-			creditHistory.getType().getDetail(),
+			creditHistory.getType().getLabel(),
 			creditHistory.getDetail(),
 			creditHistory.getAmount()
 		);
