@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.answer.domain.Answer;
-import com.dnd.gongmuin.credit_history.CreditType;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.dto.CreditHistoryMapper;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;

@@ -15,10 +15,11 @@ import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.MemberMapper;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
-import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsByMemberResponse;
-import com.dnd.gongmuin.member.dto.response.BookmarksByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
+import com.dnd.gongmuin.member.dto.response.BookmarksResponse;
+import com.dnd.gongmuin.member.dto.response.CreditHistoryResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
-import com.dnd.gongmuin.member.dto.response.QuestionPostsByMemberResponse;
+import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
@@ -90,10 +91,10 @@ public class MemberService {
 		}
 	}
 
-	public PageResponse<QuestionPostsByMemberResponse> getQuestionPostsByMember(
+	public PageResponse<QuestionPostsResponse> getQuestionPostsByMember(
 		Member member, Pageable pageable) {
 		try {
-			Slice<QuestionPostsByMemberResponse> responsePage =
+			Slice<QuestionPostsResponse> responsePage =
 				memberRepository.getQuestionPostsByMember(member, pageable);
 
 			return PageMapper.toPageResponse(responsePage);
@@ -102,10 +103,10 @@ public class MemberService {
 		}
 	}
 
-	public PageResponse<AnsweredQuestionPostsByMemberResponse> getAnsweredQuestionPostsByMember(
+	public PageResponse<AnsweredQuestionPostsResponse> getAnsweredQuestionPostsByMember(
 		Member member, Pageable pageable) {
 		try {
-			Slice<AnsweredQuestionPostsByMemberResponse> responsePage =
+			Slice<AnsweredQuestionPostsResponse> responsePage =
 				memberRepository.getAnsweredQuestionPostsByMember(member, pageable);
 
 			return PageMapper.toPageResponse(responsePage);
@@ -114,15 +115,28 @@ public class MemberService {
 		}
 	}
 
-	public PageResponse<BookmarksByMemberResponse> getBookmarksByMember(
+	public PageResponse<BookmarksResponse> getBookmarksByMember(
 		Member member, Pageable pageable) {
 		try {
-			Slice<BookmarksByMemberResponse> responsePage =
+			Slice<BookmarksResponse> responsePage =
 				memberRepository.getBookmarksByMember(member, pageable);
 
 			return PageMapper.toPageResponse(responsePage);
 		} catch (Exception e) {
 			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
 		}
+	}
+
+	public PageResponse<CreditHistoryResponse> getCreditHistoryByMember(String type, Member member,
+		Pageable pageable) {
+		try {
+			Slice<CreditHistoryResponse> responsePage =
+				memberRepository.getCreditHistoryByMember(type, member, pageable);
+
+			return PageMapper.toPageResponse(responsePage);
+		} catch (Exception e) {
+			throw new NotFoundException(MemberErrorCode.QUESTION_POSTS_BY_MEMBER_FAILED);
+		}
+
 	}
 }

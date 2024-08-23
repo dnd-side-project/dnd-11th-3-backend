@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.credit_history;
+package com.dnd.gongmuin.credit_history.domain;
 
 import java.util.Arrays;
 
@@ -26,5 +26,16 @@ public enum CreditType {
 
 	private boolean isEqual(String input) {
 		return input.equals(this.label);
+	}
+
+	public static CreditType fromDetail(String detail) {
+		return Arrays.stream(values())
+			.filter(type -> type.isDetailEqual(detail))
+			.findAny()
+			.orElseThrow(IllegalArgumentException::new);
+	}
+
+	private boolean isDetailEqual(String input) {
+		return input.equals(this.detail);
 	}
 }
