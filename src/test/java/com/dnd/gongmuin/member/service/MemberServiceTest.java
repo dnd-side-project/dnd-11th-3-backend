@@ -87,10 +87,12 @@ class MemberServiceTest {
 
 		// then
 		assertAll(
+			() -> assertThat(memberProfile.memberId()).isEqualTo(member.getId()),
 			() -> assertThat(memberProfile.nickname()).isEqualTo(member.getNickname()),
 			() -> assertThat(memberProfile.jobGroup()).isEqualTo(member.getJobGroup().getLabel()),
 			() -> assertThat(memberProfile.jobCategory()).isEqualTo(member.getJobCategory().getLabel()),
-			() -> assertThat(memberProfile.credit()).isEqualTo(member.getCredit())
+			() -> assertThat(memberProfile.credit()).isEqualTo(member.getCredit()),
+			() -> assertThat(memberProfile.profileImageNo()).isEqualTo(member.getProfileImageNo())
 		);
 	}
 

@@ -73,9 +73,11 @@ class MemberControllerTest extends ApiTestSupport {
 				.cookie(accessToken)
 			)
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("nickname").value("김회원"))
-			.andExpect(jsonPath("jobGroup").value("공업"))
-			.andExpect(jsonPath("jobCategory").value("기계"))
+			.andExpect(jsonPath("memberId").value(loginMember.getId()))
+			.andExpect(jsonPath("nickname").value(loginMember.getNickname()))
+			.andExpect(jsonPath("jobGroup").value(loginMember.getJobGroup().getLabel()))
+			.andExpect(jsonPath("jobCategory").value(loginMember.getJobCategory().getLabel()))
+			.andExpect(jsonPath("profileImageNo").value(loginMember.getProfileImageNo()))
 			.andExpect(jsonPath("credit").value(10000));
 	}
 
