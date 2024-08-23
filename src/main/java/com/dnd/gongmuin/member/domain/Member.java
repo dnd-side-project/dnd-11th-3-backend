@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 import java.util.Random;
+
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -22,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends TimeBaseEntity {
-
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)

@@ -93,11 +93,13 @@ class QuestionPostServiceTest {
 			.willReturn(Optional.of(questionPost));
 
 		given(interactionRepository
-			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(), InteractionType.SAVED))
+			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(),
+				InteractionType.SAVED))
 			.willReturn(false);
 
 		given(interactionRepository
-			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(), InteractionType.RECOMMEND))
+			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(),
+				InteractionType.RECOMMEND))
 			.willReturn(false);
 
 		//when
@@ -160,10 +162,12 @@ class QuestionPostServiceTest {
 			.willReturn(Optional.of(questionPost));
 
 		given(interactionRepository
-			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(), InteractionType.SAVED))
+			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(),
+				InteractionType.SAVED))
 			.willReturn(false);
 		given(interactionRepository
-			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(), InteractionType.RECOMMEND))
+			.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, member.getId(),
+				InteractionType.RECOMMEND))
 			.willReturn(true);
 
 		InteractionCount recommendCount
