@@ -34,9 +34,9 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 	@Autowired
 	protected ObjectMapper objectMapper;
 	@Autowired
-	private TokenProvider tokenProvider;
-	@Autowired
 	protected CookieUtil cookieUtil;
+	@Autowired
+	private TokenProvider tokenProvider;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);

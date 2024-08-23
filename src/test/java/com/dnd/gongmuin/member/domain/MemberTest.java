@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.member.domain;
 
-import static com.dnd.gongmuin.member.domain.JobCategory.*;
-import static com.dnd.gongmuin.member.domain.JobGroup.*;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;

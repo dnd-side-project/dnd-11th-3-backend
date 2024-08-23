@@ -55,7 +55,7 @@ public class QuestionPostController {
 		@AuthenticationPrincipal Member member
 	) {
 		QuestionPostDetailResponse response =
-			questionPostService.getQuestionPostById(questionPostId,member);
+			questionPostService.getQuestionPostById(questionPostId, member);
 		return ResponseEntity.ok(response);
 	}
 

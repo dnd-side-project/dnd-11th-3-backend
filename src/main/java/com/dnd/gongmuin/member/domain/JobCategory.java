@@ -58,7 +58,6 @@ public enum JobCategory {
 	CS("관세"),
 	SW("사회복지");
 
-
 	private final String label;
 
 	public static JobCategory from(String input) {
@@ -71,4 +70,4 @@ public enum JobCategory {
 	private boolean isEqual(String input) {
 		return input.equals(this.label);
 	}
-	}
+}

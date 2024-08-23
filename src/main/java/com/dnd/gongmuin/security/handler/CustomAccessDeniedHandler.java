@@ -25,29 +25,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 	private static final String ROLE_GUEST = "ROLE_GUEST";
 	private static final String ROLE_USER = "ROLE_USER";
 
-	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response,
-		AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		// 현재 인증된 사용자 정보 가져오기
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		// 사용자 권한에 따라 다른 응답 제공
-		if (!Objects.isNull(accessDeniedException)) {
-			if (!matchAuthenticationFromRole(authentication, ROLE_USER)) {
-				// ROLE_USER 권한이 없는 경우
-				setUpResponse(response, SecurityErrorCode.FORBIDDEN_USER);
-			} else if (!matchAuthenticationFromRole(authentication, ROLE_GUEST)) {
-				// ROLE_GUEST 권한이 없는 경우
-				setUpResponse(response, SecurityErrorCode.FORBIDDEN_GUEST);
-			} else {
-				// 기타 권한이 없는 경우
-				setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
-			}
-		} else {
-			setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
-		}
-	}
-
 	private static boolean matchAuthenticationFromRole(Authentication authentication, String role) {
 		String authRole = authentication.getAuthorities().stream()
 			.map(GrantedAuthority::getAuthority)
@@ -73,5 +50,28 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		String jsonResponse = mapper.writeValueAsString(errorResponse);
 
 		response.getWriter().write(jsonResponse);
+	}
+
+	@Override
+	public void handle(HttpServletRequest request, HttpServletResponse response,
+		AccessDeniedException accessDeniedException) throws IOException, ServletException {
+		// 현재 인증된 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		// 사용자 권한에 따라 다른 응답 제공
+		if (!Objects.isNull(accessDeniedException)) {
+			if (!matchAuthenticationFromRole(authentication, ROLE_USER)) {
+				// ROLE_USER 권한이 없는 경우
+				setUpResponse(response, SecurityErrorCode.FORBIDDEN_USER);
+			} else if (!matchAuthenticationFromRole(authentication, ROLE_GUEST)) {
+				// ROLE_GUEST 권한이 없는 경우
+				setUpResponse(response, SecurityErrorCode.FORBIDDEN_GUEST);
+			} else {
+				// 기타 권한이 없는 경우
+				setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
+			}
+		} else {
+			setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
+		}
 	}
 }
