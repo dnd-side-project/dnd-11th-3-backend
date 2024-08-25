@@ -3,6 +3,8 @@ name: CD Backend
 on:
   push:
     branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
