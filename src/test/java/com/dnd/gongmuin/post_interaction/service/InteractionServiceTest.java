@@ -33,6 +33,7 @@ class InteractionServiceTest {
 
 	private final Member questioner = MemberFixture.member(1L);
 	private final Member interactor = MemberFixture.member(2L);
+	private final InteractionType type = InteractionType.RECOMMEND;
 
 	@Mock
 	private InteractionRepository interactionRepository;
@@ -46,60 +47,27 @@ class InteractionServiceTest {
 	@InjectMocks
 	private InteractionService interactionService;
 
-	@DisplayName("[상호작용을 새로 활성화한다. 기존에 게시글 상호작용 수가 저장되어 있다.]")
+	@DisplayName("[게시글에 최초로 추천을 한다.]")
 	@Test
 	void activateInteraction_create1() {
 		//given
-		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
 		Interaction interaction = Interaction.of(type, interactor.getId(), questionPost.getId());
 		InteractionCount interactionCount = InteractionCount.of(type, interactor.getId());
 
-		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
-			questionPost.getId(), interactor.getId(), type
-		)).willReturn(false); // 생성
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 		given(interactionRepository.save(any(Interaction.class)))
 			.willReturn(interaction);
 		given(interactionCountRepository.findByQuestionPostIdAndType(
-			questionPost.getId(), type)).willReturn(Optional.of(interactionCount));
-
-		//when
-		InteractionResponse response = interactionService.activateInteraction(1L, 2L,
-			type);
-
-		//then
-		assertAll(
-			() -> assertThat(response.count()).isEqualTo(1),
-			() -> assertThat(response.interactionType()).isEqualTo(type.getLabel())
-		);
-	}
-
-	@DisplayName("[상호작용을 새로 활성화한다. 기존에 게시글 상호작용 수가 저장되어있지 않다.]")
-	@Test
-	void activateInteraction_create2() {
-		//given
-		InteractionType type = InteractionType.RECOMMEND;
-		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		Interaction interaction = Interaction.of(type, interactor.getId(), questionPost.getId());
-		InteractionCount interactionCount = InteractionCount.of(type, interactor.getId());
-
-		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
-			questionPost.getId(), interactor.getId(), type
-		)).willReturn(false); // 생성
-		given(questionPostRepository.findById(questionPost.getId()))
-			.willReturn(Optional.of(questionPost));
-		given(interactionRepository.save(any(Interaction.class)))
-			.willReturn(interaction);
-		given(interactionCountRepository.findByQuestionPostIdAndType(
-			questionPost.getId(), type)).willReturn(Optional.empty());
+			questionPost.getId(), type)
+		).willReturn(Optional.empty());
 		given(interactionCountRepository.save(any(InteractionCount.class)))
 			.willReturn(interactionCount);
 
 		//when
 		InteractionResponse response
-			= interactionService.activateInteraction(1L, 2L, type);
+			= interactionService.activateInteraction(1L, interactor.getId(), type);
 
 		//then
 		assertAll(
@@ -108,11 +76,37 @@ class InteractionServiceTest {
 		);
 	}
 
-	@DisplayName("[비활성화된 상호작용을 재활성화한다.]")
+	@DisplayName("[다른 사람이 추천했던 게시글에 대해 추천한다.]")
+	@Test
+	void activateInteraction_create2() {
+		//given
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
+		Interaction interaction = Interaction.of(type, interactor.getId(), questionPost.getId());
+		InteractionCount interactionCount = InteractionCount.of(type, interactor.getId());
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(interactionRepository.save(any(Interaction.class)))
+			.willReturn(interaction);
+		given(interactionCountRepository.findByQuestionPostIdAndType(
+			questionPost.getId(), type)
+		).willReturn(Optional.of(interactionCount));
+
+		//when
+		InteractionResponse response = interactionService
+			.activateInteraction(1L, interactor.getId(), type);
+
+		//then
+		assertAll(
+			() -> assertThat(response.count()).isEqualTo(2),
+			() -> assertThat(response.interactionType()).isEqualTo(type.getLabel())
+		);
+	}
+
+	@DisplayName("[기존에 추천 취소했던 게시글을 재추천한다.]")
 	@Test
 	void activateInteraction_update() {
 		//given
-		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
 		Interaction interaction = InteractionFixture.interaction(1L, type, interactor.getId(),
 			questionPost.getId());
@@ -121,21 +115,22 @@ class InteractionServiceTest {
 		interaction.updateIsInteracted(false);
 		interactionCount.decreaseCount();
 
-		given(interactionRepository.existsByQuestionPostIdAndMemberIdAndType(
-			questionPost.getId(), interactor.getId(), type
-		)).willReturn(true); // 업데이트
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+
 		given(interactionRepository.findByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(),
 			interactor.getId(),
 			type
 		)).willReturn(Optional.of(interaction));
+
 		given(interactionCountRepository.findByQuestionPostIdAndType(
 			interactionCount.getId(), type))
 			.willReturn(Optional.of(interactionCount));
 
 		//when
-		InteractionResponse response = interactionService.activateInteraction(1L, 2L,
-			type);
+		InteractionResponse response =
+			interactionService.activateInteraction(1L, interactor.getId(), type);
 
 		//then
 		assertAll(
@@ -144,29 +139,30 @@ class InteractionServiceTest {
 		);
 	}
 
-	@DisplayName("[활성화된 상호작용을 비활성화한다.]")
+	@DisplayName("[게시글 추천을 취소한다.]")
 	@Test
 	void inactivateInteraction() {
 		//given
-		InteractionType type = InteractionType.RECOMMEND;
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L, questioner);
-		Interaction interaction = InteractionFixture.interaction(1L, type, interactor.getId(),
-			questionPost.getId());
-		InteractionCount interactionCount = InteractionCountFixture.interactionCount(1L, type,
-			interactor.getId());
+		Interaction interaction = InteractionFixture.interaction(
+			1L, type, interactor.getId(), questionPost.getId()
+		);
+		InteractionCount interactionCount =
+			InteractionCountFixture.interactionCount(1L, type, interactor.getId());
 
 		given(interactionRepository.findByQuestionPostIdAndMemberIdAndType(
 			questionPost.getId(),
 			interactor.getId(),
 			type
 		)).willReturn(Optional.of(interaction));
+
 		given(interactionCountRepository.findByQuestionPostIdAndType(
-			interactionCount.getId(), type))
-			.willReturn(Optional.of(interactionCount));
+			interactionCount.getId(), type)
+		).willReturn(Optional.of(interactionCount));
 
 		//when
-		InteractionResponse response = interactionService.inactivateInteraction(1L, 2L,
-			type);
+		InteractionResponse response = interactionService
+			.inactivateInteraction(1L, interactor.getId(), type);
 
 		//then
 		assertAll(
