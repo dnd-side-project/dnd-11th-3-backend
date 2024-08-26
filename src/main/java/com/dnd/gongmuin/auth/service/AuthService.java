@@ -18,6 +18,7 @@ import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
+import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.auth.repository.AuthRepository;
@@ -78,7 +79,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public void tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
+	public TempSignResponse tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
 		Date now = new Date();
 		Member member = Member.of(
 			tempSignUpRequest.socialName(),
@@ -100,10 +101,12 @@ public class AuthService {
 		tokenProvider.generateRefreshToken(customOauth2User, now);
 		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
 		response.addCookie(cookieUtil.createCookie(accessToken));
+
+		return new TempSignResponse(true);
 	}
 
 	@Transactional
-	public void tempSignIn(TempSignInRequest tempSignInRequest, HttpServletResponse response) {
+	public TempSignResponse tempSignIn(TempSignInRequest tempSignInRequest, HttpServletResponse response) {
 		Date now = new Date();
 
 		String prefixSocialEmail = "kakao/" + tempSignInRequest.socialEmail();
@@ -118,6 +121,8 @@ public class AuthService {
 		tokenProvider.generateRefreshToken(customOauth2User, now);
 		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
 		response.addCookie(cookieUtil.createCookie(accessToken));
+
+		return new TempSignResponse(true);
 	}
 
 	@Transactional(readOnly = true)
