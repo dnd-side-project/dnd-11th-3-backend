@@ -24,15 +24,15 @@ public enum CreditType {
 			.orElseThrow(IllegalArgumentException::new);
 	}
 
-	private boolean isEqual(String input) {
-		return input.equals(this.label);
-	}
-
 	public static CreditType fromDetail(String detail) {
 		return Arrays.stream(values())
 			.filter(type -> type.isDetailEqual(detail))
 			.findAny()
 			.orElseThrow(IllegalArgumentException::new);
+	}
+
+	private boolean isEqual(String input) {
+		return input.equals(this.label);
 	}
 
 	private boolean isDetailEqual(String input) {

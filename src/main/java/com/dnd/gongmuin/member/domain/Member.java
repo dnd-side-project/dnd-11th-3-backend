@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class Member extends TimeBaseEntity {
 
+	@Column(name = "profile_image_no", nullable = false)
+	private final int profileImageNo = setRandomNumber();
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "member_id")
@@ -46,8 +48,6 @@ public class Member extends TimeBaseEntity {
 	private int credit;
 	@Column(name = "role", nullable = false)
 	private String role;
-	@Column(name = "profile_image_no", nullable = false)
-	private final int profileImageNo = setRandomNumber();
 
 	@Builder(access = PRIVATE)
 	private Member(String nickname, String socialName, JobGroup jobGroup, JobCategory jobCategory, String socialEmail,
