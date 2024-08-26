@@ -47,12 +47,9 @@ public class InteractionService {
 		int count = interactionCountRepository
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.map(InteractionCount::increaseCount)
-			.orElseGet(() -> {
-				interactionCountRepository.save(
-					InteractionMapper.toInteractionCount(questionPostId, type)
-				);
-				return 1;
-			});
+			.orElseGet(() -> interactionCountRepository.save(
+				InteractionMapper.toInteractionCount(questionPostId, type)
+			).getCount());
 		return InteractionMapper.toInteractionResponse(count, type);
 	}
 
