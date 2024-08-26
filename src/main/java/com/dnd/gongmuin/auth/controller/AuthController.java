@@ -14,6 +14,7 @@ import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
+import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
@@ -37,23 +38,23 @@ public class AuthController {
 	@Operation(summary = "임시 회원가입(토큰 발급) API", description = "임시 회원가입 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/temp-signup")
-	public ResponseEntity<String> tempSignUp(
+	public ResponseEntity<TempSignResponse> tempSignUp(
 		@RequestBody @Valid TempSignUpRequest request,
 		HttpServletResponse response) {
 
-		authService.tempSignUp(request, response);
-		return ResponseEntity.ok("성공");
+		TempSignResponse tempSignResponse = authService.tempSignUp(request, response);
+		return ResponseEntity.ok(tempSignResponse);
 	}
 
 	@Operation(summary = "임시 로그인(토큰 발급) API", description = "임시 로그인 후 토큰을 발급한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/temp-signin")
-	public ResponseEntity<String> tempSignIn(
+	public ResponseEntity<TempSignResponse> tempSignIn(
 		@RequestBody @Valid TempSignInRequest request,
 		HttpServletResponse response) {
 
-		authService.tempSignIn(request, response);
-		return ResponseEntity.ok("성공");
+		TempSignResponse tempSignResponse = authService.tempSignIn(request, response);
+		return ResponseEntity.ok(tempSignResponse);
 	}
 
 	@Operation(summary = "닉네임 중복 검증 API", description = "닉네임 중복을 검증한다.")
