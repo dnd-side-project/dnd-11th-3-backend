@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InteractionMapper {
 
-	public static Interaction toPostInteraction(Long questionPostId, Long memberId, InteractionType type) {
+	public static Interaction toInteraction(Long questionPostId, Long memberId, InteractionType type) {
 		return Interaction.of(
 			type,
 			memberId,
@@ -18,14 +18,14 @@ public class InteractionMapper {
 		);
 	}
 
-	public static InteractionCount toPostInteractionCount(Long questionPostId, InteractionType type) {
+	public static InteractionCount toInteractionCount(Long questionPostId, InteractionType type) {
 		return InteractionCount.of(
 			type,
 			questionPostId
 		);
 	}
 
-	public static InteractionResponse toPostInteractionResponse(int count, InteractionType type) {
+	public static InteractionResponse toInteractionResponse(int count, InteractionType type) {
 		return new InteractionResponse(
 			count, type.getLabel()
 		);

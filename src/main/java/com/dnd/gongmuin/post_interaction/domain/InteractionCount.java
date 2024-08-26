@@ -51,7 +51,7 @@ public class InteractionCount extends TimeBaseEntity {
 
 	public int decreaseCount() {
 		if (count == 0) {
-			throw new ValidationException(InteractionErrorCode.UNINTERACTION_NOT_ALLOWED);
+			throw new ValidationException(InteractionErrorCode.INTERACTION_UNDO_NOT_ALLOWED);
 		}
 		return --count;
 	}
