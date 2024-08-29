@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat.dto.ChatMessageRequest;
 import com.dnd.gongmuin.chat.dto.ChatMessageResponse;
-import com.dnd.gongmuin.chat.service.ChatMessageService;
+import com.dnd.gongmuin.chat.service.ChatRoomService;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 
@@ -21,21 +21,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "채팅 메시지 API")
+@Tag(name = "채팅방 API")
 @RestController
 @RequiredArgsConstructor
-public class ChatMessageController {
+public class ChatRoomController {
 
-	private final ChatMessageService chatMessageService;
+	private final ChatRoomService chatRoomService;
 
-	@Operation(summary = "채팅방 메시지 등록 임시 API", description = "웹소켓 구현 전 임시 API")
+	@Operation(summary = "채팅방 메시지 등록 임시 API", description = "웹소켓 연결 전 임시 API")
 	@PostMapping("/api/chat-messages/{chatRoomId}")
 	public ResponseEntity<Void> registerChatMessage(
 		@PathVariable Long chatRoomId,
 		@Valid @RequestBody ChatMessageRequest request,
 		@AuthenticationPrincipal Member member
 	) {
-		chatMessageService.saveChatMessage(request, chatRoomId, member.getId());
+		chatRoomService.saveChatMessage(request, chatRoomId, member.getId());
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
@@ -46,7 +46,7 @@ public class ChatMessageController {
 		Pageable pageable
 	) {
 		PageResponse<ChatMessageResponse> response =
-			chatMessageService.getChatMessage(chatRoomId, pageable);
+			chatRoomService.getChatMessage(chatRoomId, pageable);
 		return ResponseEntity.ok(response);
 	}
 }

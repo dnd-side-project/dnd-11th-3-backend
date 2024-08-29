@@ -15,7 +15,7 @@ import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
 
 @DisplayName("[ChatMessage 통합 테스트]")
-class ChatMessageControllerTest extends ApiTestSupport {
+class ChatRoomControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private ChatMessageRepository chatMessageRepository;

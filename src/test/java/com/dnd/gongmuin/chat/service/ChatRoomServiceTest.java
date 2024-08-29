@@ -22,7 +22,7 @@ import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 
 @DisplayName("[채팅방 메시지 서비스 단위 테스트]")
 @ExtendWith(MockitoExtension.class)
-class ChatMessageServiceTest {
+class ChatRoomServiceTest {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
 
@@ -30,7 +30,7 @@ class ChatMessageServiceTest {
 	private ChatMessageRepository chatMessageRepository;
 
 	@InjectMocks
-	private ChatMessageService chatMessageService;
+	private ChatRoomService chatRoomService;
 
 	@DisplayName("[채팅방 아이디로 채팅방 메시지를 조회할 수 있다.]")
 	@Test
@@ -41,7 +41,7 @@ class ChatMessageServiceTest {
 			.willReturn(new SliceImpl<>(List.of(chatMessage)));
 
 		//when
-		List<ChatMessageResponse> response = chatMessageService.getChatMessage(1L, pageRequest).content();
+		List<ChatMessageResponse> response = chatRoomService.getChatMessage(1L, pageRequest).content();
 
 		//then
 		assertAll(
