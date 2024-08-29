@@ -12,6 +12,7 @@ import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,7 +23,7 @@ public class ChatRoomService {
 
 	@Transactional
 	public void saveChatMessage(
-		ChatMessageRequest request,
+		@Valid ChatMessageRequest request,
 		Long chatRoomId,
 		Long memberId
 	) {
