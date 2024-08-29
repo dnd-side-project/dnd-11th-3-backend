@@ -11,10 +11,6 @@ import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 @Repository
 public interface InteractionRepository extends JpaRepository<Interaction, Long> {
 
-	boolean existsByQuestionPostIdAndMemberIdAndType(
-		Long questionPostId, Long memberId, InteractionType type
-	);
-
 	boolean existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
 		Long questionPostId, Long memberId, InteractionType type
 	);
