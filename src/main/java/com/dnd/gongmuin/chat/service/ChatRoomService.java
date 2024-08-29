@@ -30,7 +30,7 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<ChatMessageResponse> getChatMessage(Long chatRoomId, Pageable pageable) {
+	public PageResponse<ChatMessageResponse> getChatMessages(Long chatRoomId, Pageable pageable) {
 		Slice<ChatMessageResponse> responsePage = chatMessageRepository
 			.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, pageable)
 			.map(ChatMapper::toChatMessageResponse);

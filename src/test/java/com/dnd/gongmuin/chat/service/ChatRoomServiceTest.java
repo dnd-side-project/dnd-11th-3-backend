@@ -41,7 +41,7 @@ class ChatRoomServiceTest {
 			.willReturn(new SliceImpl<>(List.of(chatMessage)));
 
 		//when
-		List<ChatMessageResponse> response = chatRoomService.getChatMessage(1L, pageRequest).content();
+		List<ChatMessageResponse> response = chatRoomService.getChatMessages(1L, pageRequest).content();
 
 		//then
 		assertAll(

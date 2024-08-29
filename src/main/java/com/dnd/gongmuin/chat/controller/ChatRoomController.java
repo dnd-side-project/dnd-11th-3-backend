@@ -46,7 +46,7 @@ public class ChatRoomController {
 		Pageable pageable
 	) {
 		PageResponse<ChatMessageResponse> response =
-			chatRoomService.getChatMessage(chatRoomId, pageable);
+			chatRoomService.getChatMessages(chatRoomId, pageable);
 		return ResponseEntity.ok(response);
 	}
 }
