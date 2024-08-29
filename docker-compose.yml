@@ -6,3 +6,15 @@ services:
     ports:
       - "6379:6379"
     restart: always
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+    volumes:
+      - mongo:/data/db
+volumes:
+  mongo:
