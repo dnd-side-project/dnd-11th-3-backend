@@ -38,7 +38,7 @@ public class InteractionController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "상호작용 등록 API", description = "게시글을 추천하거나 북마크 취소한다.")
+	@Operation(summary = "상호작용 취소 API", description = "게시글을 추천하거나 북마크 취소한다.")
 	@PostMapping("/api/question-posts/{questionPostId}/inactivated")
 	public ResponseEntity<InteractionResponse> inactivateInteraction(
 		@PathVariable("questionPostId") Long questionPostId,
