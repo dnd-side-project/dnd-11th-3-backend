@@ -55,4 +55,13 @@ public class Notification extends TimeBaseEntity {
 		this.targetId = targetId;
 		this.member = member;
 	}
+
+	public static Notification of(NotificationType type, Long targetId, Member member) {
+		return Notification.builder()
+			.type(type)
+			.isRead(false)
+			.targetId(targetId)
+			.member(member)
+			.build();
+	}
 }
