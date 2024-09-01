@@ -38,7 +38,7 @@ public class NotificationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PatchMapping("/api/notifications/read")
+	@PatchMapping("/api/notification/read")
 	public ResponseEntity<IsReadNotificationResponse> isReadNotification(
 		@RequestBody IsReadNotificationRequest request
 	) {
