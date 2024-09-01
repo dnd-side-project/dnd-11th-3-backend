@@ -16,6 +16,7 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -29,6 +30,7 @@ public class AnswerService {
 	private final QuestionPostRepository questionPostRepository;
 	private final AnswerRepository answerRepository;
 	private final CreditHistoryService creditHistoryService;
+	private final NotificationService notificationService;
 
 	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
 		if (!questionPost.isQuestioner(member.getId())) {
@@ -45,7 +47,10 @@ public class AnswerService {
 		QuestionPost questionPost = findQuestionPostById(questionPostId);
 		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
 			member);
-		return AnswerMapper.toAnswerDetailResponse(answerRepository.save(answer));
+		Answer savedAnswer = answerRepository.save(answer);
+
+		notificationService.saveNotificationFromTarget("답변", questionPost.getId(), questionPost.getMember());
+		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
 	}
 
 	@Transactional(readOnly = true)
