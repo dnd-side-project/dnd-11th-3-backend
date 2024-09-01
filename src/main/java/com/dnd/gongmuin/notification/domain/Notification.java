@@ -78,4 +78,8 @@ public class Notification extends TimeBaseEntity {
 			.member(member)
 			.build();
 	}
+
+	public Boolean updateIsRead() {
+		return this.isRead = Boolean.TRUE;
+	}
 }
