@@ -16,8 +16,7 @@ public class ChatMapper {
 			chatMessage.getMemberId(),
 			chatMessage.getChatRoomId(),
 			chatMessage.getContent(),
-			chatMessage.getType().getLabel(),
-			chatMessage.getMediaUrl()
+			chatMessage.getType().getLabel()
 		);
 	}
 
@@ -30,7 +29,6 @@ public class ChatMapper {
 			request.content(),
 			chatRoomId,
 			memberId,
-			request.mediaUrl(),
 			MessageType.of(request.type())
 		);
 	}
