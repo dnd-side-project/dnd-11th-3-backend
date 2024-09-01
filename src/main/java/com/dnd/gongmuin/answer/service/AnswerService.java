@@ -49,7 +49,9 @@ public class AnswerService {
 			member);
 		Answer savedAnswer = answerRepository.save(answer);
 
-		notificationService.saveNotificationFromTarget("답변", questionPost.getId(), questionPost.getMember());
+		notificationService.saveNotificationFromTarget(
+			"답변", questionPost.getId(), member.getId(), questionPost.getMember()
+		);
 		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
 	}
 
