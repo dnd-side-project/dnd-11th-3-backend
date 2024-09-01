@@ -67,7 +67,7 @@ public class NotificationService {
 			.orElseThrow(() -> new NotFoundException(NotificationErrorCode.NOT_FOUND_NOTIFICATION));
 
 		if (Boolean.TRUE.equals(findNotification.getIsRead())) {
-			throw new ValidationException(NotificationErrorCode.NOTIFICATIONS_BY_MEMBER_FAILED);
+			throw new ValidationException(NotificationErrorCode.CHANGE_IS_READ_NOTIFICATION_FAILED);
 		}
 
 		findNotification.updateIsRead();
