@@ -40,7 +40,7 @@ public class NotificationService {
 	}
 
 	private NotificationType findTargetType(String targetType) {
-		return NotificationType.of(targetType);
+		return NotificationType.from(targetType);
 	}
 
 	public PageResponse<NotificationsResponse> getNotificationsByMember(

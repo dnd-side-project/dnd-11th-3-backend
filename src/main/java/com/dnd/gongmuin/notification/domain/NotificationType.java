@@ -18,7 +18,7 @@ public enum NotificationType {
 
 	private final String label;
 
-	public static NotificationType of(String input) {
+	public static NotificationType from(String input) {
 		return Arrays.stream(values())
 			.filter(type -> type.isEqual(input))
 			.findAny()

@@ -58,7 +58,7 @@ public class NotificationCustomImpl implements NotificationCustom {
 			return null;
 		}
 
-		return notification.type.in(NotificationType.of(type));
+		return notification.type.in(NotificationType.from(type));
 	}
 
 	private <T> boolean hasNext(int pageSize, List<T> content) {
