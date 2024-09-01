@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.notification;
+package com.dnd.gongmuin.notification.service;
 
 import static org.mockito.Mockito.*;
 
@@ -16,7 +16,6 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.domain.Notification;
 import com.dnd.gongmuin.notification.domain.NotificationType;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
-import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 @ExtendWith(MockitoExtension.class)
