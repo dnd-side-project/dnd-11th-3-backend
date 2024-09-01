@@ -19,9 +19,13 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 
 	@Transactional
-	public void saveNotificationFromTarget(String targetType, Long targetId, Member toMember) {
+	public void saveNotificationFromTarget(
+		String targetType,
+		Long targetId,
+		Long triggerMemberId,
+		Member toMember) {
 		NotificationType type = findTargetType(targetType);
-		Notification notification = Notification.of(type, targetId, toMember);
+		Notification notification = Notification.of(type, targetId, triggerMemberId, toMember);
 		try {
 			notificationRepository.save(notification);
 		} catch (Exception e) {
