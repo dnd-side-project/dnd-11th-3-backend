@@ -34,7 +34,6 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].memberId").value(chatMessages.get(0).getMemberId()))
 			.andExpect(jsonPath("$.content[0].chatRoomId").value(chatMessages.get(0).getChatRoomId()))
 			.andExpect(jsonPath("$.content[0].content").value(chatMessages.get(0).getContent()))
-			.andExpect(jsonPath("$.content[0].type").value(chatMessages.get(0).getType().getLabel()))
-			.andExpect(jsonPath("$.content[0].mediaUrl").value(chatMessages.get(0).getMediaUrl()));
+			.andExpect(jsonPath("$.content[0].type").value(chatMessages.get(0).getType().getLabel()));
 	}
 }

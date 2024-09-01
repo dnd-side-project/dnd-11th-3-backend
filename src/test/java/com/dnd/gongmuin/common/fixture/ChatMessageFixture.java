@@ -14,7 +14,6 @@ public class ChatMessageFixture {
 			"하하",
 			1L,
 			1L,
-			null,
 			MessageType.TEXT
 		);
 	}
