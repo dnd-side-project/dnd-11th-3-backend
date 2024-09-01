@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NotificationType {
 
-	ANSWER("댓글"),
+	ANSWER("답변"),
 	CHOSEN("채택"),
 	CHAT("채팅");
 
