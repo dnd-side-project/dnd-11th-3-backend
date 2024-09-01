@@ -42,6 +42,9 @@ public class Notification extends TimeBaseEntity {
 	@Column(name = "target_id")
 	private Long targetId;
 
+	@Column(name = "trigger_member_id")
+	private Long triggerMemberId;
+
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
 		nullable = false,
@@ -49,18 +52,29 @@ public class Notification extends TimeBaseEntity {
 	private Member member;
 
 	@Builder(access = PRIVATE)
-	private Notification(NotificationType type, Boolean isRead, Long targetId, Member member) {
+	private Notification(
+		NotificationType type,
+		Boolean isRead,
+		Long targetId,
+		Long triggerMemberId,
+		Member member) {
 		this.type = type;
 		this.isRead = isRead;
 		this.targetId = targetId;
+		this.triggerMemberId = triggerMemberId;
 		this.member = member;
 	}
 
-	public static Notification of(NotificationType type, Long targetId, Member member) {
+	public static Notification of(
+		NotificationType type,
+		Long targetId,
+		Long triggerMemberId,
+		Member member) {
 		return Notification.builder()
 			.type(type)
 			.isRead(false)
 			.targetId(targetId)
+			.triggerMemberId(triggerMemberId)
 			.member(member)
 			.build();
 	}
