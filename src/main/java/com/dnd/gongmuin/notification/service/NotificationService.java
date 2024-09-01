@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.notification.service;
 
+import java.util.Objects;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -62,9 +64,13 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public IsReadNotificationResponse isReadNotification(IsReadNotificationRequest request) {
+	public IsReadNotificationResponse isReadNotification(IsReadNotificationRequest request, Member member) {
 		Notification findNotification = notificationRepository.findById(request.notificationId())
 			.orElseThrow(() -> new NotFoundException(NotificationErrorCode.NOT_FOUND_NOTIFICATION));
+
+		if (!isNotificationOwnedByMember(findNotification, member)) {
+			throw new ValidationException(NotificationErrorCode.INVALID_NOTIFICATION_OWNER);
+		}
 
 		if (Boolean.TRUE.equals(findNotification.getIsRead())) {
 			throw new ValidationException(NotificationErrorCode.CHANGE_IS_READ_NOTIFICATION_FAILED);
@@ -73,5 +79,9 @@ public class NotificationService {
 		findNotification.updateIsRead();
 
 		return NotificationMapper.toIsReadNotificationResponse(findNotification);
+	}
+
+	private boolean isNotificationOwnedByMember(Notification notification, Member member) {
+		return Objects.equals(notification.getMember().getId(), member.getId());
 	}
 }

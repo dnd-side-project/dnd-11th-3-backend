@@ -41,9 +41,10 @@ public class NotificationController {
 
 	@PatchMapping("/api/notification/read")
 	public ResponseEntity<IsReadNotificationResponse> isReadNotification(
-		@RequestBody @Valid IsReadNotificationRequest request
+		@RequestBody @Valid IsReadNotificationRequest request,
+		@AuthenticationPrincipal Member member
 	) {
-		IsReadNotificationResponse response = notificationService.isReadNotification(request);
+		IsReadNotificationResponse response = notificationService.isReadNotification(request, member);
 
 		return ResponseEntity.ok(response);
 	}
