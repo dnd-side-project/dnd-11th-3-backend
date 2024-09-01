@@ -73,6 +73,9 @@ public class AnswerService {
 		QuestionPost questionPost = findQuestionPostById(answer.getQuestionPostId());
 		validateIfQuestioner(member, questionPost);
 		chooseAnswer(questionPost, answer);
+		notificationService.saveNotificationFromTarget(
+			"채택", questionPost.getId(), member.getId(), answer.getMember()
+		);
 
 		return AnswerMapper.toAnswerDetailResponse(answer);
 	}
