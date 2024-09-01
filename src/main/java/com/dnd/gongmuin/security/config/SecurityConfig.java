@@ -81,7 +81,7 @@ public class SecurityConfig {
 		return web -> web.ignoring()
 			.requestMatchers(
 				"/error", "/favicon.ico", "/api/auth/temp-signup", "/api/auth/temp-signin",
-				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
+				"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/ws/**"
 			);
 	}
 
@@ -91,7 +91,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app",
-			"https://gongmuin.site/", "http://localhost:8080"));
+			"https://gongmuin.site/", "http://localhost:8080", "/ws/**"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
