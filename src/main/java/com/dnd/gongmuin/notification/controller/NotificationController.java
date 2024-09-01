@@ -17,6 +17,7 @@ import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
 import com.dnd.gongmuin.notification.service.NotificationService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "알림 API", description = "알림 API")
@@ -40,7 +41,7 @@ public class NotificationController {
 
 	@PatchMapping("/api/notification/read")
 	public ResponseEntity<IsReadNotificationResponse> isReadNotification(
-		@RequestBody IsReadNotificationRequest request
+		@RequestBody @Valid IsReadNotificationRequest request
 	) {
 		IsReadNotificationResponse response = notificationService.isReadNotification(request);
 
