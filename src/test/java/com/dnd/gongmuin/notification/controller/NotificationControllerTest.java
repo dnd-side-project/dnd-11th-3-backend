@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.notification.controller;
 
 import static com.dnd.gongmuin.notification.domain.NotificationType.*;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -21,6 +22,7 @@ import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.domain.Notification;
+import com.dnd.gongmuin.notification.dto.request.IsReadNotificationRequest;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -52,7 +54,7 @@ class NotificationControllerTest extends ApiTestSupport {
 
 	@DisplayName("로그인 된 회원의 알림 목록을 조회힌다.")
 	@Test
-	void test() throws Exception {
+	void getNotificationsByMember() throws Exception {
 		// given
 		Member member2 = MemberFixture.member2();
 		Member member3 = MemberFixture.member3();
@@ -89,5 +91,33 @@ class NotificationControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].targetMemberId").value(loginMember.getId()))
 			.andExpect(jsonPath("$.content[1].targetMemberId").value(loginMember.getId()))
 			.andExpect(jsonPath("$.content[2].targetMemberId").value(loginMember.getId()));
+	}
+
+	@DisplayName("회원의 특정 알림을 읽음 여부로 변경한다.")
+	@Test
+	void isReadNotification() throws Exception {
+		// given
+		Member member2 = MemberFixture.member2();
+		memberRepository.save(member2);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(loginMember, "첫 번째 게시글입니다.");
+		questionPostRepository.save(questionPost1);
+
+		Notification notification = NotificationFixture.notification(
+			ANSWER, questionPost1.getId(), member2.getId(), loginMember
+		);
+		notificationRepository.save(notification);
+
+		IsReadNotificationRequest request = new IsReadNotificationRequest(notification.getId());
+
+		// when		// then
+		mockMvc.perform(patch("/api/notification/read")
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken)
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("notificationId").value(notification.getId()))
+			.andExpect(jsonPath("isRead").value(Boolean.TRUE));
 	}
 }
