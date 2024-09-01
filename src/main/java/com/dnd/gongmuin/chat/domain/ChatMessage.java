@@ -26,8 +26,6 @@ public class ChatMessage {
 
 	private Boolean isRead;
 
-	private String mediaUrl;
-
 	private MessageType type;
 
 	private LocalDateTime createdAt;
@@ -36,13 +34,11 @@ public class ChatMessage {
 		String content,
 		long chatRoomId,
 		long memberId,
-		String mediaUrl,
 		MessageType type
 	) {
 		this.content = content;
 		this.chatRoomId = chatRoomId;
 		this.memberId = memberId;
-		this.mediaUrl = mediaUrl;
 		this.type = type;
 		this.isRead = false;
 		this.createdAt = LocalDateTime.now();
@@ -52,9 +48,8 @@ public class ChatMessage {
 		String content,
 		long chatRoomId,
 		long memberId,
-		String mediaUrl,
 		MessageType type
 	) {
-		return new ChatMessage(content, chatRoomId, memberId, mediaUrl, type);
+		return new ChatMessage(content, chatRoomId, memberId, type);
 	}
 }
