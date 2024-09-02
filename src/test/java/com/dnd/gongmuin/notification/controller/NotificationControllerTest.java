@@ -22,7 +22,7 @@ import com.dnd.gongmuin.common.support.ApiTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.domain.Notification;
-import com.dnd.gongmuin.notification.dto.request.IsReadNotificationRequest;
+import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -108,7 +108,7 @@ class NotificationControllerTest extends ApiTestSupport {
 		);
 		notificationRepository.save(notification);
 
-		IsReadNotificationRequest request = new IsReadNotificationRequest(notification.getId());
+		readNotificationRequest request = new readNotificationRequest(notification.getId());
 
 		// when		// then
 		mockMvc.perform(patch("/api/notification/read")

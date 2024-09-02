@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.notification.dto.request.IsReadNotificationRequest;
-import com.dnd.gongmuin.notification.dto.response.IsReadNotificationResponse;
+import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
 import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.service.NotificationService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,11 +40,11 @@ public class NotificationController {
 	}
 
 	@PatchMapping("/api/notification/read")
-	public ResponseEntity<IsReadNotificationResponse> isReadNotification(
-		@RequestBody @Valid IsReadNotificationRequest request,
+	public ResponseEntity<readNotificationResponse> readNotification(
+		@RequestBody @Valid readNotificationRequest request,
 		@AuthenticationPrincipal Member member
 	) {
-		IsReadNotificationResponse response = notificationService.isReadNotification(request, member);
+		readNotificationResponse response = notificationService.readNotification(request, member);
 
 		return ResponseEntity.ok(response);
 	}

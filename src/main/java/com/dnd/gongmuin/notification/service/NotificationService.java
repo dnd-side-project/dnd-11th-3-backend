@@ -15,9 +15,9 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.domain.Notification;
 import com.dnd.gongmuin.notification.domain.NotificationType;
 import com.dnd.gongmuin.notification.dto.NotificationMapper;
-import com.dnd.gongmuin.notification.dto.request.IsReadNotificationRequest;
-import com.dnd.gongmuin.notification.dto.response.IsReadNotificationResponse;
+import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
 import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.exception.NotificationErrorCode;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 
@@ -59,7 +59,7 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public IsReadNotificationResponse isReadNotification(IsReadNotificationRequest request, Member member) {
+	public readNotificationResponse readNotification(readNotificationRequest request, Member member) {
 		Notification findNotification = notificationRepository.findById(request.notificationId())
 			.orElseThrow(() -> new NotFoundException(NotificationErrorCode.NOT_FOUND_NOTIFICATION));
 

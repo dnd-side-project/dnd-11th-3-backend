@@ -20,8 +20,8 @@ import com.dnd.gongmuin.common.fixture.NotificationFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.domain.Notification;
-import com.dnd.gongmuin.notification.dto.request.IsReadNotificationRequest;
-import com.dnd.gongmuin.notification.dto.response.IsReadNotificationResponse;
+import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
+import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
@@ -70,12 +70,12 @@ class NotificationServiceTest {
 			member2.getId(),
 			member1
 		);
-		IsReadNotificationRequest request = new IsReadNotificationRequest(1L);
+		readNotificationRequest request = new readNotificationRequest(1L);
 
 		given(notificationRepository.findById(anyLong())).willReturn(Optional.ofNullable(notification));
 
 		// when
-		IsReadNotificationResponse response = notificationService.isReadNotification(request, member1);
+		readNotificationResponse response = notificationService.readNotification(request, member1);
 
 		// then
 		assertAll(
@@ -99,12 +99,12 @@ class NotificationServiceTest {
 			member1
 		);
 		notification.updateIsRead();
-		IsReadNotificationRequest request = new IsReadNotificationRequest(1L);
+		readNotificationRequest request = new readNotificationRequest(1L);
 
 		given(notificationRepository.findById(anyLong())).willReturn(Optional.ofNullable(notification));
 
 		// when		// then
-		assertThrows(ValidationException.class, () -> notificationService.isReadNotification(request, member2));
+		assertThrows(ValidationException.class, () -> notificationService.readNotification(request, member2));
 	}
 
 	@DisplayName("읽었던 알림의 읽음 상태 변화를 하면 예외가 발생한다.")
@@ -122,11 +122,11 @@ class NotificationServiceTest {
 			member1
 		);
 		notification.updateIsRead();
-		IsReadNotificationRequest request = new IsReadNotificationRequest(1L);
+		readNotificationRequest request = new readNotificationRequest(1L);
 
 		given(notificationRepository.findById(anyLong())).willReturn(Optional.ofNullable(notification));
 
 		// when		// then
-		assertThrows(ValidationException.class, () -> notificationService.isReadNotification(request, member1));
+		assertThrows(ValidationException.class, () -> notificationService.readNotification(request, member1));
 	}
 }

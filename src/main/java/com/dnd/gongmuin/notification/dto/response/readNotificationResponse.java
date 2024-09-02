@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.notification.dto.response;
 
-public record IsReadNotificationResponse(
+public record readNotificationResponse(
 	Long notificationId,
 	Boolean isRead
 ) {
