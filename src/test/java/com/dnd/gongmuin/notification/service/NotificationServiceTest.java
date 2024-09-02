@@ -44,7 +44,7 @@ class NotificationServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 
 		// when
-		notificationService.saveNotificationFromTarget("답변", questionPost.getId(), member2.getId(), member1);
+		notificationService.saveNotificationFromTarget(ANSWER, questionPost.getId(), member2.getId(), member1);
 
 		// then
 		verify(notificationRepository).save(any(Notification.class));
