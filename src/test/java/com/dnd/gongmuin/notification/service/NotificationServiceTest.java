@@ -98,7 +98,7 @@ class NotificationServiceTest {
 			member2.getId(),
 			member1
 		);
-		notification.updateIsRead();
+		notification.updateIsReadTrue();
 		readNotificationRequest request = new readNotificationRequest(1L);
 
 		given(notificationRepository.findById(anyLong())).willReturn(Optional.ofNullable(notification));
@@ -121,7 +121,7 @@ class NotificationServiceTest {
 			member2.getId(),
 			member1
 		);
-		notification.updateIsRead();
+		notification.updateIsReadTrue();
 		readNotificationRequest request = new readNotificationRequest(1L);
 
 		given(notificationRepository.findById(anyLong())).willReturn(Optional.ofNullable(notification));
