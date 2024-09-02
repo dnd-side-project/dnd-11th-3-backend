@@ -14,7 +14,6 @@ public class ChatMapper {
 	) {
 		return new ChatMessageResponse(
 			chatMessage.getMemberId(),
-			chatMessage.getChatRoomId(),
 			chatMessage.getContent(),
 			chatMessage.getType().getLabel()
 		);
