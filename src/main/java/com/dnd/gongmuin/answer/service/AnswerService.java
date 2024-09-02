@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.answer.service;
 
+import static com.dnd.gongmuin.notification.domain.NotificationType.*;
+
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,7 @@ public class AnswerService {
 		Answer savedAnswer = answerRepository.save(answer);
 
 		notificationService.saveNotificationFromTarget(
-			"답변", questionPost.getId(), member.getId(), questionPost.getMember()
+			ANSWER, questionPost.getId(), member.getId(), questionPost.getMember()
 		);
 		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
 	}
@@ -74,7 +76,7 @@ public class AnswerService {
 		validateIfQuestioner(member, questionPost);
 		chooseAnswer(questionPost, answer);
 		notificationService.saveNotificationFromTarget(
-			"채택", questionPost.getId(), member.getId(), answer.getMember()
+			CHOSEN, questionPost.getId(), member.getId(), answer.getMember()
 		);
 
 		return AnswerMapper.toAnswerDetailResponse(answer);

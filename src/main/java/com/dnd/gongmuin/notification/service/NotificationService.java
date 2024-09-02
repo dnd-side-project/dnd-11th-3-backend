@@ -31,21 +31,16 @@ public class NotificationService {
 
 	@Transactional
 	public void saveNotificationFromTarget(
-		String targetType,
+		NotificationType type,
 		Long targetId,
 		Long triggerMemberId,
 		Member toMember) {
-		NotificationType type = findTargetType(targetType);
 		Notification notification = Notification.of(type, targetId, triggerMemberId, toMember);
 		try {
 			notificationRepository.save(notification);
 		} catch (Exception e) {
 			throw new ValidationException(NotificationErrorCode.SAVE_NOTIFICATION_FAILED);
 		}
-	}
-
-	private NotificationType findTargetType(String targetType) {
-		return NotificationType.from(targetType);
 	}
 
 	public PageResponse<NotificationsResponse> getNotificationsByMember(
