@@ -71,7 +71,7 @@ public class NotificationService {
 			throw new ValidationException(NotificationErrorCode.CHANGE_IS_READ_NOTIFICATION_FAILED);
 		}
 
-		findNotification.updateIsRead();
+		findNotification.updateIsReadTrue();
 
 		return NotificationMapper.toIsReadNotificationResponse(findNotification);
 	}
