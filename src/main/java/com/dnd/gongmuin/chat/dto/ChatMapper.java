@@ -15,7 +15,8 @@ public class ChatMapper {
 		return new ChatMessageResponse(
 			chatMessage.getMemberId(),
 			chatMessage.getContent(),
-			chatMessage.getType().getLabel()
+			chatMessage.getType().getLabel(),
+			chatMessage.getCreatedAt().toString()
 		);
 	}
 
