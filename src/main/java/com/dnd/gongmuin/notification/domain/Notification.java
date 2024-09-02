@@ -2,6 +2,7 @@ package com.dnd.gongmuin.notification.domain;
 
 import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.FetchType.*;
+import static lombok.AccessLevel.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.member.domain.Member;
@@ -38,8 +39,11 @@ public class Notification extends TimeBaseEntity {
 	@Column(name = "is_read", nullable = false)
 	private Boolean isRead;
 
-	@Column(name = "target_url")
-	private String targetUrl;
+	@Column(name = "target_id")
+	private Long targetId;
+
+	@Column(name = "trigger_member_id")
+	private Long triggerMemberId;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "member_id",
@@ -47,11 +51,35 @@ public class Notification extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member member;
 
-	@Builder
-	public Notification(NotificationType type, Boolean isRead, String targetUrl, Member member) {
+	@Builder(access = PRIVATE)
+	private Notification(
+		NotificationType type,
+		Boolean isRead,
+		Long targetId,
+		Long triggerMemberId,
+		Member member) {
 		this.type = type;
 		this.isRead = isRead;
-		this.targetUrl = targetUrl;
+		this.targetId = targetId;
+		this.triggerMemberId = triggerMemberId;
 		this.member = member;
+	}
+
+	public static Notification of(
+		NotificationType type,
+		Long targetId,
+		Long triggerMemberId,
+		Member member) {
+		return Notification.builder()
+			.type(type)
+			.isRead(false)
+			.targetId(targetId)
+			.triggerMemberId(triggerMemberId)
+			.member(member)
+			.build();
+	}
+
+	public void updateIsReadTrue() {
+		this.isRead = Boolean.TRUE;
 	}
 }
