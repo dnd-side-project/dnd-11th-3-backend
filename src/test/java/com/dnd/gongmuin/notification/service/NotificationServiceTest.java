@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -39,13 +38,10 @@ class NotificationServiceTest {
 	@Test
 	void saveNotificationFromTarget() {
 		// given
-		Member member1 = MemberFixture.member();
-		Member member2 = MemberFixture.member2();
-		ReflectionTestUtils.setField(member1, "id", 1L);
-		ReflectionTestUtils.setField(member2, "id", 2L);
+		Member member1 = MemberFixture.member(1L);
+		Member member2 = MemberFixture.member(2L);
 
-		QuestionPost questionPost = QuestionPostFixture.questionPost(member1);
-		ReflectionTestUtils.setField(questionPost, "id", 1L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 
 		// when
 		notificationService.saveNotificationFromTarget("답변", questionPost.getId(), member2.getId(), member1);
