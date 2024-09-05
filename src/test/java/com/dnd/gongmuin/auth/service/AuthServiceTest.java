@@ -29,7 +29,6 @@ import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
@@ -44,12 +43,6 @@ class AuthServiceTest {
 	private MemberRepository memberRepository;
 
 	@Mock
-	private MemberService memberService;
-
-	@Mock
-	private AuthRepository authRepository;
-
-	@Mock
 	private TokenProvider tokenProvider;
 
 	@Mock
@@ -60,21 +53,6 @@ class AuthServiceTest {
 
 	@InjectMocks
 	private AuthService authService;
-
-	@DisplayName("신규 회원의 상태는 Old가 아니다.")
-	@Test
-	void isAuthStatusOld() {
-		// given
-		Member member = MemberFixture.member();
-		Auth auth = AuthFixture.auth(member);
-		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.ofNullable(auth));
-
-		// when
-		boolean result = authService.isAuthStatusOld(member);
-
-		// then
-		assertThat(result).isFalse();
-	}
 
 	@DisplayName("공무원 이메일이 존재하는지 체크한다.")
 	@Test
