@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.auth.service.AuthService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
 	private final MemberService memberService;
-	private final AuthService authService;
 
 	@Transactional
 	@Override
