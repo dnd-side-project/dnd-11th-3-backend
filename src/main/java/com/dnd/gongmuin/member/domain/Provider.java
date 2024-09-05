@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.auth.domain;
+package com.dnd.gongmuin.member.domain;
 
 import java.util.Arrays;
 

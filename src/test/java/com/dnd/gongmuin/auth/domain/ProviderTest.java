@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.dnd.gongmuin.member.domain.Provider;
+
 class ProviderTest {
 
 	@DisplayName("Provider 이름으로 해당 Enum을 찾을 수 있다.")
