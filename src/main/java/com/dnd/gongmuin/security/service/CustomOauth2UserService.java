@@ -47,7 +47,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		}
 
 		Member savedMember = memberService.saveOrUpdate(oauth2Response);
-		authService.saveOrUpdate(savedMember);
 
 		AuthInfo authInfo = AuthInfo.of(
 			savedMember.getSocialName(),

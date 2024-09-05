@@ -8,9 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.auth.domain.Auth;
-import com.dnd.gongmuin.auth.domain.AuthStatus;
-import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
@@ -21,7 +18,6 @@ import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
 import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
-import com.dnd.gongmuin.auth.repository.AuthRepository;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobCategory;
@@ -29,7 +25,6 @@ import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
@@ -45,38 +40,10 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
 	private static final String LOGOUT = "logout";
-	private final AuthRepository authRepository;
-	private final MemberService memberService;
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
 	private final RedisUtil redisUtil;
-
-	public void saveOrUpdate(Member savedMember) {
-		Auth foundOrCreatedAuth = authRepository.findByMember(savedMember)
-			.map(auth -> {
-				if (!isOfficialEmail(savedMember)) {
-					auth.updateStatusToOld();
-				}
-				return auth;
-			})
-			.orElseGet(() -> createAuth(savedMember));
-
-		authRepository.save(foundOrCreatedAuth);
-	}
-
-	public boolean isAuthStatusOld(Member member) {
-		Auth findAuth = authRepository.findByMember(member)
-			.orElseThrow(() -> new NotFoundException(AuthErrorCode.NOT_FOUND_AUTH));
-
-		return Objects.equals(findAuth.getStatus(), AuthStatus.OLD);
-	}
-
-	private Auth createAuth(Member savedMember) {
-		Provider provider = memberService.parseProviderFromSocialEmail(savedMember);
-
-		return Auth.of(provider, AuthStatus.NEW, savedMember);
-	}
 
 	@Transactional
 	public TempSignResponse tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
@@ -93,7 +60,6 @@ public class AuthService {
 		}
 
 		memberRepository.save(member);
-		saveOrUpdate(member);
 
 		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
@@ -114,7 +80,6 @@ public class AuthService {
 		Member member = memberRepository.findBySocialEmail(prefixSocialEmail)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-		saveOrUpdate(member);
 		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
