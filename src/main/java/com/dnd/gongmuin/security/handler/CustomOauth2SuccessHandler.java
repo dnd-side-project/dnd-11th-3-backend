@@ -16,7 +16,6 @@ import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-		Authentication authentication) throws IOException, ServletException {
+		Authentication authentication) throws IOException {
 
 		CustomOauth2User customOauth2User = (CustomOauth2User)authentication.getPrincipal();
 
