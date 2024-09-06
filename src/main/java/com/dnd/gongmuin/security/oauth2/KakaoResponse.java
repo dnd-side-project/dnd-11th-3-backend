@@ -2,6 +2,8 @@ package com.dnd.gongmuin.security.oauth2;
 
 import java.util.Map;
 
+import com.dnd.gongmuin.member.domain.Provider;
+
 public class KakaoResponse implements Oauth2Response {
 
 	private final Map<String, Object> attribute;
@@ -14,7 +16,7 @@ public class KakaoResponse implements Oauth2Response {
 
 	@Override
 	public String getProvider() {
-		return "kakao";
+		return Provider.NAVER.getLabel();
 	}
 
 	@Override

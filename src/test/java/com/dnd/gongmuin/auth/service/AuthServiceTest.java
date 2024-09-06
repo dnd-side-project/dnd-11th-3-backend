@@ -19,21 +19,16 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import com.dnd.gongmuin.auth.domain.Auth;
-import com.dnd.gongmuin.auth.domain.AuthStatus;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
-import com.dnd.gongmuin.auth.repository.AuthRepository;
-import com.dnd.gongmuin.common.fixture.AuthFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
-import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
@@ -48,12 +43,6 @@ class AuthServiceTest {
 	private MemberRepository memberRepository;
 
 	@Mock
-	private MemberService memberService;
-
-	@Mock
-	private AuthRepository authRepository;
-
-	@Mock
 	private TokenProvider tokenProvider;
 
 	@Mock
@@ -64,53 +53,6 @@ class AuthServiceTest {
 
 	@InjectMocks
 	private AuthService authService;
-
-	@DisplayName("신규 회원의 상태는 Old가 아니다.")
-	@Test
-	void isAuthStatusOld() {
-		// given
-		Member member = MemberFixture.member();
-		Auth auth = AuthFixture.auth(member);
-		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.ofNullable(auth));
-
-		// when
-		boolean result = authService.isAuthStatusOld(member);
-
-		// then
-		assertThat(result).isFalse();
-	}
-
-	@DisplayName("신규 회원의 공무원 이메일 값이 있다면 Auth 상태는 OLD로 업데이트된다.")
-	@Test
-	void updateStatusWithOfficialEmail() {
-		// given
-		Member member = MemberFixture.member();
-		Auth auth = AuthFixture.auth(member);
-		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.of(auth));
-		given(authRepository.save(any(Auth.class))).willReturn(auth);
-
-		// when
-		authService.saveOrUpdate(member);
-
-		// then
-		assertThat(auth.getStatus()).isEqualTo(AuthStatus.OLD);
-	}
-
-	@DisplayName("신규 회원의 공무원 이메일 값이 없다면 Auth 상태는 NEW로 유지된다.")
-	@Test
-	void maintainStatusWithOfficialEmail() {
-		// given
-		Member member = MemberFixture.member3();
-		Auth auth = AuthFixture.auth(member);
-		given(authRepository.findByMember(any(Member.class))).willReturn(Optional.of(auth));
-		given(authRepository.save(any(Auth.class))).willReturn(auth);
-
-		// when
-		authService.saveOrUpdate(member);
-
-		// then
-		assertThat(auth.getStatus()).isEqualTo(AuthStatus.NEW);
-	}
 
 	@DisplayName("공무원 이메일이 존재하는지 체크한다.")
 	@Test

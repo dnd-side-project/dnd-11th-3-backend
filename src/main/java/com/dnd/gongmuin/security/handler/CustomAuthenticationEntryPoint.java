@@ -9,7 +9,6 @@ import com.dnd.gongmuin.common.exception.ErrorResponse;
 import com.dnd.gongmuin.security.exception.SecurityErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException authException) throws IOException, ServletException {
+		AuthenticationException authException) throws IOException {
 
 		log.error("비인가 사용자 요청 -> 예외 발생 : {}", authException.getMessage());
 
