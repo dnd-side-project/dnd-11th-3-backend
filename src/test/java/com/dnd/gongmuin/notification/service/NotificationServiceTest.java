@@ -20,6 +20,7 @@ import com.dnd.gongmuin.common.fixture.NotificationFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.domain.Notification;
+import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
 import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
@@ -43,8 +44,10 @@ class NotificationServiceTest {
 
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
 
+		NotificationEvent event = new NotificationEvent(ANSWER, questionPost.getId(), member2.getId(), member1);
+
 		// when
-		notificationService.saveNotificationFromTarget(ANSWER, questionPost.getId(), member2.getId(), member1);
+		notificationService.saveNotificationFromTarget(event);
 
 		// then
 		verify(notificationRepository).save(any(Notification.class));
