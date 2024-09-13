@@ -13,7 +13,7 @@ import com.dnd.gongmuin.member.domain.QMember;
 import com.dnd.gongmuin.notification.domain.NotificationType;
 import com.dnd.gongmuin.notification.domain.QNotification;
 import com.dnd.gongmuin.notification.dto.response.NotificationResponse;
-import com.dnd.gongmuin.notification.dto.response.QNotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.QNotificationResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -33,7 +33,7 @@ public class NotificationCustomImpl implements NotificationCustom {
 		QMember tm = QMember.member;
 
 		List<NotificationResponse> content = queryFactory
-			.select(new QNotificationsResponse(
+			.select(new QNotificationResponse(
 				nc,
 				tm
 			))
