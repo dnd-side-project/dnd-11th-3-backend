@@ -449,7 +449,15 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				.containsExactly(
 					ch4.getDetail(),
 					ch1.getDetail()
-				)
+				),
+			() -> assertThat(creditHistoryByMember).extracting(CreditHistoryResponse::profileImageNo)
+				.satisfies(profileImageNos -> {
+					Integer profileImageNo1 = profileImageNos.get(0);
+					Integer profileImageNo2 = profileImageNos.get(1);
+
+					assertThat(profileImageNo1).isEqualTo(ch4.getMember().getProfileImageNo());
+					assertThat(profileImageNo2).isBetween(1, 9);
+				})
 		);
 	}
 
