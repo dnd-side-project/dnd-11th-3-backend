@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
@@ -41,7 +42,7 @@ public class ChatRoomController {
 	@Operation(summary = "채팅방 생성 API", description = "요청자가 답변자와의 채팅방을 생성한다.")
 	@PostMapping("/api/chat-rooms")
 	public ResponseEntity<ChatRoomDetailResponse> createChatRoom(
-		@Valid CreateChatRoomRequest request,
+		@Valid @RequestBody CreateChatRoomRequest request,
 		@AuthenticationPrincipal Member member
 	) {
 		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, member);
