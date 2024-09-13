@@ -12,8 +12,8 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.domain.QMember;
 import com.dnd.gongmuin.notification.domain.NotificationType;
 import com.dnd.gongmuin.notification.domain.QNotification;
-import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
-import com.dnd.gongmuin.notification.dto.response.QNotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.NotificationResponse;
+import com.dnd.gongmuin.notification.dto.response.QNotificationResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -25,15 +25,15 @@ public class NotificationCustomImpl implements NotificationCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Slice<NotificationsResponse> getNotificationsByMember(
+	public Slice<NotificationResponse> getNotificationsByMember(
 		String type,
 		Member member,
 		Pageable pageable) {
 		QNotification nc = notification;
 		QMember tm = QMember.member;
 
-		List<NotificationsResponse> content = queryFactory
-			.select(new QNotificationsResponse(
+		List<NotificationResponse> content = queryFactory
+			.select(new QNotificationResponse(
 				nc,
 				tm
 			))

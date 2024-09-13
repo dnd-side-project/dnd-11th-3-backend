@@ -2,6 +2,7 @@ package com.dnd.gongmuin.answer.service;
 
 import static com.dnd.gongmuin.notification.domain.NotificationType.*;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.notification.service.NotificationService;
+import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -32,7 +33,7 @@ public class AnswerService {
 	private final QuestionPostRepository questionPostRepository;
 	private final AnswerRepository answerRepository;
 	private final CreditHistoryService creditHistoryService;
-	private final NotificationService notificationService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
 		if (!questionPost.isQuestioner(member.getId())) {
@@ -51,9 +52,10 @@ public class AnswerService {
 			member);
 		Answer savedAnswer = answerRepository.save(answer);
 
-		notificationService.saveNotificationFromTarget(
+		eventPublisher.publishEvent(new NotificationEvent(
 			ANSWER, questionPost.getId(), member.getId(), questionPost.getMember()
-		);
+		));
+
 		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
 	}
 
@@ -75,9 +77,10 @@ public class AnswerService {
 		QuestionPost questionPost = findQuestionPostById(answer.getQuestionPostId());
 		validateIfQuestioner(member, questionPost);
 		chooseAnswer(questionPost, answer);
-		notificationService.saveNotificationFromTarget(
+
+		eventPublisher.publishEvent(new NotificationEvent(
 			CHOSEN, questionPost.getId(), member.getId(), answer.getMember()
-		);
+		));
 
 		return AnswerMapper.toAnswerDetailResponse(answer);
 	}

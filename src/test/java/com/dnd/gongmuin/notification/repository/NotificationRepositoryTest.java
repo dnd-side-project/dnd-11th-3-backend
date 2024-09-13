@@ -20,7 +20,7 @@ import com.dnd.gongmuin.common.support.DataJpaTestSupport;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.domain.Notification;
-import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.NotificationResponse;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -64,31 +64,31 @@ class NotificationRepositoryTest extends DataJpaTestSupport {
 		notificationRepository.saveAll(List.of(notification1, notification2, notification3));
 
 		// when
-		Slice<NotificationsResponse> notificationsByMember = notificationRepository.getNotificationsByMember("전체",
+		Slice<NotificationResponse> notificationsByMember = notificationRepository.getNotificationsByMember("전체",
 			member1, pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(notificationsByMember).hasSize(3),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::type)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::type)
 				.containsExactly(
 					"채택",
 					"답변",
 					"답변"
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::triggerMemberId)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::triggerMemberId)
 				.containsExactly(
 					member3.getId(),
 					member3.getId(),
 					member2.getId()
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::triggerMemberNickName)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::triggerMemberNickName)
 				.containsExactly(
 					member3.getNickname(),
 					member3.getNickname(),
 					member2.getNickname()
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::targetMemberId)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::targetMemberId)
 				.containsExactly(
 					member1.getId(),
 					member1.getId(),
@@ -121,25 +121,25 @@ class NotificationRepositoryTest extends DataJpaTestSupport {
 		notificationRepository.saveAll(List.of(notification1, notification2, notification3));
 
 		// when
-		Slice<NotificationsResponse> notificationsByMember = notificationRepository.getNotificationsByMember("채택",
+		Slice<NotificationResponse> notificationsByMember = notificationRepository.getNotificationsByMember("채택",
 			member1, pageRequest);
 
 		// then
 		Assertions.assertAll(
 			() -> assertThat(notificationsByMember).hasSize(1),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::type)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::type)
 				.containsExactly(
 					"채택"
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::triggerMemberId)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::triggerMemberId)
 				.containsExactly(
 					member3.getId()
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::triggerMemberNickName)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::triggerMemberNickName)
 				.containsExactly(
 					member3.getNickname()
 				),
-			() -> assertThat(notificationsByMember).extracting(NotificationsResponse::targetMemberId)
+			() -> assertThat(notificationsByMember).extracting(NotificationResponse::targetMemberId)
 				.containsExactly(
 					member1.getId()
 				)

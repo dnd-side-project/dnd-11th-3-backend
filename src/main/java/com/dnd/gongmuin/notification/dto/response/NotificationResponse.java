@@ -4,7 +4,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.domain.Notification;
 import com.querydsl.core.annotations.QueryProjection;
 
-public record NotificationsResponse(
+public record NotificationResponse(
 
 	Long notificationId,
 
@@ -20,11 +20,11 @@ public record NotificationsResponse(
 
 	Long targetMemberId,
 
-	String NotificationCreatedAt
+	String createdAt
 ) {
 
 	@QueryProjection
-	public NotificationsResponse(
+	public NotificationResponse(
 		Notification notification,
 		Member triggerMember
 	) {
