@@ -20,7 +20,7 @@ public record NotificationResponse(
 
 	Long targetMemberId,
 
-	String NotificationCreatedAt
+	String createdAt
 ) {
 
 	@QueryProjection
