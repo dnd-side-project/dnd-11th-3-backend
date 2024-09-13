@@ -32,7 +32,6 @@ public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
 
-	// @EventListener
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void saveNotificationFromTarget(NotificationEvent event) {
