@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.credit_history.fixture;
+package com.dnd.gongmuin.common.fixture;
 
 import com.dnd.gongmuin.credit_history.domain.CreditHistory;
 import com.dnd.gongmuin.credit_history.domain.CreditType;

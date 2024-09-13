@@ -13,11 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
+import com.dnd.gongmuin.common.fixture.CreditHistoryFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.credit_history.domain.CreditHistory;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
-import com.dnd.gongmuin.credit_history.fixture.CreditHistoryFixture;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
