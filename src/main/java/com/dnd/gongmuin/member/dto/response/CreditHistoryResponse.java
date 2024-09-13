@@ -7,15 +7,19 @@ public record CreditHistoryResponse(
 	Long id,
 	String type,
 	String detail,
-	int amount
+	int amount,
+	int profileImageNo,
+	String createdAt
 ) {
 	@QueryProjection
-	public CreditHistoryResponse(CreditHistory creditHistory) {
+	public CreditHistoryResponse(CreditHistory creditHistory, int profileImageNo) {
 		this(
 			creditHistory.getId(),
 			creditHistory.getType().getLabel(),
 			creditHistory.getDetail(),
-			creditHistory.getAmount()
+			creditHistory.getAmount(),
+			profileImageNo,
+			creditHistory.getCreatedAt().toString()
 		);
 	}
 }
