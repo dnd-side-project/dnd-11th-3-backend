@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
-import com.dnd.gongmuin.chat.dto.ChatMapper;
-import com.dnd.gongmuin.chat.dto.ChatMessageRequest;
-import com.dnd.gongmuin.chat.dto.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.ChatMessageMapper;
+import com.dnd.gongmuin.chat.dto.request.ChatMessageRequest;
+import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,9 @@ public class ChatMessageService {
 		Long chatRoomId
 	) {
 		Long memberId = request.memberId();
-		ChatMessage chatMessage = chatMessageRepository.save(ChatMapper.toChatMessage(request, chatRoomId, memberId));
+		ChatMessage chatMessage = chatMessageRepository.save(
+			ChatMessageMapper.toChatMessage(request, chatRoomId, memberId));
 		log.info("chatRoomId = {}, memberId= {}, chatMessageId= {}", chatRoomId, memberId, chatMessage.getId());
-		return ChatMapper.toChatMessageResponse(chatMessage);
+		return ChatMessageMapper.toChatMessageResponse(chatMessage);
 	}
 }
