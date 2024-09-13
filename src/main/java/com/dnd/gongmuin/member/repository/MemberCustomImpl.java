@@ -24,6 +24,9 @@ import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -145,7 +148,8 @@ public class MemberCustomImpl implements MemberCustom {
 		Pageable pageable) {
 		List<CreditHistoryResponse> content = queryFactory
 			.select(new QCreditHistoryResponse(
-				creditHistory
+				creditHistory,
+				selectProfileImageNo()
 			))
 			.from(creditHistory)
 			.where(
@@ -176,5 +180,12 @@ public class MemberCustomImpl implements MemberCustom {
 		}
 		content.remove(pageSize);
 		return true;
+	}
+
+	private NumberExpression<Integer> selectProfileImageNo() {
+		return new CaseBuilder()
+			.when(creditHistory.detail.eq("출금"))
+			.then(Expressions.numberTemplate(Integer.class, "function('rand') * 9 + 1"))
+			.otherwise(creditHistory.member.profileImageNo);
 	}
 }
