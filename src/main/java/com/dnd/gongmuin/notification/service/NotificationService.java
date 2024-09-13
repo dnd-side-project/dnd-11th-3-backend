@@ -40,7 +40,7 @@ public class NotificationService {
 				event.type(),
 				event.targetId(),
 				event.triggerMemberId(),
-				event.toMember()
+				event.targetMember()
 			);
 			notificationRepository.save(notification);
 		} catch (Exception e) {

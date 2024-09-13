@@ -7,6 +7,6 @@ public record NotificationEvent(
 	NotificationType type,
 	Long targetId,
 	Long triggerMemberId,
-	Member toMember
+	Member targetMember
 ) {
 }
