@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,25 +30,36 @@ public class ChatRoom extends TimeBaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "questioner_id", nullable = false,
+	@JoinColumn(name = "question_post_id",
+		nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private Member questioner;
+	private QuestionPost questionPost;
+
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "requester_id", nullable = false,
+		foreignKey = @ForeignKey(NO_CONSTRAINT))
+	private Member requester;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "answerer_id", nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member answerer;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "question_post_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private QuestionPost questionPost;
+	@Column(name = "is_accepted", nullable = false)
+	private boolean isAccepted;
 
-	@Builder
-	public ChatRoom(Member questioner, Member answerer, QuestionPost questionPost) {
-		this.questioner = questioner;
-		this.answerer = answerer;
+	private ChatRoom(QuestionPost questionPost, Member requester, Member answerer) {
 		this.questionPost = questionPost;
+		this.requester = requester;
+		this.answerer = answerer;
+		this.isAccepted = false;
+	}
+
+	public static ChatRoom of(
+		QuestionPost questionPost,
+		Member requester,
+		Member answerer
+	) {
+		return new ChatRoom(questionPost, requester, answerer);
 	}
 }
