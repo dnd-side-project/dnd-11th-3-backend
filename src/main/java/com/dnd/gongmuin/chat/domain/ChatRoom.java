@@ -4,7 +4,9 @@ import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.FetchType.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
@@ -36,9 +38,9 @@ public class ChatRoom extends TimeBaseEntity {
 	private QuestionPost questionPost;
 
 	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "requester_id", nullable = false,
+	@JoinColumn(name = "inquirer_id", nullable = false,
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private Member requester;
+	private Member inquirer;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "answerer_id", nullable = false,
@@ -48,18 +50,25 @@ public class ChatRoom extends TimeBaseEntity {
 	@Column(name = "is_accepted", nullable = false)
 	private boolean isAccepted;
 
-	private ChatRoom(QuestionPost questionPost, Member requester, Member answerer) {
+	private ChatRoom(QuestionPost questionPost, Member inquirer, Member answerer) {
 		this.questionPost = questionPost;
-		this.requester = requester;
+		this.inquirer = inquirer;
 		this.answerer = answerer;
 		this.isAccepted = false;
+		validateInquirerCredit();
 	}
 
 	public static ChatRoom of(
 		QuestionPost questionPost,
-		Member requester,
+		Member inquirer,
 		Member answerer
 	) {
-		return new ChatRoom(questionPost, requester, answerer);
+		return new ChatRoom(questionPost, inquirer, answerer);
+	}
+
+	private void validateInquirerCredit() {
+		if (inquirer.getCredit() < 2000) {
+			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
+		}
 	}
 }
