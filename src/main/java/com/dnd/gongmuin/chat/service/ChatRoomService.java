@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.dto.ChatMessageMapper;
 import com.dnd.gongmuin.chat.dto.ChatRoomMapper;
+import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
-import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
@@ -50,11 +50,12 @@ public class ChatRoomService {
 		);
 	}
 
-	private QuestionPost getQuestionPostById(Long id){
+	private QuestionPost getQuestionPostById(Long id) {
 		return questionPostRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 	}
-	private Member getMemberById(Long id){
+
+	private Member getMemberById(Long id) {
 		return memberRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 	}
