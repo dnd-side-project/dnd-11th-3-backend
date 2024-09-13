@@ -15,7 +15,6 @@ import com.dnd.gongmuin.common.exception.ErrorResponse;
 import com.dnd.gongmuin.security.exception.SecurityErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -54,7 +53,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
-		AccessDeniedException accessDeniedException) throws IOException, ServletException {
+		AccessDeniedException accessDeniedException) throws IOException {
 		// 현재 인증된 사용자 정보 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

@@ -43,8 +43,8 @@ public class MemberCustomImpl implements MemberCustom {
 		List<QuestionPostsResponse> content = queryFactory
 			.select(new QQuestionPostsResponse(
 				qp,
-				saved.count.coalesce(0).as("savedTotalCount"),
-				recommend.count.coalesce(0).as("recommendTotalCount")
+				saved.count.coalesce(0).as("bookmarkCount"),
+				recommend.count.coalesce(0).as("recommendCount")
 			))
 			.from(qp)
 			.leftJoin(saved)
@@ -75,8 +75,8 @@ public class MemberCustomImpl implements MemberCustom {
 			queryFactory
 				.select(new QAnsweredQuestionPostsResponse(
 					qp,
-					saved.count.coalesce(0).as("savedTotalCount"),
-					recommend.count.coalesce(0).as("recommendTotalCount"),
+					saved.count.coalesce(0).as("bookmarkCount"),
+					recommend.count.coalesce(0).as("recommendCount"),
 					aw1
 				))
 				.from(qp)
@@ -119,8 +119,8 @@ public class MemberCustomImpl implements MemberCustom {
 		List<BookmarksResponse> content = queryFactory
 			.select(new QBookmarksResponse(
 				qp,
-				saved.count.coalesce(0).as("savedTotalCount"),
-				recommend.count.coalesce(0).as("recommendTotalCount")
+				saved.count.coalesce(0).as("bookmarkCount"),
+				recommend.count.coalesce(0).as("recommendCount")
 			))
 			.from(qp)
 			.join(ir)

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
@@ -31,6 +32,7 @@ import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
+import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
@@ -49,6 +51,12 @@ class AnswerServiceTest {
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
+
+	@Mock
+	private NotificationService notificationService;
+
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
 
 	@InjectMocks
 	private AnswerService answerService;

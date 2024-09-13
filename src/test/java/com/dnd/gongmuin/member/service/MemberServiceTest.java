@@ -14,11 +14,11 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.gongmuin.auth.domain.Provider;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.domain.Provider;
 import com.dnd.gongmuin.member.dto.request.UpdateMemberProfileRequest;
 import com.dnd.gongmuin.member.dto.response.MemberInformationResponse;
 import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
