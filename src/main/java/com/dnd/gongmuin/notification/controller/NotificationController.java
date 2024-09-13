@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
-import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.NotificationResponse;
 import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.service.NotificationService;
 
@@ -28,12 +28,12 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	@GetMapping("/api/notifications")
-	public ResponseEntity<PageResponse<NotificationsResponse>> getNotificationsByMember(
+	public ResponseEntity<PageResponse<NotificationResponse>> getNotificationsByMember(
 		@RequestParam("type") String type,
 		@AuthenticationPrincipal Member member,
 		Pageable pageable) {
 
-		PageResponse<NotificationsResponse> response =
+		PageResponse<NotificationResponse> response =
 			notificationService.getNotificationsByMember(type, member, pageable);
 
 		return ResponseEntity.ok(response);

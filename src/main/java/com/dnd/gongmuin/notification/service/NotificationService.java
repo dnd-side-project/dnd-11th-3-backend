@@ -2,7 +2,6 @@ package com.dnd.gongmuin.notification.service;
 
 import java.util.Objects;
 
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import com.dnd.gongmuin.notification.domain.Notification;
 import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.notification.dto.NotificationMapper;
 import com.dnd.gongmuin.notification.dto.request.readNotificationRequest;
-import com.dnd.gongmuin.notification.dto.response.NotificationsResponse;
+import com.dnd.gongmuin.notification.dto.response.NotificationResponse;
 import com.dnd.gongmuin.notification.dto.response.readNotificationResponse;
 import com.dnd.gongmuin.notification.exception.NotificationErrorCode;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
@@ -33,7 +32,7 @@ public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
 
-	@EventListener
+	// @EventListener
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void saveNotificationFromTarget(NotificationEvent event) {
@@ -50,13 +49,13 @@ public class NotificationService {
 		}
 	}
 
-	public PageResponse<NotificationsResponse> getNotificationsByMember(
+	public PageResponse<NotificationResponse> getNotificationsByMember(
 		String type,
 		Member member,
 		Pageable pageable) {
 
 		try {
-			Slice<NotificationsResponse> responsePage =
+			Slice<NotificationResponse> responsePage =
 				notificationRepository.getNotificationsByMember(type, member, pageable);
 
 			return PageMapper.toPageResponse(responsePage);
