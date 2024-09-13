@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.chat.dto;
+package com.dnd.gongmuin.chat.dto.response;
 
 public record ChatMessageResponse(
 	Long senderId,

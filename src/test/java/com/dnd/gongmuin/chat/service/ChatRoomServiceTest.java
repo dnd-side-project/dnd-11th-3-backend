@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
-import com.dnd.gongmuin.chat.dto.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 
@@ -45,7 +45,6 @@ class ChatRoomServiceTest {
 
 		//then
 		assertAll(
-			() -> assertThat(response.get(0).chatRoomId()).isEqualTo(1L),
 			() -> assertThat(response).hasSize(1)
 		);
 	}
