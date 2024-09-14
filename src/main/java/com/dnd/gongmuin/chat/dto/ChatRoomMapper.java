@@ -38,7 +38,8 @@ public class ChatRoomMapper {
 				answerer.getJobGroup().getLabel(),
 				answerer.getProfileImageNo()
 			),
-			chatRoom.isAccepted()
+			chatRoom.getStatus().getLabel()
 		);
 	}
+
 }

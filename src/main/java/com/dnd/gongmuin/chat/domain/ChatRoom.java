@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.chat.domain;
 
 import static jakarta.persistence.ConstraintMode.*;
+import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
@@ -11,6 +12,7 @@ import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -47,14 +49,15 @@ public class ChatRoom extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member answerer;
 
-	@Column(name = "is_accepted", nullable = false)
-	private boolean isAccepted;
+	@Enumerated(STRING)
+	@Column(name = "status", nullable = false)
+	private ChatStatus status;
 
 	private ChatRoom(QuestionPost questionPost, Member inquirer, Member answerer) {
 		this.questionPost = questionPost;
 		this.inquirer = inquirer;
 		this.answerer = answerer;
-		this.isAccepted = false;
+		this.status = ChatStatus.PENDING;
 		inquirer.decreaseCredit(2000);
 	}
 
