@@ -2,21 +2,23 @@ package com.dnd.gongmuin.chat.dto;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
 import com.dnd.gongmuin.chat.domain.MessageType;
+import com.dnd.gongmuin.chat.dto.request.ChatMessageRequest;
+import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChatMapper {
+public class ChatMessageMapper {
 
 	public static ChatMessageResponse toChatMessageResponse(
 		ChatMessage chatMessage
 	) {
 		return new ChatMessageResponse(
 			chatMessage.getMemberId(),
-			chatMessage.getChatRoomId(),
 			chatMessage.getContent(),
-			chatMessage.getType().getLabel()
+			chatMessage.getType().getLabel(),
+			chatMessage.getCreatedAt().toString()
 		);
 	}
 

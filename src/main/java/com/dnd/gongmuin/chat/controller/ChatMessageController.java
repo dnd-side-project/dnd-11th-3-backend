@@ -6,8 +6,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import com.dnd.gongmuin.chat.dto.ChatMessageRequest;
-import com.dnd.gongmuin.chat.dto.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.request.ChatMessageRequest;
+import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.service.ChatMessageService;
 
 import lombok.RequiredArgsConstructor;
