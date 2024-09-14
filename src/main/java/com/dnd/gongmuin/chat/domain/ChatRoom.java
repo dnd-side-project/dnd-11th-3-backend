@@ -55,7 +55,7 @@ public class ChatRoom extends TimeBaseEntity {
 		this.inquirer = inquirer;
 		this.answerer = answerer;
 		this.isAccepted = false;
-		validateInquirerCredit();
+		inquirer.decreaseCredit(2000);
 	}
 
 	public static ChatRoom of(
@@ -64,11 +64,5 @@ public class ChatRoom extends TimeBaseEntity {
 		Member answerer
 	) {
 		return new ChatRoom(questionPost, inquirer, answerer);
-	}
-
-	private void validateInquirerCredit() {
-		if (inquirer.getCredit() < 2000) {
-			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
-		}
 	}
 }
