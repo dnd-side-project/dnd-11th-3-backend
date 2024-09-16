@@ -14,6 +14,7 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.service.ChatRoomService;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.member.domain.Member;
@@ -58,6 +59,16 @@ public class ChatRoomController {
 		@AuthenticationPrincipal Member member
 	) {
 		AcceptChatResponse response = chatRoomService.acceptChat(chatRoomId, member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "채팅 거절 API", description = "채팅방에서 요청자와의 채팅을 거절한다.")
+	@PatchMapping("/api/chat-rooms/{chatRoomId}/reject")
+	public ResponseEntity<RejectChatResponse> rejectChat(
+		@PathVariable("chatRoomId") Long chatRoomId,
+		@AuthenticationPrincipal Member member
+	) {
+		RejectChatResponse response = chatRoomService.rejectChat(chatRoomId, member);
 		return ResponseEntity.ok(response);
 	}
 }
