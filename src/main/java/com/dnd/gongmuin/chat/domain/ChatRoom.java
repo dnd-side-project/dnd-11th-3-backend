@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom extends TimeBaseEntity {
 
+	private static final int CHAT_REWARD = 2000;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "chat_room_id", nullable = false)
@@ -58,7 +60,7 @@ public class ChatRoom extends TimeBaseEntity {
 		this.inquirer = inquirer;
 		this.answerer = answerer;
 		this.status = ChatStatus.PENDING;
-		inquirer.decreaseCredit(2000);
+		inquirer.decreaseCredit(CHAT_REWARD);
 	}
 
 	public static ChatRoom of(
@@ -74,6 +76,6 @@ public class ChatRoom extends TimeBaseEntity {
 			throw new ValidationException(ChatErrorCode.UNABLE_TO_ACCEPT);
 		}
 		status = ChatStatus.ACCEPTED;
-		answerer.increaseCredit(2000);
+		answerer.increaseCredit(CHAT_REWARD);
 	}
 }
