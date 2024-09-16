@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,13 @@ class ChatRoomControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private ChatRoomRepository chatRoomRepository;
+
+	@AfterEach
+	void teardown() {
+		memberRepository.deleteAll();
+		questionPostRepository.deleteAll();
+		chatRoomRepository.deleteAll();
+	}
 
 	@DisplayName("[채팅방 아이디로 메시지를 조회할 수 있다.]")
 	@Test
