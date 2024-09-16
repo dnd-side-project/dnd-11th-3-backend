@@ -89,7 +89,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		ChatRoom chatRoom = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, inquirer, loginMember));
 		int previousAnswererCredit = chatRoom.getAnswerer().getCredit();
 
-		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/accept", 1L)
+		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/accept", chatRoom.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.chatStatus").value(ChatStatus.ACCEPTED.getLabel()))
