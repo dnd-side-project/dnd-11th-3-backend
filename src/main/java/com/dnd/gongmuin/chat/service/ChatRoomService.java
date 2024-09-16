@@ -40,6 +40,12 @@ public class ChatRoomService {
 	private final MemberRepository memberRepository;
 	private final QuestionPostRepository questionPostRepository;
 
+	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
+		if (!Objects.equals(member.getId(), chatRoom.getAnswerer().getId())) {
+			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public PageResponse<ChatMessageResponse> getChatMessages(Long chatRoomId, Pageable pageable) {
 		Slice<ChatMessageResponse> responsePage = chatMessageRepository
@@ -75,13 +81,7 @@ public class ChatRoomService {
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}
 
-	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
-		if (!Objects.equals(member.getId(), chatRoom.getAnswerer().getId())){
-			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
-		}
-	}
-
-	private ChatRoom getChatRoomById(Long id){
+	private ChatRoom getChatRoomById(Long id) {
 		return chatRoomRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ChatErrorCode.NOT_FOUND_CHAT_ROOM));
 	}

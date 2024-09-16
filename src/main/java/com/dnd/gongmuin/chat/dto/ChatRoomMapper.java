@@ -44,14 +44,14 @@ public class ChatRoomMapper {
 		);
 	}
 
-	public static AcceptChatResponse toAcceptChatResponse(ChatRoom chatRoom){
+	public static AcceptChatResponse toAcceptChatResponse(ChatRoom chatRoom) {
 		return new AcceptChatResponse(
 			chatRoom.getStatus().getLabel(),
 			chatRoom.getAnswerer().getCredit()
 		);
 	}
 
-	public static RejectChatResponse toRejectChatResponse(ChatRoom chatRoom){
+	public static RejectChatResponse toRejectChatResponse(ChatRoom chatRoom) {
 		return new RejectChatResponse(
 			chatRoom.getStatus().getLabel()
 		);

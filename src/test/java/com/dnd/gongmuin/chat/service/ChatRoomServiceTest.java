@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,9 +42,8 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 @ExtendWith(MockitoExtension.class)
 class ChatRoomServiceTest {
 
-	private final PageRequest pageRequest = PageRequest.of(0, 5);
 	private static final int CHAT_REWARD = 2000;
-
+	private final PageRequest pageRequest = PageRequest.of(0, 5);
 	@Mock
 	private ChatMessageRepository chatMessageRepository;
 
@@ -135,7 +133,7 @@ class ChatRoomServiceTest {
 	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")
 	@Test
 	void acceptChat() {
-	    //given
+		//given
 		Long chatRoomId = 1L;
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
@@ -154,7 +152,7 @@ class ChatRoomServiceTest {
 			() -> assertThat(response.chatStatus())
 				.isEqualTo(ChatStatus.ACCEPTED.getLabel()),
 			() -> assertThat(response.credit())
-				.isEqualTo(previousCredit+CHAT_REWARD)
+				.isEqualTo(previousCredit + CHAT_REWARD)
 		);
 	}
 
