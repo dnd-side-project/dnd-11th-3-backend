@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.chat.service;
 
+import java.util.Objects;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,7 @@ public class ChatRoomService {
 	}
 
 	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
-		if (member != chatRoom.getAnswerer()) {
+		if (!Objects.equals(member.getId(), chatRoom.getAnswerer().getId())){
 			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
 		}
 	}
