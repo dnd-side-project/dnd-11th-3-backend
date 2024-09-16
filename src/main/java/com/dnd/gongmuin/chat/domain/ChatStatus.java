@@ -9,7 +9,7 @@ public enum ChatStatus {
 
 	PENDING("요청중"),
 	ACCEPTED("수락됨"),
-	DENIED("거절됨");
+	REJECTED("거절됨");
 
 	private final String label;
 }
