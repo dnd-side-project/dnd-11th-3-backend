@@ -95,4 +95,17 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.chatStatus").value(ChatStatus.ACCEPTED.getLabel()))
 			.andExpect(jsonPath("$.credit").value(previousAnswererCredit + CHAT_REWARD));
 	}
+
+	@DisplayName("[답변자가 채팅 요청을 거절할 수 있다.]")
+	@Test
+	void rejectChatRoom() throws Exception {
+		Member inquirer = memberRepository.save(MemberFixture.member4());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
+		ChatRoom chatRoom = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, inquirer, loginMember));
+
+		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/reject", chatRoom.getId())
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.chatStatus").value(ChatStatus.REJECTED.getLabel()));
+	}
 }
