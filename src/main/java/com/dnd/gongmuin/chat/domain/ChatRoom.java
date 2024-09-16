@@ -4,10 +4,10 @@ import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
 
+import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
@@ -67,5 +67,13 @@ public class ChatRoom extends TimeBaseEntity {
 		Member answerer
 	) {
 		return new ChatRoom(questionPost, inquirer, answerer);
+	}
+
+	public void updateStatusAccepted() {
+		if (status != ChatStatus.PENDING) {
+			throw new ValidationException(ChatErrorCode.UNABLE_TO_ACCEPT);
+		}
+		status = ChatStatus.ACCEPTED;
+		answerer.increaseCredit(2000);
 	}
 }
