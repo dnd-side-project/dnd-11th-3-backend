@@ -14,6 +14,7 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
@@ -63,6 +64,15 @@ public class ChatRoomService {
 		chatRoom.updateStatusAccepted();
 
 		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
+	}
+
+	@Transactional
+	public RejectChatResponse rejectChat(Long chatRoomId, Member member) {
+		ChatRoom chatRoom = getChatRoomById(chatRoomId);
+		validateIfAnswerer(member, chatRoom);
+		chatRoom.updateStatusRejected();
+
+		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}
 
 	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
