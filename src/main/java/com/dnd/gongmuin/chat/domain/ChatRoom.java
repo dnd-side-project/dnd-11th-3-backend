@@ -73,7 +73,7 @@ public class ChatRoom extends TimeBaseEntity {
 
 	public void updateStatusAccepted() {
 		if (status != ChatStatus.PENDING) {
-			throw new ValidationException(ChatErrorCode.UNABLE_TO_ACCEPT);
+			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
 		}
 		status = ChatStatus.ACCEPTED;
 		answerer.increaseCredit(CHAT_REWARD);
