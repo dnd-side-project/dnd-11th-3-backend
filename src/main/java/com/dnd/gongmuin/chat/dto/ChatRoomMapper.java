@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.chat.dto;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
+import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -39,6 +40,13 @@ public class ChatRoomMapper {
 				answerer.getProfileImageNo()
 			),
 			chatRoom.getStatus().getLabel()
+		);
+	}
+
+	public static AcceptChatResponse toAcceptChatResponse(ChatRoom chatRoom){
+		return new AcceptChatResponse(
+			chatRoom.getStatus().getLabel(),
+			chatRoom.getAnswerer().getCredit()
 		);
 	}
 
