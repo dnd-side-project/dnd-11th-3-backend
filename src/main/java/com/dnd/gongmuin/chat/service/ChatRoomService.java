@@ -5,16 +5,20 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.dto.ChatMessageMapper;
 import com.dnd.gongmuin.chat.dto.ChatRoomMapper;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
+import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
@@ -48,6 +52,26 @@ public class ChatRoomService {
 		return ChatRoomMapper.toChatRoomDetailResponse(
 			chatRoomRepository.save(ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer))
 		);
+	}
+
+	@Transactional
+	public AcceptChatResponse acceptChat(Long chatRoomId, Member member) {
+		ChatRoom chatRoom = getChatRoomById(chatRoomId);
+		validateIfAnswerer(member, chatRoom);
+		chatRoom.updateStatusAccepted();
+
+		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
+	}
+
+	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
+		if (member != chatRoom.getAnswerer()) {
+			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
+		}
+	}
+
+	private ChatRoom getChatRoomById(Long id){
+		return chatRoomRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException(ChatErrorCode.NOT_FOUND_CHAT_ROOM));
 	}
 
 	private QuestionPost getQuestionPostById(Long id) {
