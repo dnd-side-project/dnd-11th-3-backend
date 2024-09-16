@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -154,5 +156,26 @@ class ChatRoomServiceTest {
 			() -> assertThat(response.credit())
 				.isEqualTo(previousCredit+CHAT_REWARD)
 		);
+	}
+
+	@DisplayName("[답변자가 채팅 요청을 거절할 수 있다.]")
+	@Test
+	void rejectChat() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		RejectChatResponse response = chatRoomService.rejectChat(chatRoomId, answerer);
+
+		//then
+		assertThat(response.chatStatus())
+			.isEqualTo(ChatStatus.REJECTED.getLabel());
 	}
 }
