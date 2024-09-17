@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.dnd.gongmuin.redis.util.RedisUtil;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +23,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String TOKEN_PREFIX = "Bearer ";
 	private final TokenProvider tokenProvider;
-	private final RedisUtil redisUtil;
 	private final CookieUtil cookieUtil;
 
 	@Override
@@ -36,8 +33,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
-			String isLogout = redisUtil.getValues(accessToken);
-			if ("false".equals(isLogout)) {
+			if (tokenProvider.verifyLogout(accessToken)) {
 				saveAuthentication(accessToken);
 			}
 		}
