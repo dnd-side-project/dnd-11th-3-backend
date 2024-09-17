@@ -30,7 +30,7 @@ public class LoggingAspect {
 	}
 
 	@Around("controllerPointcut() || servicePointcut()")
-	public Object allLogWithAround(ProceedingJoinPoint joinPoint) throws Throwable {
+	public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 		long start = System.currentTimeMillis();
 		log.info("START: {}", joinPoint.toString());
 		try {
@@ -43,7 +43,7 @@ public class LoggingAspect {
 	}
 
 	@Before("controllerPointcut()")
-	public void requestArgsWithBefore(JoinPoint joinPoint) throws Throwable {
+	public void logRequestArgs(JoinPoint joinPoint) throws Throwable {
 		Method method = getMethod(joinPoint);
 		String methodName = method.getName();
 		log.info("===== {} Request Detail START =====", methodName);
@@ -56,7 +56,7 @@ public class LoggingAspect {
 	}
 
 	@AfterReturning(value = "servicePointcut()", returning = "returnValue")
-	public void responseArgsWithAfter(JoinPoint joinPoint, Object returnValue) throws Throwable {
+	public void logResponseDetails(JoinPoint joinPoint, Object returnValue) throws Throwable {
 		Method method = getMethod(joinPoint);
 		String methodName = method.getName();
 
