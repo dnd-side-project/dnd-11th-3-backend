@@ -19,9 +19,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
 import com.dnd.gongmuin.chat.domain.ChatRoom;
+import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
+import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -39,8 +42,8 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 @ExtendWith(MockitoExtension.class)
 class ChatRoomServiceTest {
 
+	private static final int CHAT_REWARD = 2000;
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
-
 	@Mock
 	private ChatMessageRepository chatMessageRepository;
 
@@ -125,5 +128,52 @@ class ChatRoomServiceTest {
 		assertThatThrownBy(() -> chatRoomService.createChatRoom(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")
+	@Test
+	void acceptChat() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		int previousCredit = answerer.getCredit();
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		AcceptChatResponse response = chatRoomService.acceptChat(chatRoomId, answerer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.chatStatus())
+				.isEqualTo(ChatStatus.ACCEPTED.getLabel()),
+			() -> assertThat(response.credit())
+				.isEqualTo(previousCredit + CHAT_REWARD)
+		);
+	}
+
+	@DisplayName("[답변자가 채팅 요청을 거절할 수 있다.]")
+	@Test
+	void rejectChat() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		RejectChatResponse response = chatRoomService.rejectChat(chatRoomId, answerer);
+
+		//then
+		assertThat(response.chatStatus())
+			.isEqualTo(ChatStatus.REJECTED.getLabel());
 	}
 }

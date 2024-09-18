@@ -1,16 +1,18 @@
 package com.dnd.gongmuin.chat.domain;
 
 import static jakarta.persistence.ConstraintMode.*;
+import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
 
+import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom extends TimeBaseEntity {
+
+	private static final int CHAT_REWARD = 2000;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,15 +51,16 @@ public class ChatRoom extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member answerer;
 
-	@Column(name = "is_accepted", nullable = false)
-	private boolean isAccepted;
+	@Enumerated(STRING)
+	@Column(name = "status", nullable = false)
+	private ChatStatus status;
 
 	private ChatRoom(QuestionPost questionPost, Member inquirer, Member answerer) {
 		this.questionPost = questionPost;
 		this.inquirer = inquirer;
 		this.answerer = answerer;
-		this.isAccepted = false;
-		validateInquirerCredit();
+		this.status = ChatStatus.PENDING;
+		inquirer.decreaseCredit(CHAT_REWARD);
 	}
 
 	public static ChatRoom of(
@@ -66,9 +71,19 @@ public class ChatRoom extends TimeBaseEntity {
 		return new ChatRoom(questionPost, inquirer, answerer);
 	}
 
-	private void validateInquirerCredit() {
-		if (inquirer.getCredit() < 2000) {
-			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
+	public void updateStatusAccepted() {
+		if (status != ChatStatus.PENDING) {
+			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
 		}
+		status = ChatStatus.ACCEPTED;
+		answerer.increaseCredit(CHAT_REWARD);
+	}
+
+	public void updateStatusRejected() {
+		if (status != ChatStatus.PENDING) {
+			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
+		}
+		status = ChatStatus.REJECTED;
+		inquirer.increaseCredit(CHAT_REWARD);
 	}
 }

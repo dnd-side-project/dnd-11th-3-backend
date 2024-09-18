@@ -7,6 +7,6 @@ public record ChatRoomDetailResponse(
 	String targetJobGroup,
 	String title,
 	MemberInfo receiverInfo,
-	boolean isAccepted
+	String status
 ) {
 }
