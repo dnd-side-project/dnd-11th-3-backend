@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
@@ -133,6 +134,11 @@ public class TokenProvider {
 		Claims claims = parseToken(token);
 		Date expiration = claims.getExpiration();
 		return (expiration.getTime() - date.getTime());
+	}
+
+	public boolean verifyLogout(String accessToken) {
+		String value = redisUtil.getValues(accessToken);
+		return Objects.equals("false", value);
 	}
 
 }
