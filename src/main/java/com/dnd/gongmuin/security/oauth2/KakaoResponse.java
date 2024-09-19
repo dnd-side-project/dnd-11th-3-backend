@@ -16,7 +16,7 @@ public class KakaoResponse implements Oauth2Response {
 
 	@Override
 	public String getProvider() {
-		return Provider.NAVER.getLabel();
+		return Provider.KAKAO.getLabel();
 	}
 
 	@Override
