@@ -4,34 +4,32 @@ import java.util.Map;
 
 import com.dnd.gongmuin.member.domain.Provider;
 
-public class KakaoResponse implements Oauth2Response {
+public class NaverResponse implements Oauth2Response {
 
 	private final Map<String, Object> attribute;
-	private final Long id;
 
-	public KakaoResponse(Map<String, Object> attribute) {
-		this.attribute = (Map<String, Object>)attribute.get("kakao_account");
-		this.id = (Long)attribute.get("id");
+	public NaverResponse(Map<String, Object> attribute) {
+		this.attribute = (Map<String, Object>)attribute.get("response");
 	}
 
 	@Override
 	public String getProvider() {
-		return Provider.KAKAO.getLabel();
+		return Provider.NAVER.getLabel();
 	}
 
 	@Override
 	public String getProviderId() {
-		return this.id.toString();
+		return this.attribute.get("id").toString();
 	}
 
 	@Override
 	public String getEmail() {
-		return attribute.get("email").toString();
+		return this.attribute.get("email").toString();
 	}
 
 	@Override
 	public String getName() {
-		return ((Map<String, Object>)attribute.get("profile")).get("nickname").toString();
+		return this.attribute.get("name").toString();
 	}
 
 	@Override
@@ -42,5 +40,4 @@ public class KakaoResponse implements Oauth2Response {
 			this.getEmail()
 		);
 	}
-
 }

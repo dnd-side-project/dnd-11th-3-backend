@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.security.service;
 
 import static com.dnd.gongmuin.auth.exception.AuthErrorCode.*;
+import static com.dnd.gongmuin.member.domain.Provider.*;
 
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import com.dnd.gongmuin.member.service.MemberService;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import com.dnd.gongmuin.security.oauth2.KakaoResponse;
+import com.dnd.gongmuin.security.oauth2.NaverResponse;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
@@ -35,8 +37,10 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 		Oauth2Response oauth2Response = null;
 
-		if (Objects.equals(registrationId, "kakao")) {
+		if (Objects.equals(registrationId, KAKAO.getLabel())) {
 			oauth2Response = new KakaoResponse(oAuth2User.getAttributes());
+		} else if (Objects.equals(registrationId, NAVER.getLabel())) {
+			oauth2Response = new NaverResponse(oAuth2User.getAttributes());
 		} else {
 			throw new OAuth2AuthenticationException(
 				new OAuth2Error(UNSUPPORTED_SOCIAL_LOGIN.getCode()),
