@@ -11,4 +11,5 @@ public interface Oauth2Response {
 
 	String createSocialEmail();
 
+	String getOauth2AccessToken();
 }
