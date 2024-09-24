@@ -33,7 +33,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
-			if (tokenProvider.verifyLogout(accessToken)) {
+			if (tokenProvider.verifyBlackList(accessToken)) {
 				saveAuthentication(accessToken);
 			}
 		}
