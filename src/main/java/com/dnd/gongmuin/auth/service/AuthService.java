@@ -13,6 +13,7 @@ import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
+import com.dnd.gongmuin.auth.dto.response.MemberDeletionResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
 import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
@@ -30,6 +31,7 @@ import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
+import com.dnd.gongmuin.security.service.OAuth2UnlinkService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,10 +42,12 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
 	private static final String LOGOUT = "logout";
+	private static final String DELETE = "delete";
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
 	private final RedisUtil redisUtil;
+	private final OAuth2UnlinkService oAuth2UnlinkService;
 
 	@Transactional
 	public TempSignResponse tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
@@ -181,4 +185,41 @@ public class AuthService {
 		);
 	}
 
+	@Transactional
+	public MemberDeletionResponse deleteMember(HttpServletRequest request) {
+		String accessToken = cookieUtil.getCookieValue(request);
+
+		if (!tokenProvider.validateToken(accessToken, new Date())) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		Member member = (Member)authentication.getPrincipal();
+
+		// RefreshToken 삭제
+		if (!Objects.isNull(redisUtil.getValues("RT:" + member.getSocialEmail()))) {
+			redisUtil.deleteValues("RT:" + member.getSocialEmail());
+		}
+
+		// 현재 발급 되어 있는 AccessToken 블랙리스트 등록
+		Long expiration = tokenProvider.getExpiration(accessToken, new Date());
+		redisUtil.setValues(accessToken, DELETE, Duration.ofMillis(expiration));
+
+		// AccessToken 블랙리스트 등록 여부 검증
+		String values = redisUtil.getValues(accessToken);
+		if (!Objects.equals(values, DELETE)) {
+			throw new NotFoundException(MemberErrorCode.DELETE_FAILED);
+		}
+
+		// TODO: SOFT DELETE
+
+		// oauth2 서비스 연결 끊기
+		oAuth2UnlinkService.unlink(member.getSocialEmail());
+
+		// oauth2 access 토큰 삭제
+		if (redisUtil.getValues("AT(oauth):" + member.getSocialEmail()) != null) {
+			redisUtil.deleteValues("AT(oauth):" + member.getSocialEmail());
+		}
+		return new MemberDeletionResponse(member.getId());
+	}
 }
