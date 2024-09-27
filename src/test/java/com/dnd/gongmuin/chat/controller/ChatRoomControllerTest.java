@@ -81,6 +81,25 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk());
 	}
 
+	@DisplayName("[채팅방 아이디로 채팅방을 상세조회할 수 있다.]")
+	@Test
+	void getChatRoomById() throws Exception {
+		Member inquirer = memberRepository.save(MemberFixture.member4());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
+		ChatRoom chatRoom = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, inquirer, loginMember));
+
+		mockMvc.perform(get("/api/chat-rooms/{chatRoomId}", chatRoom.getId())
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.questionPostId").value(questionPost.getId()))
+			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
+			.andExpect(jsonPath("$.receiverInfo.memberId").value(inquirer.getId()))
+			.andExpect(jsonPath("$.receiverInfo.nickname").value(inquirer.getNickname()))
+			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(inquirer.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(inquirer.getProfileImageNo()));
+	}
+
 	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")
 	@Test
 	void acceptChatRoom() throws Exception {
