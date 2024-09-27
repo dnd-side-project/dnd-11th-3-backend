@@ -64,7 +64,8 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.size").value(2))
 			.andExpect(jsonPath("$.content[0].senderId").value(chatMessages.get(0).getMemberId()))
 			.andExpect(jsonPath("$.content[0].content").value(chatMessages.get(0).getContent()))
-			.andExpect(jsonPath("$.content[0].type").value(chatMessages.get(0).getType().getLabel()));
+			.andExpect(jsonPath("$.content[0].type").value(chatMessages.get(0).getType().getLabel()))
+			.andExpect(jsonPath("$.content[0].isRead").value(chatMessages.get(0).getIsRead()));
 	}
 
 	@DisplayName("[채팅방을 생성할 수 있다.]")
