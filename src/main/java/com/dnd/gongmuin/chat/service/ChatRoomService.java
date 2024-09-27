@@ -1,6 +1,10 @@
 package com.dnd.gongmuin.chat.service;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -14,8 +18,12 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
+import com.dnd.gongmuin.chat.repository.ChatMessageQueryRepository;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
@@ -26,6 +34,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -36,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomService {
 
 	private final ChatMessageRepository chatMessageRepository;
+	private final ChatMessageQueryRepository chatMessageQueryRepository;
 	private final ChatRoomRepository chatRoomRepository;
 	private final MemberRepository memberRepository;
 	private final QuestionPostRepository questionPostRepository;
@@ -64,6 +74,34 @@ public class ChatRoomService {
 			),
 			answerer
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ChatRoomSimpleResponse> getChatRoomsByMember(Member member) {
+		// 회원 채팅방 정보 가져오기
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(member);
+		// chatRoomId 리스트 추출
+		List<Long> chatRoomIds = chatRoomInfos.stream()
+			.map(ChatRoomInfo::chatRoomId)
+			.toList();
+		// 각 채팅방 최근 메시지 정보
+		List<LatestChatMessage> latestChatMessages = chatMessageQueryRepository.findLatestChatByChatRoomIds(chatRoomIds);
+		// <chatRoomId, LatestMessage> -> 순서 보장 x
+		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
+			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
+		// 최신순 정렬
+		return chatRoomInfos.stream()
+			.sorted(Comparator.comparing((ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()).reversed())
+			.map(chatRoomInfo -> {
+				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
+				return new ChatRoomSimpleResponse(
+					chatRoomInfo.chatRoomId(),
+					new MemberInfo(chatRoomInfo.partnerId(), chatRoomInfo.partnerNickname(), chatRoomInfo.partnerJobGroup(), chatRoomInfo.partnerProfileImageNo()),
+					latestMessage.content(),
+					latestMessage.type(),
+					latestMessage.createdAt().toString()
+				);
+			}).toList();
 	}
 
 	@Transactional(readOnly = true)
