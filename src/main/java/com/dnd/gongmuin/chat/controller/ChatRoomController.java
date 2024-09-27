@@ -52,6 +52,16 @@ public class ChatRoomController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "채팅방 조회 API", description = "채팅방 아이디로 채팅방을 조회한다.")
+	@GetMapping("/api/chat-rooms/{chatRoomId}")
+	public ResponseEntity<ChatRoomDetailResponse> createChatRoom(
+		@PathVariable("chatRoomId") Long chatRoomId,
+		@AuthenticationPrincipal Member member
+	) {
+		ChatRoomDetailResponse response = chatRoomService.getChatRoomById(chatRoomId, member);
+		return ResponseEntity.ok(response);
+	}
+
 	@Operation(summary = "채팅 수락 API", description = "채팅방에서 요청자와의 채팅을 수락한다.")
 	@PatchMapping("/api/chat-rooms/{chatRoomId}/accept")
 	public ResponseEntity<AcceptChatResponse> acceptChat(

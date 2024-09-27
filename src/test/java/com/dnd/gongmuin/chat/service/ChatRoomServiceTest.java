@@ -25,6 +25,7 @@ import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
+import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -38,7 +39,7 @@ import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-@DisplayName("[채팅방 메시지 서비스 단위 테스트]")
+@DisplayName("[채팅방 서비스 단위 테스트]")
 @ExtendWith(MockitoExtension.class)
 class ChatRoomServiceTest {
 
@@ -128,6 +129,78 @@ class ChatRoomServiceTest {
 		assertThatThrownBy(() -> chatRoomService.createChatRoom(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[요청자가 채팅방 아이디로 채팅방을 조회할 수 있다.]")
+	@Test
+	void getChatRoomById_Inquirer() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		ChatRoomDetailResponse response
+			= chatRoomService.getChatRoomById(chatRoomId, inquirer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.questionPostId())
+				.isEqualTo(questionPost.getId()),
+			() -> assertThat(response.receiverInfo().memberId())
+				.isEqualTo(answerer.getId())
+		);
+	}
+
+	@DisplayName("[답변자가 채팅방 아이디로 채팅방을 조회할 수 있다.]")
+	@Test
+	void getChatRoomById_Answerer() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		ChatRoomDetailResponse response
+			= chatRoomService.getChatRoomById(chatRoomId, answerer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.questionPostId())
+				.isEqualTo(questionPost.getId()),
+			() -> assertThat(response.receiverInfo().memberId())
+				.isEqualTo(inquirer.getId())
+		);
+	}
+
+	@DisplayName("[채팅방에 속하지 않은 사람은 채팅방을 조회할 수 없다.]")
+	@Test
+	void getChatRoomById_Unauthorized() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		Member unrelatedMember = MemberFixture.member(3L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when & then
+		assertThatThrownBy(() -> chatRoomService.getChatRoomById(chatRoomId, unrelatedMember))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM.getMessage());
 	}
 
 	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")

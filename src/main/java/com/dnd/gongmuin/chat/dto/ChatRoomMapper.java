@@ -26,19 +26,21 @@ public class ChatRoomMapper {
 		);
 	}
 
-	public static ChatRoomDetailResponse toChatRoomDetailResponse(ChatRoom chatRoom) {
+	public static ChatRoomDetailResponse toChatRoomDetailResponse(
+		ChatRoom chatRoom,
+		Member chatPartner
+	) {
 		QuestionPost questionPost = chatRoom.getQuestionPost();
-		Member answerer = chatRoom.getAnswerer(); // 요청자만 채팅방 생성 가능 -> 상태방: 답변자
 
 		return new ChatRoomDetailResponse(
 			questionPost.getId(),
 			questionPost.getJobGroup().getLabel(),
 			questionPost.getTitle(),
 			new MemberInfo(
-				answerer.getId(),
-				answerer.getNickname(),
-				answerer.getJobGroup().getLabel(),
-				answerer.getProfileImageNo()
+				chatPartner.getId(),
+				chatPartner.getNickname(),
+				chatPartner.getJobGroup().getLabel(),
+				chatPartner.getProfileImageNo()
 			),
 			chatRoom.getStatus().getLabel()
 		);
