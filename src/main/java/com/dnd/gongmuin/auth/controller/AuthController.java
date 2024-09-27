@@ -11,8 +11,8 @@ import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.auth.dto.response.DeleteMemberResponse;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
-import com.dnd.gongmuin.auth.dto.response.MemberDeletionResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
 import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
@@ -98,12 +98,12 @@ public class AuthController {
 	@Operation(summary = "회원탈퇴 API", description = "회원 탈퇴한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/delete")
-	public ResponseEntity<MemberDeletionResponse> deleteMember(
+	public ResponseEntity<DeleteMemberResponse> deleteMember(
 		HttpServletRequest request
 	) {
-		MemberDeletionResponse memberDeletionResponse = authService.deleteMember(request);
+		DeleteMemberResponse deleteMemberResponse = authService.deleteMember(request);
 
-		return ResponseEntity.ok(memberDeletionResponse);
+		return ResponseEntity.ok(deleteMemberResponse);
 	}
 }
 

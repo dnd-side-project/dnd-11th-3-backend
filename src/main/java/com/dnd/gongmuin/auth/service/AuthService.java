@@ -12,8 +12,8 @@ import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.auth.dto.response.DeleteMemberResponse;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
-import com.dnd.gongmuin.auth.dto.response.MemberDeletionResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
 import com.dnd.gongmuin.auth.dto.response.TempSignResponse;
@@ -186,7 +186,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public MemberDeletionResponse deleteMember(HttpServletRequest request) {
+	public DeleteMemberResponse deleteMember(HttpServletRequest request) {
 		String accessToken = cookieUtil.getCookieValue(request);
 
 		if (!tokenProvider.validateToken(accessToken, new Date())) {
@@ -220,6 +220,6 @@ public class AuthService {
 		if (redisUtil.getValues("AT(oauth):" + member.getSocialEmail()) != null) {
 			redisUtil.deleteValues("AT(oauth):" + member.getSocialEmail());
 		}
-		return new MemberDeletionResponse(member.getId());
+		return new DeleteMemberResponse(member.getId());
 	}
 }
