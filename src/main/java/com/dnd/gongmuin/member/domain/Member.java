@@ -62,16 +62,6 @@ public class Member extends TimeBaseEntity {
 		this.role = role;
 	}
 
-	@Override
-	public String toString() {
-		return "MEMBER INFO{" +
-			"id=" + id +
-			", role='" + role + '\'' +
-			", jobGroup=" + jobGroup +
-			", socialEmail='" + socialEmail + '\'' +
-			'}';
-	}
-
 	public static Member of(String socialName, String socialEmail, int credit) {
 		return Member.builder()
 			.socialName(socialName)
@@ -101,6 +91,16 @@ public class Member extends TimeBaseEntity {
 			.credit(credit)
 			.role(role)
 			.build();
+	}
+
+	@Override
+	public String toString() {
+		return "MEMBER INFO{" +
+			"id=" + id +
+			", role='" + role + '\'' +
+			", jobGroup=" + jobGroup +
+			", socialEmail='" + socialEmail + '\'' +
+			'}';
 	}
 
 	public void updateSocialEmail(String socialEmail) {

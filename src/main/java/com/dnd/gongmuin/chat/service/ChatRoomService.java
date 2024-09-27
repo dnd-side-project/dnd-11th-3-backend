@@ -85,18 +85,21 @@ public class ChatRoomService {
 			.map(ChatRoomInfo::chatRoomId)
 			.toList();
 		// 각 채팅방 최근 메시지 정보
-		List<LatestChatMessage> latestChatMessages = chatMessageQueryRepository.findLatestChatByChatRoomIds(chatRoomIds);
+		List<LatestChatMessage> latestChatMessages = chatMessageQueryRepository.findLatestChatByChatRoomIds(
+			chatRoomIds);
 		// <chatRoomId, LatestMessage> -> 순서 보장 x
 		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
 			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
 		// 최신순 정렬
 		return chatRoomInfos.stream()
-			.sorted(Comparator.comparing((ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()).reversed())
+			.sorted(
+				Comparator.comparing((ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()).reversed())
 			.map(chatRoomInfo -> {
 				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
 				return new ChatRoomSimpleResponse(
 					chatRoomInfo.chatRoomId(),
-					new MemberInfo(chatRoomInfo.partnerId(), chatRoomInfo.partnerNickname(), chatRoomInfo.partnerJobGroup(), chatRoomInfo.partnerProfileImageNo()),
+					new MemberInfo(chatRoomInfo.partnerId(), chatRoomInfo.partnerNickname(),
+						chatRoomInfo.partnerJobGroup(), chatRoomInfo.partnerProfileImageNo()),
 					latestMessage.content(),
 					latestMessage.type(),
 					latestMessage.createdAt().toString()

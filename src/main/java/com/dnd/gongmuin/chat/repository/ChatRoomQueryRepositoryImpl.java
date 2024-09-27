@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 	private final JPAQueryFactory queryFactory;
+
 	public List<ChatRoomInfo> getChatRoomsByMember(Member member) {
 		return queryFactory
 			.select(new QChatRoomInfo(
