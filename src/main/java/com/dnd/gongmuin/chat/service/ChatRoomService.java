@@ -59,8 +59,18 @@ public class ChatRoomService {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
 		return ChatRoomMapper.toChatRoomDetailResponse(
-			chatRoomRepository.save(ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer))
+			chatRoomRepository.save(
+				ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer)
+			),
+			answerer
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public ChatRoomDetailResponse getChatRoomById(Long chatRoomId, Member member){
+		ChatRoom chatRoom = getChatRoomById(chatRoomId);
+		Member chatPartner = getChatPartner(member.getId(), chatRoom);
+		return ChatRoomMapper.toChatRoomDetailResponse(chatRoom, chatPartner);
 	}
 
 	@Transactional
@@ -94,6 +104,17 @@ public class ChatRoomService {
 	private Member getMemberById(Long id) {
 		return memberRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+	}
+
+	private Member getChatPartner(Long memberId, ChatRoom chatRoom){
+		if (Objects.equals(chatRoom.getAnswerer().getId(), memberId)){
+			return chatRoom.getInquirer();
+		}
+		else if (Objects.equals(chatRoom.getInquirer().getId(), memberId)){
+			return chatRoom.getAnswerer();
+		} else {
+			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM);
+		}
 	}
 }
 
