@@ -4,6 +4,7 @@ public record ChatMessageResponse(
 	Long senderId,
 	String content,
 	String type,
+	boolean isRead,
 	String createdAt
 ) {
 }
