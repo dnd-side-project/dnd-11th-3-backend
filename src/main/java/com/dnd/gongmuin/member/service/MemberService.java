@@ -42,7 +42,7 @@ public class MemberService {
 		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
 			.map(m -> {
 				m.updateSocialEmail(oauth2Response.createSocialEmail());
-				deleteExistingOauthAccessToken(m);
+				deleteOauthAccessTokenIfExists(m);
 				saveOauth2AccessToken(oauth2Response, m);
 				return m;
 			})
@@ -59,7 +59,7 @@ public class MemberService {
 		);
 	}
 
-	private void deleteExistingOauthAccessToken(Member m) {
+	private void deleteOauthAccessTokenIfExists(Member m) {
 		if (redisUtil.getValues("AT(oauth2):" + m.getSocialEmail()) != null) {
 			redisUtil.deleteValues("AT(oauth2):" + m.getSocialEmail());
 		}
