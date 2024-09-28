@@ -10,6 +10,6 @@ public record ChatMessageRequest(
 	String type,
 
 	@NotNull(message = "회원 아이디를 입력해주세요.")
-	Long memberId
+	Long senderId
 ) {
 }
