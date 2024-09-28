@@ -123,7 +123,8 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			)
 		);
 		mockMvc.perform(get("/api/chat-rooms")
-				.cookie(accessToken))
+				.cookie(accessToken)
+				.param("status", ChatStatus.PENDING.getLabel()))
 			.andExpect(status().isOk())
 			.andDo(MockMvcResultHandlers.print());
 	}
