@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
@@ -58,9 +59,10 @@ public class ChatRoomController {
 	@Operation(summary = "채팅방 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
 	@GetMapping("/api/chat-rooms")
 	public ResponseEntity<List<ChatRoomSimpleResponse>> getChatRoomsByMember(
+		@RequestParam("status") String status,
 		@AuthenticationPrincipal Member member
 	) {
-		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(member);
+		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(member, status);
 		return ResponseEntity.ok(response);
 	}
 
