@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.chat.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +16,7 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.service.ChatRoomService;
 import com.dnd.gongmuin.common.dto.PageResponse;
@@ -49,6 +52,15 @@ public class ChatRoomController {
 		@AuthenticationPrincipal Member member
 	) {
 		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "채팅방 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@GetMapping("/api/chat-rooms")
+	public ResponseEntity<List<ChatRoomSimpleResponse>> getChatRoomsByMember(
+		@AuthenticationPrincipal Member member
+	) {
+		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(member);
 		return ResponseEntity.ok(response);
 	}
 

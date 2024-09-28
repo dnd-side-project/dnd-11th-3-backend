@@ -18,6 +18,7 @@ public class ChatMessageMapper {
 			chatMessage.getMemberId(),
 			chatMessage.getContent(),
 			chatMessage.getType().getLabel(),
+			chatMessage.getIsRead(),
 			chatMessage.getCreatedAt().toString()
 		);
 	}

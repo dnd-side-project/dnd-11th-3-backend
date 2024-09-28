@@ -62,6 +62,19 @@ public class MemberFixture {
 		);
 	}
 
+	public static Member member5() {
+		return Member.of(
+			"회원",
+			"소셜회원",
+			JobGroup.AD,
+			JobCategory.ME,
+			"KAKAO12345/member2@daum.net",
+			"member@korea.kr",
+			20000,
+			"ROLE_USER"
+		);
+	}
+
 	public static Member member(Long memberId) {
 		Member member = Member.of(
 			"김회원",

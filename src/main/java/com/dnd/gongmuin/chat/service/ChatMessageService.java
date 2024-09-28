@@ -24,10 +24,10 @@ public class ChatMessageService {
 		ChatMessageRequest request,
 		Long chatRoomId
 	) {
-		Long memberId = request.memberId();
+		Long senderId = request.senderId();
 		ChatMessage chatMessage = chatMessageRepository.save(
-			ChatMessageMapper.toChatMessage(request, chatRoomId, memberId));
-		log.info("chatRoomId = {}, memberId= {}, chatMessageId= {}", chatRoomId, memberId, chatMessage.getId());
+			ChatMessageMapper.toChatMessage(request, chatRoomId, senderId));
+		log.info("chatRoomId = {}, senderId= {}, chatMessageId= {}", chatRoomId, senderId, chatMessage.getId());
 		return ChatMessageMapper.toChatMessageResponse(chatMessage);
 	}
 }
