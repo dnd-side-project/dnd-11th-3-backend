@@ -71,7 +71,7 @@ class InteractionControllerTest extends ApiTestSupport {
 		mockMvc.perform(post("/api/question-posts/{questionPostId}/inactivated", questionPost.getId())
 				.contentType(APPLICATION_JSON)
 				.cookie(accessToken)
-				.param("type", "추천")
+				.param("type", InteractionType.RECOMMEND.getLabel())
 			)
 			.andExpect(status().isOk());
 	}
