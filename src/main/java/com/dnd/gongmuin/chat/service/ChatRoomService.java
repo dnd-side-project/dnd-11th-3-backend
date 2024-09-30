@@ -1,11 +1,14 @@
 package com.dnd.gongmuin.chat.service;
 
+import static com.dnd.gongmuin.notification.domain.NotificationType.*;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,7 @@ import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
@@ -49,6 +53,7 @@ public class ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final MemberRepository memberRepository;
 	private final QuestionPostRepository questionPostRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
 		if (!Objects.equals(member.getId(), chatRoom.getAnswerer().getId())) {
@@ -68,10 +73,17 @@ public class ChatRoomService {
 	public ChatRoomDetailResponse createChatRoom(CreateChatRoomRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
+
+		ChatRoom chatRoom = chatRoomRepository.save(
+			ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer)
+		);
+
+		eventPublisher.publishEvent(
+			new NotificationEvent(CHAT_REQUEST, chatRoom.getId(), inquirer.getId(), answerer)
+		);
+
 		return ChatRoomMapper.toChatRoomDetailResponse(
-			chatRoomRepository.save(
-				ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer)
-			),
+			chatRoom,
 			answerer
 		);
 	}
@@ -120,6 +132,10 @@ public class ChatRoomService {
 		validateIfAnswerer(member, chatRoom);
 		chatRoom.updateStatusAccepted();
 
+		eventPublisher.publishEvent(
+			new NotificationEvent(CHAT_ACCEPT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+		);
+
 		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
 	}
 
@@ -128,6 +144,10 @@ public class ChatRoomService {
 		ChatRoom chatRoom = getChatRoomById(chatRoomId);
 		validateIfAnswerer(member, chatRoom);
 		chatRoom.updateStatusRejected();
+
+		eventPublisher.publishEvent(
+			new NotificationEvent(CHAT_REJECT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}

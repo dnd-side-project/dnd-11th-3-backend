@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,6 +37,7 @@ import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -56,6 +58,9 @@ class ChatRoomServiceTest {
 
 	@Mock
 	private QuestionPostRepository questionPostRepository;
+
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
 
 	@InjectMocks
 	private ChatRoomService chatRoomService;
@@ -104,6 +109,37 @@ class ChatRoomServiceTest {
 		assertAll(
 			() -> assertThat(response.questionPostId()).isEqualTo(request.questionPostId()),
 			() -> assertThat(response.receiverInfo().memberId()).isEqualTo(request.answererId())
+		);
+	}
+
+	@DisplayName("[요청자가 채팅방을 생성 시 생성 알림이 발행된다.]")
+	@Test
+	void createChatRoomWithEventPublish() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		CreateChatRoomRequest request = new CreateChatRoomRequest(
+			questionPost.getId(),
+			answerer.getId()
+		);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(chatRoomRepository.save(any(ChatRoom.class)))
+			.willReturn(chatRoom);
+
+		//when
+		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, inquirer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.questionPostId()).isEqualTo(request.questionPostId()),
+			() -> assertThat(response.receiverInfo().memberId()).isEqualTo(request.answererId()),
+			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
 		);
 	}
 
@@ -229,6 +265,33 @@ class ChatRoomServiceTest {
 		);
 	}
 
+	@DisplayName("[답변자가 채팅 요청을 수락할 때 채팅 수락 알림이 발행된다.]")
+	@Test
+	void acceptChatWithEventPublish() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		int previousCredit = answerer.getCredit();
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		AcceptChatResponse response = chatRoomService.acceptChat(chatRoomId, answerer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.chatStatus())
+				.isEqualTo(ChatStatus.ACCEPTED.getLabel()),
+			() -> assertThat(response.credit())
+				.isEqualTo(previousCredit + CHAT_REWARD),
+			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
+		);
+	}
+
 	@DisplayName("[답변자가 채팅 요청을 거절할 수 있다.]")
 	@Test
 	void rejectChat() {
@@ -248,5 +311,28 @@ class ChatRoomServiceTest {
 		//then
 		assertThat(response.chatStatus())
 			.isEqualTo(ChatStatus.REJECTED.getLabel());
+	}
+
+	@DisplayName("[답변자가 채팅 요청을 거절할 때 채팅 거절 알림이 발행된다.]")
+	@Test
+	void rejectChatWithEventPublish() {
+		//given
+		Long chatRoomId = 1L;
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+
+		given(chatRoomRepository.findById(chatRoomId))
+			.willReturn(Optional.of(chatRoom));
+
+		//when
+		RejectChatResponse response = chatRoomService.rejectChat(chatRoomId, answerer);
+
+		//then
+		assertAll(
+			() -> assertThat(response.chatStatus()).isEqualTo(ChatStatus.REJECTED.getLabel()),
+			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
+		);
 	}
 }
