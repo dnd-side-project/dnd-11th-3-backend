@@ -22,4 +22,12 @@ public record CreditHistoryResponse(
 			creditHistory.getCreatedAt().toString()
 		);
 	}
+
+	@Override
+	public String toString() {
+		return "CreditHistoryResponse{" +
+			"id=" + id +
+			", type='" + type + '\'' +
+			'}';
+	}
 }

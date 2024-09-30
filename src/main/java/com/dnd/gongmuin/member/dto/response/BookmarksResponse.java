@@ -32,4 +32,12 @@ public record BookmarksResponse(
 			recommendCount
 		);
 	}
+
+	@Override
+	public String toString() {
+		return "BookmarksResponse{" +
+			"questionPostId=" + questionPostId +
+			", questionTitle='" + questionTitle + '\'' +
+			'}';
+	}
 }

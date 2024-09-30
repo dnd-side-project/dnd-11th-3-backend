@@ -40,4 +40,12 @@ public record AnsweredQuestionPostsResponse(
 			answer.getCreatedAt().toString()
 		);
 	}
+
+	@Override
+	public String toString() {
+		return "AnsweredQuestionPostsResponse{" +
+			"questionPostId=" + questionPostId +
+			", answerId=" + answerId +
+			'}';
+	}
 }

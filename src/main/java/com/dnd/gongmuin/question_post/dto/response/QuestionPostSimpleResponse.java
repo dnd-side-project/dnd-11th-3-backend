@@ -33,4 +33,12 @@ public record QuestionPostSimpleResponse(
 			recommendCount
 		);
 	}
+
+	@Override
+	public String toString() {
+		return "QuestionPostSimpleResponse{" +
+			"questionPostId=" + questionPostId +
+			", title='" + title + '\'' +
+			'}';
+	}
 }
