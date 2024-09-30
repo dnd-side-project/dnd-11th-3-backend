@@ -14,7 +14,6 @@ public enum ChatErrorCode implements ErrorCode {
 	UNAUTHORIZED_REQUEST("채팅 수락을 하거나 거절할 권한이 없습니다.", "CH_003"),
 	UNABLE_TO_CHANGE_CHAT_STATUS("이미 수락했거나 거절한 요청입니다.", "CH_004"),
 	UNAUTHORIZED_CHAT_ROOM("권한이 없는 채팅방입니다.", "CH_005"),
-
 	NOT_FOUND_CHAT_STATUS("채팅방 상태값을 올바르게 입력해주세요.", "CH_006");
 
 	private final String message;
