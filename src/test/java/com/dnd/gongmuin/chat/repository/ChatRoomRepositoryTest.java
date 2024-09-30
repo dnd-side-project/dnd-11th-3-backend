@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
+import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -43,7 +44,7 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
 		));
 		//when
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target);
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING);
 		//then
 		Assertions.assertAll(
 			() -> assertThat(chatRoomInfos).hasSize(2),

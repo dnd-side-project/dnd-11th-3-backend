@@ -4,6 +4,7 @@ import static com.dnd.gongmuin.chat.domain.QChatRoom.*;
 
 import java.util.List;
 
+import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.QChatRoomInfo;
 import com.dnd.gongmuin.member.domain.Member;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 	private final JPAQueryFactory queryFactory;
 
-	public List<ChatRoomInfo> getChatRoomsByMember(Member member) {
+	public List<ChatRoomInfo> getChatRoomsByMember(Member member, ChatStatus chatStatus) {
 		return queryFactory
 			.select(new QChatRoomInfo(
 				chatRoom.id,
@@ -39,7 +40,8 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			))
 			.from(chatRoom)
 			.where(chatRoom.inquirer.id.eq(member.getId())
-				.or(chatRoom.answerer.id.eq(member.getId())))
+				.or(chatRoom.answerer.id.eq(member.getId()))
+				.and(chatRoom.status.eq(chatStatus)))
 			.fetch();
 	}
 }

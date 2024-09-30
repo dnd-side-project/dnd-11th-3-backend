@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
+import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.ChatMessageMapper;
 import com.dnd.gongmuin.chat.dto.ChatRoomMapper;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
@@ -89,9 +90,9 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ChatRoomSimpleResponse> getChatRoomsByMember(Member member) {
+	public List<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, String chatStatus) {
 		// 회원 채팅방 정보 가져오기
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(member);
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(member, ChatStatus.from(chatStatus));
 		// chatRoomId 리스트 추출
 		List<Long> chatRoomIds = chatRoomInfos.stream()
 			.map(ChatRoomInfo::chatRoomId)
