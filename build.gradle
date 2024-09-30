@@ -147,6 +147,9 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+
 }
 
 // Querydsl
