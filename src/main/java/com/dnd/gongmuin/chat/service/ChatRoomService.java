@@ -145,6 +145,10 @@ public class ChatRoomService {
 		validateIfAnswerer(member, chatRoom);
 		chatRoom.updateStatusRejected();
 
+		eventPublisher.publishEvent(
+			new NotificationEvent(CHAT_REJECT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+		);
+
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}
 
