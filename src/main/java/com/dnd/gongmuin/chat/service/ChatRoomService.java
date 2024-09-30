@@ -132,6 +132,10 @@ public class ChatRoomService {
 		validateIfAnswerer(member, chatRoom);
 		chatRoom.updateStatusAccepted();
 
+		eventPublisher.publishEvent(
+			new NotificationEvent(CHAT_ACCEPT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+		);
+
 		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
 	}
 
