@@ -65,7 +65,7 @@ public class ChatRoomMapper {
 	public static ChatRoomSimpleResponse toChatRoomSimpleResponse(
 		ChatRoomInfo chatRoomInfo,
 		LatestChatMessage latestChatMessage
-	){
+	) {
 		return new ChatRoomSimpleResponse(
 			chatRoomInfo.chatRoomId(),
 			new MemberInfo(

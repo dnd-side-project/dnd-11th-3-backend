@@ -48,7 +48,8 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		));
 		//when
 
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING, pageRequest)
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING,
+				pageRequest)
 			.getContent();
 		//then
 		Assertions.assertAll(
