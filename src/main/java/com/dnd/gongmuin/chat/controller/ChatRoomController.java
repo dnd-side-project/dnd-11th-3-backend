@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.chat.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -58,11 +56,13 @@ public class ChatRoomController {
 
 	@Operation(summary = "채팅방 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
 	@GetMapping("/api/chat-rooms")
-	public ResponseEntity<List<ChatRoomSimpleResponse>> getChatRoomsByMember(
+	public ResponseEntity<PageResponse<ChatRoomSimpleResponse>> getChatRoomsByMember(
 		@RequestParam("status") String status,
-		@AuthenticationPrincipal Member member
+		@AuthenticationPrincipal Member member,
+		Pageable pageable
 	) {
-		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(member, status);
+		PageResponse<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(member, status,
+			pageable);
 		return ResponseEntity.ok(response);
 	}
 
