@@ -84,7 +84,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk());
 	}
 
-	@DisplayName("[회원의 채팅방 목록을 조회할 수 있다.]")
+	@DisplayName("[회원의 요청 상태 채팅방 목록을 조회할 수 있다.]")
 	@Test
 	void getChatRoomsByMember() throws Exception {
 		//given
