@@ -102,7 +102,8 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			ChatRoomFixture.chatRoom(questionPosts.get(0), member2, loginMember));
 		ChatRoom chatRoom3 = chatRoomRepository.save(
 			ChatRoomFixture.chatRoom(questionPosts.get(1), loginMember, member1));
-		ChatRoom chatRoom4 = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPosts.get(1), member2, member1));
+		ChatRoom unrelatedChatroom = chatRoomRepository.save(
+			ChatRoomFixture.chatRoom(questionPosts.get(1), member2, member1));
 		chatMessageRepository.saveAll(
 			List.of(
 				chatMessageRepository.save(
@@ -112,20 +113,32 @@ class ChatRoomControllerTest extends ApiTestSupport {
 				chatMessageRepository.save(
 					ChatMessageFixture.chatMessage(chatRoom2.getId(), "21", LocalDateTime.now())),
 				chatMessageRepository.save(
-					ChatMessageFixture.chatMessage(chatRoom2.getId(), "22", LocalDateTime.now())),
-				chatMessageRepository.save(
 					ChatMessageFixture.chatMessage(chatRoom3.getId(), "31", LocalDateTime.now())),
 				chatMessageRepository.save(
 					ChatMessageFixture.chatMessage(chatRoom3.getId(), "32", LocalDateTime.now())),
 				chatMessageRepository.save(
-					ChatMessageFixture.chatMessage(chatRoom4.getId(), "41", LocalDateTime.now())),
-				chatMessageRepository.save(ChatMessageFixture.chatMessage(chatRoom4.getId(), "42", LocalDateTime.now()))
+					ChatMessageFixture.chatMessage(unrelatedChatroom.getId(), "41", LocalDateTime.now())),
+				chatMessageRepository.save(
+					ChatMessageFixture.chatMessage(unrelatedChatroom.getId(), "42", LocalDateTime.now())
+				)
 			)
 		);
+
+		// when & then
 		mockMvc.perform(get("/api/chat-rooms")
 				.cookie(accessToken)
 				.param("status", ChatStatus.PENDING.getLabel()))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.size").value(3))
+			.andExpect(jsonPath("$.content[0].chatRoomId").value(chatRoom3.getId()))
+			.andExpect(jsonPath("$.content[0].latestMessage").value("32"))
+			.andExpect(jsonPath("$.content[0].chatPartner.memberId").value(member1.getId()))
+			.andExpect(jsonPath("$.content[1].chatRoomId").value(chatRoom2.getId()))
+			.andExpect(jsonPath("$.content[1].latestMessage").value("21"))
+			.andExpect(jsonPath("$.content[1].chatPartner.memberId").value(member2.getId()))
+			.andExpect(jsonPath("$.content[2].chatRoomId").value(chatRoom1.getId()))
+			.andExpect(jsonPath("$.content[2].latestMessage").value("12"))
+			.andExpect(jsonPath("$.content[2].chatPartner.memberId").value(member1.getId()))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
