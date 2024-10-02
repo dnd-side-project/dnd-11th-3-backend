@@ -4,6 +4,10 @@ import static com.dnd.gongmuin.chat.domain.QChatRoom.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+
 import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.QChatRoomInfo;
@@ -15,10 +19,15 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
+
 	private final JPAQueryFactory queryFactory;
 
-	public List<ChatRoomInfo> getChatRoomsByMember(Member member, ChatStatus chatStatus) {
-		return queryFactory
+	public Slice<ChatRoomInfo> getChatRoomsByMember(
+		Member member,
+		ChatStatus chatStatus,
+		Pageable pageable
+	) {
+		List<ChatRoomInfo> content = queryFactory
 			.select(new QChatRoomInfo(
 				chatRoom.id,
 				new CaseBuilder()
@@ -43,5 +52,16 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 				.or(chatRoom.answerer.id.eq(member.getId()))
 				.and(chatRoom.status.eq(chatStatus)))
 			.fetch();
+
+		boolean hasNext = hasNext(pageable.getPageSize(), content);
+		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	private <T> boolean hasNext(int pageSize, List<T> items) {
+		if (items.size() <= pageSize) {
+			return false;
+		}
+		items.remove(pageSize);
+		return true;
 	}
 }
