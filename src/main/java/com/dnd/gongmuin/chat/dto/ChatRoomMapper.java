@@ -3,6 +3,9 @@ package com.dnd.gongmuin.chat.dto;
 import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -56,6 +59,24 @@ public class ChatRoomMapper {
 	public static RejectChatResponse toRejectChatResponse(ChatRoom chatRoom) {
 		return new RejectChatResponse(
 			chatRoom.getStatus().getLabel()
+		);
+	}
+
+	public static ChatRoomSimpleResponse toChatRoomSimpleResponse(
+		ChatRoomInfo chatRoomInfo,
+		LatestChatMessage latestChatMessage
+	){
+		return new ChatRoomSimpleResponse(
+			chatRoomInfo.chatRoomId(),
+			new MemberInfo(
+				chatRoomInfo.partnerId(),
+				chatRoomInfo.partnerNickname(),
+				chatRoomInfo.partnerJobGroup(),
+				chatRoomInfo.partnerProfileImageNo()
+			),
+			latestChatMessage.content(),
+			latestChatMessage.type(),
+			latestChatMessage.createdAt().toString()
 		);
 	}
 
