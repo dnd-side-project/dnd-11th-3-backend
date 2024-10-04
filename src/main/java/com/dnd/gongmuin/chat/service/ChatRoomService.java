@@ -39,7 +39,6 @@ import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
-import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -90,34 +89,28 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, String chatStatus) {
+	public PageResponse<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, String chatStatus,
+		Pageable pageable) {
 		// 회원 채팅방 정보 가져오기
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(member, ChatStatus.from(chatStatus));
+		Slice<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(
+			member, ChatStatus.from(chatStatus), pageable
+		);
+
 		// chatRoomId 리스트 추출
 		List<Long> chatRoomIds = chatRoomInfos.stream()
 			.map(ChatRoomInfo::chatRoomId)
 			.toList();
-		// 각 채팅방 최근 메시지 정보
-		List<LatestChatMessage> latestChatMessages = chatMessageQueryRepository.findLatestChatByChatRoomIds(
-			chatRoomIds);
-		// <chatRoomId, LatestMessage> -> 순서 보장 x
-		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
-			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
-		// 최신순 정렬
-		return chatRoomInfos.stream()
-			.sorted(
-				Comparator.comparing((ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()).reversed())
-			.map(chatRoomInfo -> {
-				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
-				return new ChatRoomSimpleResponse(
-					chatRoomInfo.chatRoomId(),
-					new MemberInfo(chatRoomInfo.partnerId(), chatRoomInfo.partnerNickname(),
-						chatRoomInfo.partnerJobGroup(), chatRoomInfo.partnerProfileImageNo()),
-					latestMessage.content(),
-					latestMessage.type(),
-					latestMessage.createdAt().toString()
-				);
-			}).toList();
+
+		// 각 채팅방 최근 메시지 가져오기
+		List<LatestChatMessage> latestChatMessages
+			= chatMessageQueryRepository.findLatestChatByChatRoomIds(chatRoomIds);
+
+		// 두 객체 합쳐서 하나의 DTO로 반환
+		List<ChatRoomSimpleResponse> responses = getChatRoomSimpleResponses(latestChatMessages,
+			chatRoomInfos);
+
+		// PageResponse 객체 생성
+		return new PageResponse<>(responses, responses.size(), chatRoomInfos.hasNext());
 	}
 
 	@Transactional(readOnly = true)
@@ -151,6 +144,25 @@ public class ChatRoomService {
 		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
+	}
+
+	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages, Slice<ChatRoomInfo> chatRoomInfos) {
+		// <chatRoomId, LatestMessage> -> 순서 보장 x
+		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
+			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
+
+		// 최신순 정렬 및 변환
+		return chatRoomInfos.stream()
+			.sorted(
+				Comparator.comparing(
+					(ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()
+				).reversed())
+			.map(chatRoomInfo -> {
+				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
+				return ChatRoomMapper.toChatRoomSimpleResponse(
+					chatRoomInfo, latestMessage
+				);
+			}).toList();
 	}
 
 	private ChatRoom getChatRoomById(Long id) {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +26,12 @@ import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
+import com.dnd.gongmuin.chat.repository.ChatMessageQueryRepository;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -49,6 +54,9 @@ class ChatRoomServiceTest {
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
 	@Mock
 	private ChatMessageRepository chatMessageRepository;
+
+	@Mock
+	private ChatMessageQueryRepository chatMessageQueryRepository;
 
 	@Mock
 	private ChatRoomRepository chatRoomRepository;
@@ -165,6 +173,42 @@ class ChatRoomServiceTest {
 		assertThatThrownBy(() -> chatRoomService.createChatRoom(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[회원이 속한 수락 상태 채팅방 목록을 조회할 수 있다.]")
+	@Test
+	void getChatRoomsByMember() {
+		//given
+		Long chatRoomId = 1L;
+		ChatStatus status = ChatStatus.ACCEPTED;
+		Member targetMember = MemberFixture.member(1L);
+		Member partner = MemberFixture.member(2L);
+		ChatRoomInfo chatRoomInfo = new ChatRoomInfo(
+			chatRoomId, partner.getId(), partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
+		);
+		LatestChatMessage latestChatMessage = new LatestChatMessage(
+			chatRoomId, "와", "텍스트", LocalDateTime.now()
+		);
+
+		given(chatRoomRepository.getChatRoomsByMember(targetMember, status, pageRequest))
+			.willReturn(new SliceImpl<>(List.of(chatRoomInfo), pageRequest, false));
+		given(chatMessageQueryRepository.findLatestChatByChatRoomIds(List.of(chatRoomId)))
+			.willReturn(List.of(latestChatMessage));
+
+		//when
+		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(
+			targetMember, status.getLabel(), pageRequest).content();
+
+		//then
+		assertAll(
+			() -> assertThat(response).hasSize(1),
+			() -> assertThat(response.get(0).chatRoomId())
+				.isEqualTo(chatRoomId),
+			() -> assertThat(response.get(0).chatPartner().memberId())
+				.isEqualTo(partner.getId()),
+			() -> assertThat(response.get(0).latestMessage())
+				.isEqualTo(latestChatMessage.content())
+		);
 	}
 
 	@DisplayName("[요청자가 채팅방 아이디로 채팅방을 조회할 수 있다.]")

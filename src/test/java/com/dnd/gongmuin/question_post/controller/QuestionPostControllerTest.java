@@ -108,7 +108,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 				.value(MemberErrorCode.NOT_ENOUGH_CREDIT.getCode()));
 	}
 
-	@DisplayName("[질문글을 조회할 수 있다.]")
+	@DisplayName("[질문글을 아이디로 상세 조회할 수 있다.]")
 	@Test
 	void getQuestionPostById() throws Exception {
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));

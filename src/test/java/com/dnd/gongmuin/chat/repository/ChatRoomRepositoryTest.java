@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.domain.ChatStatus;
@@ -23,6 +24,8 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[ChatRoomRepository 테스트]")
 class ChatRoomRepositoryTest extends DataJpaTestSupport {
+
+	private final PageRequest pageRequest = PageRequest.of(0, 10);
 	@Autowired
 	ChatRoomRepository chatRoomRepository;
 	@Autowired
@@ -44,7 +47,10 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
 		));
 		//when
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING);
+
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING,
+				pageRequest)
+			.getContent();
 		//then
 		Assertions.assertAll(
 			() -> assertThat(chatRoomInfos).hasSize(2),
