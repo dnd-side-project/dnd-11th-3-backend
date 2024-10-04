@@ -101,29 +101,16 @@ public class ChatRoomService {
 			.map(ChatRoomInfo::chatRoomId)
 			.toList();
 
-		// 각 채팅방 최근 메시지 정보
+		// 각 채팅방 최근 메시지 가져오기
 		List<LatestChatMessage> latestChatMessages
 			= chatMessageQueryRepository.findLatestChatByChatRoomIds(chatRoomIds);
 
-		// <chatRoomId, LatestMessage> -> 순서 보장 x
-		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
-			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
-
-		// 최신순 정렬 및 변환
-		List<ChatRoomSimpleResponse> responsePage = chatRoomInfos.stream()
-			.sorted(
-				Comparator.comparing(
-					(ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()
-				).reversed())
-			.map(chatRoomInfo -> {
-				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
-				return ChatRoomMapper.toChatRoomSimpleResponse(
-					chatRoomInfo, latestMessage
-				);
-			}).toList();
+		// 두 객체 합쳐서 하나의 DTO로 반환
+		List<ChatRoomSimpleResponse> responses = getChatRoomSimpleResponses(latestChatMessages,
+			chatRoomInfos);
 
 		// PageResponse 객체 생성
-		return new PageResponse<>(responsePage, responsePage.size(), chatRoomInfos.hasNext());
+		return new PageResponse<>(responses, responses.size(), chatRoomInfos.hasNext());
 	}
 
 	@Transactional(readOnly = true)
@@ -157,6 +144,25 @@ public class ChatRoomService {
 		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
+	}
+
+	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages, Slice<ChatRoomInfo> chatRoomInfos) {
+		// <chatRoomId, LatestMessage> -> 순서 보장 x
+		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
+			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
+
+		// 최신순 정렬 및 변환
+		return chatRoomInfos.stream()
+			.sorted(
+				Comparator.comparing(
+					(ChatRoomInfo info) -> messageMap.get(info.chatRoomId()).createdAt()
+				).reversed())
+			.map(chatRoomInfo -> {
+				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
+				return ChatRoomMapper.toChatRoomSimpleResponse(
+					chatRoomInfo, latestMessage
+				);
+			}).toList();
 	}
 
 	private ChatRoom getChatRoomById(Long id) {
