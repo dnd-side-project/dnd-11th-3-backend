@@ -28,6 +28,7 @@ import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
@@ -111,7 +112,7 @@ class ChatRoomServiceTest {
 			.willReturn(chatRoom);
 
 		//when
-		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, inquirer);
+		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
 
 		//then
 		assertAll(
@@ -141,7 +142,7 @@ class ChatRoomServiceTest {
 			.willReturn(chatRoom);
 
 		//when
-		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, inquirer);
+		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
 
 		//then
 		assertAll(
