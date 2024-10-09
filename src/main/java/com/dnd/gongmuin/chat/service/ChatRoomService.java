@@ -129,7 +129,8 @@ public class ChatRoomService {
 		chatRoom.updateStatusAccepted();
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_ACCEPT, answerer);
 		eventPublisher.publishEvent(
-			new NotificationEvent(NotificationType.CHAT_ACCEPT, chatRoom.getId(), answerer.getId(), chatRoom.getInquirer())
+			new NotificationEvent(NotificationType.CHAT_ACCEPT, chatRoom.getId(), answerer.getId(),
+				chatRoom.getInquirer())
 		);
 
 		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
@@ -142,13 +143,15 @@ public class ChatRoomService {
 		chatRoom.updateStatusRejected();
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REFUND, chatRoom.getInquirer());
 		eventPublisher.publishEvent(
-			new NotificationEvent(NotificationType.CHAT_REJECT, chatRoom.getId(), answerer.getId(), chatRoom.getInquirer())
+			new NotificationEvent(NotificationType.CHAT_REJECT, chatRoom.getId(), answerer.getId(),
+				chatRoom.getInquirer())
 		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}
 
-	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages, Slice<ChatRoomInfo> chatRoomInfos) {
+	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages,
+		Slice<ChatRoomInfo> chatRoomInfos) {
 		// <chatRoomId, LatestMessage> -> 순서 보장 x
 		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
 			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));

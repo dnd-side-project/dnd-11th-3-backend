@@ -29,7 +29,7 @@ public class CreditHistoryService {
 	}
 
 	@Transactional
-	public void saveChatCreditHistory(CreditType creditType, Member member){
+	public void saveChatCreditHistory(CreditType creditType, Member member) {
 		int chatCredit = 2000;
 		creditHistoryRepository.save(
 			CreditHistoryMapper.toCreditHistory(creditType, chatCredit, member)
