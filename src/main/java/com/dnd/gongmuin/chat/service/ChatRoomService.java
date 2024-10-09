@@ -70,7 +70,7 @@ public class ChatRoomService {
 	}
 
 	@Transactional
-	public ChatRoomDetailResponse createChatRoom(CreateChatRoomRequest request, Member inquirer) {
+	public CreateChatRoomResponse createChatRoom(CreateChatRoomRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
 
@@ -82,10 +82,7 @@ public class ChatRoomService {
 			new NotificationEvent(CHAT_REQUEST, chatRoom.getId(), inquirer.getId(), answerer)
 		);
 
-		return ChatRoomMapper.toChatRoomDetailResponse(
-			chatRoom,
-			answerer
-		);
+		return ChatRoomMapper.toCreateChatRoomResponse(chatRoom);
 	}
 
 	@Transactional(readOnly = true)

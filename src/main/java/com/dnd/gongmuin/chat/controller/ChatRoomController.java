@@ -16,6 +16,7 @@ import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.service.ChatRoomService;
 import com.dnd.gongmuin.common.dto.PageResponse;
@@ -46,11 +47,11 @@ public class ChatRoomController {
 
 	@Operation(summary = "채팅방 생성 API", description = "요청자가 답변자와의 채팅방을 생성한다.")
 	@PostMapping("/api/chat-rooms")
-	public ResponseEntity<ChatRoomDetailResponse> createChatRoom(
+	public ResponseEntity<CreateChatRoomResponse> createChatRoom(
 		@Valid @RequestBody CreateChatRoomRequest request,
 		@AuthenticationPrincipal Member member
 	) {
-		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, member);
+		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, member);
 		return ResponseEntity.ok(response);
 	}
 
