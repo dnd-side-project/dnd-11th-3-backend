@@ -86,7 +86,15 @@ class ChatRoomControllerTest extends ApiTestSupport {
 				.cookie(accessToken)
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.credit").value(loginMember.getCredit() - CHAT_REWARD))
+			.andExpect(jsonPath("$.questionPostId").value(questionPost.getId()))
+			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
+			.andExpect(jsonPath("$.receiverInfo.memberId").value(answerer.getId()))
+			.andExpect(jsonPath("$.receiverInfo.nickname").value(answerer.getNickname()))
+			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(answerer.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(answerer.getProfileImageNo()));
 	}
 
 	@DisplayName("[회원의 요청 상태 채팅방 목록을 조회할 수 있다.]")
