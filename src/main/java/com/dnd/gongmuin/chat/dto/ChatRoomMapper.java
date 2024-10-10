@@ -5,6 +5,7 @@ import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.member.domain.Member;
@@ -26,6 +27,26 @@ public class ChatRoomMapper {
 			questionPost,
 			inquirer,
 			answerer
+		);
+	}
+
+	public static CreateChatRoomResponse toCreateChatRoomResponse(
+		ChatRoom chatRoom
+	) {
+		QuestionPost questionPost = chatRoom.getQuestionPost();
+		Member answerer = chatRoom.getAnswerer();
+		return new CreateChatRoomResponse(
+			questionPost.getId(),
+			questionPost.getJobGroup().getLabel(),
+			questionPost.getTitle(),
+			new MemberInfo(
+				answerer.getId(),
+				answerer.getNickname(),
+				answerer.getJobGroup().getLabel(),
+				answerer.getProfileImageNo()
+			),
+			chatRoom.getStatus().getLabel(),
+			chatRoom.getInquirer().getCredit()
 		);
 	}
 

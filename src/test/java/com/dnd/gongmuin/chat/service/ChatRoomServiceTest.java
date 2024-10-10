@@ -28,6 +28,7 @@ import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
@@ -39,6 +40,7 @@ import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
@@ -69,6 +71,9 @@ class ChatRoomServiceTest {
 
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
+
+	@Mock
+	private CreditHistoryService creditHistoryService;
 
 	@InjectMocks
 	private ChatRoomService chatRoomService;
@@ -111,7 +116,7 @@ class ChatRoomServiceTest {
 			.willReturn(chatRoom);
 
 		//when
-		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, inquirer);
+		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
 
 		//then
 		assertAll(
@@ -141,7 +146,7 @@ class ChatRoomServiceTest {
 			.willReturn(chatRoom);
 
 		//when
-		ChatRoomDetailResponse response = chatRoomService.createChatRoom(request, inquirer);
+		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
 
 		//then
 		assertAll(

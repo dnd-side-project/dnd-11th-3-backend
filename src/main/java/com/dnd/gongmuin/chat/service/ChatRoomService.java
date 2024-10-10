@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.chat.service;
 
-import static com.dnd.gongmuin.notification.domain.NotificationType.*;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +22,7 @@ import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
+import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.chat.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
@@ -34,9 +33,12 @@ import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.domain.NotificationType;
 import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
@@ -53,6 +55,7 @@ public class ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
 	private final MemberRepository memberRepository;
 	private final QuestionPostRepository questionPostRepository;
+	private final CreditHistoryService creditHistoryService;
 	private final ApplicationEventPublisher eventPublisher;
 
 	private static void validateIfAnswerer(Member member, ChatRoom chatRoom) {
@@ -70,7 +73,7 @@ public class ChatRoomService {
 	}
 
 	@Transactional
-	public ChatRoomDetailResponse createChatRoom(CreateChatRoomRequest request, Member inquirer) {
+	public CreateChatRoomResponse createChatRoom(CreateChatRoomRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
 
@@ -78,14 +81,13 @@ public class ChatRoomService {
 			ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer)
 		);
 
+		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
+
 		eventPublisher.publishEvent(
-			new NotificationEvent(CHAT_REQUEST, chatRoom.getId(), inquirer.getId(), answerer)
+			new NotificationEvent(NotificationType.CHAT_REQUEST, chatRoom.getId(), inquirer.getId(), answerer)
 		);
 
-		return ChatRoomMapper.toChatRoomDetailResponse(
-			chatRoom,
-			answerer
-		);
+		return ChatRoomMapper.toCreateChatRoomResponse(chatRoom);
 	}
 
 	@Transactional(readOnly = true)
@@ -121,32 +123,35 @@ public class ChatRoomService {
 	}
 
 	@Transactional
-	public AcceptChatResponse acceptChat(Long chatRoomId, Member member) {
+	public AcceptChatResponse acceptChat(Long chatRoomId, Member answerer) {
 		ChatRoom chatRoom = getChatRoomById(chatRoomId);
-		validateIfAnswerer(member, chatRoom);
+		validateIfAnswerer(answerer, chatRoom);
 		chatRoom.updateStatusAccepted();
-
+		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_ACCEPT, answerer);
 		eventPublisher.publishEvent(
-			new NotificationEvent(CHAT_ACCEPT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+			new NotificationEvent(NotificationType.CHAT_ACCEPT, chatRoom.getId(), answerer.getId(),
+				chatRoom.getInquirer())
 		);
 
 		return ChatRoomMapper.toAcceptChatResponse(chatRoom);
 	}
 
 	@Transactional
-	public RejectChatResponse rejectChat(Long chatRoomId, Member member) {
+	public RejectChatResponse rejectChat(Long chatRoomId, Member answerer) {
 		ChatRoom chatRoom = getChatRoomById(chatRoomId);
-		validateIfAnswerer(member, chatRoom);
+		validateIfAnswerer(answerer, chatRoom);
 		chatRoom.updateStatusRejected();
-
+		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REFUND, chatRoom.getInquirer());
 		eventPublisher.publishEvent(
-			new NotificationEvent(CHAT_REJECT, chatRoom.getId(), member.getId(), chatRoom.getInquirer())
+			new NotificationEvent(NotificationType.CHAT_REJECT, chatRoom.getId(), answerer.getId(),
+				chatRoom.getInquirer())
 		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
 	}
 
-	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages, Slice<ChatRoomInfo> chatRoomInfos) {
+	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages,
+		Slice<ChatRoomInfo> chatRoomInfos) {
 		// <chatRoomId, LatestMessage> -> 순서 보장 x
 		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
 			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
