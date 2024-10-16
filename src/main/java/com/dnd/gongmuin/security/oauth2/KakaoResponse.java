@@ -8,10 +8,12 @@ public class KakaoResponse implements Oauth2Response {
 
 	private final Map<String, Object> attribute;
 	private final Long id;
+	private final String oauth2AccessToken;
 
-	public KakaoResponse(Map<String, Object> attribute) {
+	public KakaoResponse(Map<String, Object> attribute, String oauth2AccessToken) {
 		this.attribute = (Map<String, Object>)attribute.get("kakao_account");
 		this.id = (Long)attribute.get("id");
+		this.oauth2AccessToken = oauth2AccessToken;
 	}
 
 	@Override
@@ -41,6 +43,11 @@ public class KakaoResponse implements Oauth2Response {
 			this.getProviderId(),
 			this.getEmail()
 		);
+	}
+
+	@Override
+	public String getOauth2AccessToken() {
+		return this.oauth2AccessToken;
 	}
 
 }

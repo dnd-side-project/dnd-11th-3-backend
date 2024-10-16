@@ -16,7 +16,8 @@ public enum MemberErrorCode implements ErrorCode {
 	UPDATE_PROFILE_FAILED("프로필 수정에 실패했습니다.", "MEMBER_005"),
 	QUESTION_POSTS_BY_MEMBER_FAILED("마이페이지 게시글 목록을 불러오는데 실패했습니다", "MEMBER_006"),
 	NOT_FOUND_JOB_GROUP("직군을 올바르게 입력해주세요.", "MEMBER_007"),
-	NOT_FOUND_JOB_CATEGORY("직렬을 올바르게 입력해주세요.", "MEMBER_008");
+	NOT_FOUND_JOB_CATEGORY("직렬을 올바르게 입력해주세요.", "MEMBER_008"),
+	DELETE_FAILED("회원탈퇴를 실패했습니다.", "MEMBER_009");
 
 	private final String message;
 	private final String code;
