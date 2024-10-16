@@ -56,6 +56,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
 		chatRoomRepository.deleteAll();
+		chatMessageRepository.deleteAll();
 	}
 
 	@DisplayName("[채팅방 아이디로 메시지를 조회할 수 있다.]")
@@ -68,7 +69,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		mockMvc.perform(get("/api/chat-messages/{chatRoomId}", 1L)
 				.cookie(accessToken))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.size").value(chatMessages.size()))
 			.andExpect(jsonPath("$.content[0].senderId").value(chatMessages.get(0).getMemberId()))
 			.andExpect(jsonPath("$.content[0].content").value(chatMessages.get(0).getContent()))
 			.andExpect(jsonPath("$.content[0].type").value(chatMessages.get(0).getType().getLabel()))
