@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatMessageMapper {
 
+	private static final String REQUEST_MESSAGE_POSTFIX = "님이 채팅을 요청하셨습니다.";
+
 	public static ChatMessageResponse toChatMessageResponse(
 		ChatMessage chatMessage
 	) {
@@ -40,7 +42,7 @@ public class ChatMessageMapper {
 		ChatRoom chatRoom
 	) {
 		return ChatMessage.of(
-			"님이 채팅을 요청하셨습니다.",
+			chatRoom.getInquirer().getNickname() + REQUEST_MESSAGE_POSTFIX,
 			chatRoom.getId(),
 			chatRoom.getInquirer().getId(),
 			MessageType.of(MessageType.TEXT.getLabel())
