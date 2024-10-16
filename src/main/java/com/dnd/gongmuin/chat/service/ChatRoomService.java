@@ -80,7 +80,9 @@ public class ChatRoomService {
 		ChatRoom chatRoom = chatRoomRepository.save(
 			ChatRoomMapper.toChatRoom(questionPost, inquirer, answerer)
 		);
-
+		chatMessageRepository.save(
+			ChatMessageMapper.toFirstChatMessage(chatRoom)
+		);
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
 
 		eventPublisher.publishEvent(
