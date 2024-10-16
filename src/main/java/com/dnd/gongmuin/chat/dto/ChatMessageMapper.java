@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.chat.dto;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
+import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.domain.MessageType;
 import com.dnd.gongmuin.chat.dto.request.ChatMessageRequest;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
@@ -32,6 +33,17 @@ public class ChatMessageMapper {
 			chatRoomId,
 			request.senderId(),
 			MessageType.of(request.type())
+		);
+	}
+
+	public static ChatMessage toFirstChatMessage(
+		ChatRoom chatRoom
+	) {
+		return ChatMessage.of(
+			"님이 채팅을 요청하셨습니다.",
+			chatRoom.getId(),
+			chatRoom.getInquirer().getId(),
+			MessageType.of(MessageType.TEXT.getLabel())
 		);
 	}
 }
