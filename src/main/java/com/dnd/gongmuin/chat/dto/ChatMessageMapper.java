@@ -25,13 +25,12 @@ public class ChatMessageMapper {
 
 	public static ChatMessage toChatMessage(
 		ChatMessageRequest request,
-		long chatRoomId,
-		long memberId
+		long chatRoomId
 	) {
 		return ChatMessage.of(
 			request.content(),
 			chatRoomId,
-			memberId,
+			request.senderId(),
 			MessageType.of(request.type())
 		);
 	}

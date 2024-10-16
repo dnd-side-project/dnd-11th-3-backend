@@ -26,7 +26,7 @@ public class ChatMessageService {
 	) {
 		Long senderId = request.senderId();
 		ChatMessage chatMessage = chatMessageRepository.save(
-			ChatMessageMapper.toChatMessage(request, chatRoomId, senderId));
+			ChatMessageMapper.toChatMessage(request, chatRoomId));
 		log.info("chatRoomId = {}, senderId= {}, chatMessageId= {}", chatRoomId, senderId, chatMessage.getId());
 		return ChatMessageMapper.toChatMessageResponse(chatMessage);
 	}
