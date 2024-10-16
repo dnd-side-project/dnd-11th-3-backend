@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.dnd.gongmuin.chat.domain.ChatMessage;
 import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.MessageType;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
@@ -53,6 +54,7 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 class ChatRoomServiceTest {
 
 	private static final int CHAT_REWARD = 2000;
+	private static final String REQUEST_MESSAGE_POSTFIX = "님이 채팅을 요청하셨습니다.";
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
 	@Mock
 	private ChatMessageRepository chatMessageRepository;
@@ -106,7 +108,7 @@ class ChatRoomServiceTest {
 			questionPost.getId(),
 			answerer.getId()
 		);
-		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(1L, questionPost, inquirer, answerer);
 
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
@@ -114,6 +116,10 @@ class ChatRoomServiceTest {
 			.willReturn(Optional.of(answerer));
 		given(chatRoomRepository.save(any(ChatRoom.class)))
 			.willReturn(chatRoom);
+		given(chatMessageRepository.save(any(ChatMessage.class)))
+			.willReturn(
+				ChatMessage.of(inquirer + REQUEST_MESSAGE_POSTFIX, chatRoom.getId(), inquirer.getId(), MessageType.TEXT)
+			);
 
 		//when
 		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
@@ -136,7 +142,7 @@ class ChatRoomServiceTest {
 			questionPost.getId(),
 			answerer.getId()
 		);
-		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
+		ChatRoom chatRoom = ChatRoomFixture.chatRoom(1L, questionPost, inquirer, answerer);
 
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
@@ -144,6 +150,10 @@ class ChatRoomServiceTest {
 			.willReturn(Optional.of(answerer));
 		given(chatRoomRepository.save(any(ChatRoom.class)))
 			.willReturn(chatRoom);
+		given(chatMessageRepository.save(any(ChatMessage.class)))
+			.willReturn(
+				ChatMessage.of(inquirer + REQUEST_MESSAGE_POSTFIX, chatRoom.getId(), inquirer.getId(), MessageType.TEXT)
+			);
 
 		//when
 		CreateChatRoomResponse response = chatRoomService.createChatRoom(request, inquirer);
