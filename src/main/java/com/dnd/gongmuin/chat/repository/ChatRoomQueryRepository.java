@@ -13,9 +13,8 @@ import com.dnd.gongmuin.member.domain.Member;
 public interface ChatRoomQueryRepository {
 
 	Slice<ChatRoomInfo> getChatRoomsByMember(Member member, ChatStatus chatStatus, Pageable pageable);
-
-
 	List<Long> getAutoRejectedInquirerIds();
 	void updateChatRoomStatusRejected();
 	void refundInMemberIds(List<Long> memberIds, int credit);
+	void saveCreditHistoryInMemberIds(List<Long> memberIds, CreditType type, int credit);
 }
