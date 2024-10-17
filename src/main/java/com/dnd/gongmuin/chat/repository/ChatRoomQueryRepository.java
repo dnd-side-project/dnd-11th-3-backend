@@ -9,4 +9,7 @@ import com.dnd.gongmuin.member.domain.Member;
 
 public interface ChatRoomQueryRepository {
 	Slice<ChatRoomInfo> getChatRoomsByMember(Member member, ChatStatus chatStatus, Pageable pageable);
+
+
+	List<Long> getAutoRejectedInquirerIds();
 }
