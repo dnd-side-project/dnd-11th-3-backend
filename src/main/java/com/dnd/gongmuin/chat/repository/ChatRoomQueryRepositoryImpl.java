@@ -88,7 +88,14 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.execute();
 	}
 
-
+	@Transactional
+	public void refundInMemberIds(List<Long> memberIds, int credit) {
+		queryFactory
+			.update(member)
+			.set(member.credit, member.credit.add(credit))
+			.where(member.id.in(memberIds))
+			.execute();
+	}
 
 
 	private <T> boolean hasNext(int pageSize, List<T> items) {

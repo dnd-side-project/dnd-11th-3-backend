@@ -17,4 +17,5 @@ public interface ChatRoomQueryRepository {
 
 	List<Long> getAutoRejectedInquirerIds();
 	void updateChatRoomStatusRejected();
+	void refundInMemberIds(List<Long> memberIds, int credit);
 }
