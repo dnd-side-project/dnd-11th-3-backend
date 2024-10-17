@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.chat.repository;
 
 import static com.dnd.gongmuin.chat.domain.QChatRoom.*;
+import static com.dnd.gongmuin.member.domain.QMember.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,10 +9,14 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.QChatRoomInfo;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -23,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private final MemberRepository memberRepository;
+	private final CreditHistoryRepository creditHistoryRepository;
 
 	public Slice<ChatRoomInfo> getChatRoomsByMember(
 		Member member,
@@ -69,6 +76,21 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			)
 			.fetch();
 	}
+
+	@Transactional
+	public void updateChatRoomStatusRejected() {
+		queryFactory.update(chatRoom)
+			.set(chatRoom.status, ChatStatus.REJECTED)
+			.where(
+				chatRoom.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
+				chatRoom.status.eq(ChatStatus.PENDING)
+			)
+			.execute();
+	}
+
+
+
+
 	private <T> boolean hasNext(int pageSize, List<T> items) {
 		if (items.size() <= pageSize) {
 			return false;
