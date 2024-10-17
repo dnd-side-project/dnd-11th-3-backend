@@ -49,7 +49,7 @@ public class CreditHistory extends TimeBaseEntity {
 		this.member = member;
 	}
 
-	public static CreditHistory of(CreditType type, String detail, int amount, Member member) {
-		return new CreditHistory(type, detail, amount, member);
+	public static CreditHistory of(CreditType type, int amount, Member member) {
+		return new CreditHistory(type, type.getDetail(), amount, member);
 	}
 }
