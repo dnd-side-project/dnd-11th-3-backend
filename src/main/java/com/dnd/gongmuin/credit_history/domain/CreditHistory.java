@@ -57,9 +57,11 @@ public class CreditHistory extends TimeBaseEntity {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		CreditHistory that = (CreditHistory) o;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CreditHistory that = (CreditHistory)o;
 		return amount == that.amount &&
 			Objects.equals(type, that.type) &&
 			Objects.equals(detail, that.detail) &&

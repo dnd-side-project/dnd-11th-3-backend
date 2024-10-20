@@ -88,7 +88,6 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.execute();
 	}
 
-
 	private <T> boolean hasNext(int pageSize, List<T> items) {
 		if (items.size() <= pageSize) {
 			return false;

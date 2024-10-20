@@ -39,7 +39,7 @@ public class CreditHistoryService {
 		);
 	}
 
-	public void saveCreditHistoryInMemberIds(List<Long> memberIds, CreditType type, int credit){
+	public void saveCreditHistoryInMemberIds(List<Long> memberIds, CreditType type, int credit) {
 		List<Member> inquirers = memberRepository.findAllById(memberIds);
 		List<CreditHistory> histories = inquirers.stream()
 			.map(inquirer -> CreditHistory.of(type, credit, inquirer))

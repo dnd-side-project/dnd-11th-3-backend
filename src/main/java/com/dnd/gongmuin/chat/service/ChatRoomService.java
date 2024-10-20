@@ -154,7 +154,7 @@ public class ChatRoomService {
 	}
 
 	@Transactional
-	public void rejectChatAuto(){
+	public void rejectChatAuto() {
 		List<Long> rejectedInquirerIds = chatRoomRepository.getAutoRejectedInquirerIds();
 		chatRoomRepository.updateChatRoomStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
