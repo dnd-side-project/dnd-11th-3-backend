@@ -50,6 +50,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+	private static final int CHAT_REWARD = 2000;
 	private final ChatMessageRepository chatMessageRepository;
 	private final ChatMessageQueryRepository chatMessageQueryRepository;
 	private final ChatRoomRepository chatRoomRepository;
@@ -150,6 +151,14 @@ public class ChatRoomService {
 		);
 
 		return ChatRoomMapper.toRejectChatResponse(chatRoom);
+	}
+
+	@Transactional
+	public void rejectChatAuto(){
+		List<Long> rejectedInquirerIds = chatRoomRepository.getAutoRejectedInquirerIds();
+		chatRoomRepository.updateChatRoomStatusRejected();
+		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
+		creditHistoryService.saveCreditHistoryInMemberIds(rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD);
 	}
 
 	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages,
