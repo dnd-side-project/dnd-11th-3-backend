@@ -88,24 +88,6 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.execute();
 	}
 
-	@Transactional
-	public void refundInMemberIds(List<Long> memberIds, int credit) {
-		queryFactory
-			.update(member)
-			.set(member.credit, member.credit.add(credit))
-			.where(member.id.in(memberIds))
-			.execute();
-	}
-
-	public void saveCreditHistoryInMemberIds(List<Long> memberIds, CreditType type, int credit) {
-		List<Member> inquirers = memberRepository.findAllById(memberIds);
-		List<CreditHistory> histories = inquirers.stream()
-			.map(inquirer -> CreditHistory.of(type, credit, inquirer))
-			.toList();
-		creditHistoryRepository.saveAll(histories);
-	}
-
-
 
 	private <T> boolean hasNext(int pageSize, List<T> items) {
 		if (items.size() <= pageSize) {

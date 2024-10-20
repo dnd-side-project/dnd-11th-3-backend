@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.answer.domain.Answer;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.dto.CreditHistoryMapper;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CreditHistoryService {
 
 	private final CreditHistoryRepository creditHistoryRepository;
+	private final MemberRepository memberRepository;
 
 	@Transactional
 	public void saveChosenCreditHistory(QuestionPost questionPost, Answer answer) {
@@ -34,5 +37,13 @@ public class CreditHistoryService {
 		creditHistoryRepository.save(
 			CreditHistoryMapper.toCreditHistory(creditType, chatCredit, member)
 		);
+	}
+
+	public void saveCreditHistoryInMemberIds(List<Long> memberIds, CreditType type, int credit){
+		List<Member> inquirers = memberRepository.findAllById(memberIds);
+		List<CreditHistory> histories = inquirers.stream()
+			.map(inquirer -> CreditHistory.of(type, credit, inquirer))
+			.toList();
+		creditHistoryRepository.saveAll(histories);
 	}
 }
