@@ -41,6 +41,7 @@ import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -392,6 +393,26 @@ class ChatRoomServiceTest {
 		assertAll(
 			() -> assertThat(response.chatStatus()).isEqualTo(ChatStatus.REJECTED.getLabel()),
 			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
+		);
+	}
+
+	@DisplayName("일주일이 지난 요청에 경우 자동으로 거절하고, 요청자에게 크레딧을 반환한다.")
+	@Test
+	void rejectChatAuto() {
+		// given
+		List<Long> rejectedInquirerIds = List.of(1L, 2L);
+		given(chatRoomRepository.getAutoRejectedInquirerIds())
+			.willReturn(rejectedInquirerIds);
+
+		// when
+		chatRoomService.rejectChatAuto();
+
+		// then
+		verify(chatRoomRepository).getAutoRejectedInquirerIds();
+		verify(chatRoomRepository).updateChatRoomStatusRejected();
+		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
+		verify(creditHistoryService).saveCreditHistoryInMemberIds(
+			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
 		);
 	}
 }
