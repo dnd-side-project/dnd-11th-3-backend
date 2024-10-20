@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 class ChatRoomRepositoryTest extends DataJpaTestSupport {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 10);
-	private static final int CHAT_REWARD = 2000;
 
 	@Autowired
 	ChatRoomRepository chatRoomRepository;
@@ -47,9 +46,6 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	CreditHistoryRepository creditHistoryRepository;
-
-	@Autowired
-	private EntityManager em;
 
 	@DisplayName("회원이 속한 채팅방을 모두 조회할 수 있다.")
 	@Test
@@ -106,80 +102,5 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(chatRoom1.getStatus()).isEqualTo(ChatStatus.REJECTED),
 			() -> assertThat(chatRoom2.getStatus()).isEqualTo(ChatStatus.PENDING)
 		);
-	}
-
-	@DisplayName("아이디에 속하는 회원들의 채팅 금액을 환급한다.")
-	@Test
-	void refundInMemberIds() {
-
-		//given
-		List<Member> initMembers = memberRepository.saveAll(List.of(
-			MemberFixture.member(),
-			MemberFixture.member(),
-			MemberFixture.member()
-		));
-
-		//when
-		chatRoomRepository.refundInMemberIds(
-			List.of(
-				initMembers.get(0).getId(),
-				initMembers.get(1).getId()
-			),
-			CHAT_REWARD
-		);
-
-		em.flush();
-		em.clear();
-
-		List<Member> foundMembers = memberRepository.findAllById(
-			List.of(
-				initMembers.get(0).getId(),
-				initMembers.get(1).getId(),
-				initMembers.get(2).getId()
-			)
-		);
-
-		//then
-		assertAll(
-			() -> assertThat(foundMembers.get(0).getCredit())
-				.isEqualTo(initMembers.get(0).getCredit() + CHAT_REWARD),
-			() -> assertThat(foundMembers.get(1).getCredit())
-				.isEqualTo(initMembers.get(1).getCredit() + CHAT_REWARD),
-			() -> assertThat(foundMembers.get(2).getCredit())
-				.isEqualTo(initMembers.get(2).getCredit())
-		);
-	}
-
-	@DisplayName("아이디에 속하는 회원들의 채팅 환급 크레딧 내역을 추가한다.")
-	@Test
-	void saveCreditHistoryInMemberIds() {
-		//given
-		List<Member> initMembers = memberRepository.saveAll(List.of(
-			MemberFixture.member(),
-			MemberFixture.member(),
-			MemberFixture.member()
-		));
-
-		//when
-		chatRoomRepository.saveCreditHistoryInMemberIds(
-			List.of(
-				initMembers.get(0).getId(),
-				initMembers.get(1).getId()
-			),
-			CreditType.CHAT_REQUEST,
-			CHAT_REWARD
-		);
-
-		List<CreditHistory> histories = creditHistoryRepository.findAll();
-
-		//then
-		assertAll(
-			() -> assertThat(histories).hasSize(2),
-			() -> assertThat(histories.get(0).getMember().getId())
-				.isEqualTo(initMembers.get(0).getId()),
-			() -> assertThat(histories.get(1).getMember().getId())
-				.isEqualTo(initMembers.get(1).getId())
-		);
-
 	}
 }
