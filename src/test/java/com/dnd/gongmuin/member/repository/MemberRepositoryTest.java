@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.member.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -38,9 +39,12 @@ import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
+import jakarta.persistence.EntityManager;
+
 class MemberRepositoryTest extends DataJpaTestSupport {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 10);
+	private static final int CHAT_REWARD = 2000;
 
 	@Autowired
 	MemberRepository memberRepository;
@@ -558,6 +562,48 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 				.containsExactly(
 					ch4.getDetail()
 				)
+		);
+	}
+
+	@DisplayName("아이디에 속하는 회원들의 채팅 금액을 환급한다.")
+	@Test
+	void refundInMemberIds() {
+
+		//given
+		List<Member> initMembers = memberRepository.saveAll(List.of(
+			MemberFixture.member(),
+			MemberFixture.member(),
+			MemberFixture.member()
+		));
+
+		//when
+		memberRepository.refundInMemberIds(
+			List.of(
+				initMembers.get(0).getId(),
+				initMembers.get(1).getId()
+			),
+			CHAT_REWARD
+		);
+
+		em.flush();
+		em.clear();
+
+		List<Member> foundMembers = memberRepository.findAllById(
+			List.of(
+				initMembers.get(0).getId(),
+				initMembers.get(1).getId(),
+				initMembers.get(2).getId()
+			)
+		);
+
+		//then
+		assertAll(
+			() -> assertThat(foundMembers.get(0).getCredit())
+				.isEqualTo(initMembers.get(0).getCredit() + CHAT_REWARD),
+			() -> assertThat(foundMembers.get(1).getCredit())
+				.isEqualTo(initMembers.get(1).getCredit() + CHAT_REWARD),
+			() -> assertThat(foundMembers.get(2).getCredit())
+				.isEqualTo(initMembers.get(2).getCredit())
 		);
 	}
 }

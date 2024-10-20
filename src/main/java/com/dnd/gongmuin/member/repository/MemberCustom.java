@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.member.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -17,4 +19,6 @@ public interface MemberCustom {
 	Slice<BookmarksResponse> getBookmarksByMember(Member member, Pageable pageable);
 
 	Slice<CreditHistoryResponse> getCreditHistoryByMember(String type, Member member, Pageable pageable);
+
+	void refundInMemberIds(List<Long> memberIds, int credit);
 }

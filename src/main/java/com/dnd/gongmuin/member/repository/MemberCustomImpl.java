@@ -1,12 +1,14 @@
 package com.dnd.gongmuin.member.repository;
 
 import static com.dnd.gongmuin.credit_history.domain.QCreditHistory.*;
+import static com.dnd.gongmuin.member.domain.QMember.*;
 
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.answer.domain.QAnswer;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
@@ -164,6 +166,15 @@ public class MemberCustomImpl implements MemberCustom {
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
 
 		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	@Transactional
+	public void refundInMemberIds(List<Long> memberIds, int credit) {
+		queryFactory
+			.update(member)
+			.set(member.credit, member.credit.add(credit))
+			.where(member.id.in(memberIds))
+			.execute();
 	}
 
 	private BooleanExpression creditTypeEq(String type) {

@@ -13,7 +13,6 @@ public class CreditHistoryFixture {
 	public static CreditHistory creditHistory(CreditType creditType, int reward, Member member) {
 		return CreditHistory.of(
 			creditType,
-			creditType.getDetail(),
 			reward,
 			member
 		);
