@@ -2,6 +2,8 @@ package com.dnd.gongmuin.credit_history.domain;
 
 import static jakarta.persistence.FetchType.*;
 
+import java.util.Objects;
+
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.member.domain.Member;
 
@@ -51,5 +53,21 @@ public class CreditHistory extends TimeBaseEntity {
 
 	public static CreditHistory of(CreditType type, int amount, Member member) {
 		return new CreditHistory(type, type.getDetail(), amount, member);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CreditHistory that = (CreditHistory) o;
+		return amount == that.amount &&
+			Objects.equals(type, that.type) &&
+			Objects.equals(detail, that.detail) &&
+			Objects.equals(member, that.member);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(type, detail, amount, member);
 	}
 }
