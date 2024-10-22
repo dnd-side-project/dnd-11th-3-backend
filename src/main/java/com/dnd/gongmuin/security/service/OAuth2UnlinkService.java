@@ -1,11 +1,14 @@
 package com.dnd.gongmuin.security.service;
 
+import static com.dnd.gongmuin.member.domain.Provider.*;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -31,9 +34,9 @@ public class OAuth2UnlinkService {
 	private String NAVER_CLIENT_SECRET;
 
 	public void unlink(String provider) {
-		if (provider.startsWith("kakao")) {
+		if (provider.startsWith(KAKAO.getLabel())) {
 			kakaoUnlink(provider);
-		} else if (provider.startsWith("naver")) {
+		} else if (provider.startsWith(NAVER.getLabel())) {
 			naverUnlink(provider);
 		} else {
 			throw new ValidationException(OAuth2ErrorCode.INVALID_REQUEST);
@@ -46,19 +49,25 @@ public class OAuth2UnlinkService {
 		if (accessToken == null) {
 			throw new ValidationException(OAuth2ErrorCode.EXPIRED_AUTH_TOKEN);
 		}
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(accessToken);
 		HttpEntity<Object> entity = new HttpEntity<>("", headers);
-		ResponseEntity<String> responseEntity = restTemplate.exchange(
-			KAKAO_URL,
-			HttpMethod.POST,
-			entity,
-			String.class
-		);
+		try {
+			ResponseEntity<String> responseEntity = restTemplate.exchange(
+				KAKAO_URL,
+				HttpMethod.POST,
+				entity,
+				String.class
+			);
 
-		if (responseEntity.getBody().isEmpty()) {
+			if (responseEntity.getBody().isEmpty()) {
+				throw new ValidationException(OAuth2ErrorCode.INTERNAL_SERVER_ERROR);
+			}
+		} catch (HttpClientErrorException.Unauthorized e) {
 			throw new ValidationException(OAuth2ErrorCode.INTERNAL_SERVER_ERROR);
 		}
+
 	}
 
 	public void naverUnlink(String provider) {
@@ -69,19 +78,23 @@ public class OAuth2UnlinkService {
 			throw new ValidationException(OAuth2ErrorCode.EXPIRED_AUTH_TOKEN);
 		}
 
-		String url = NAVER_URL +
-			"?service_provider=NAVER" +
-			"&grant_type=delete" +
-			"&client_id=" +
-			NAVER_CLIENT_ID +
-			"&client_secret=" +
-			NAVER_CLIENT_SECRET +
-			"&access_token=" +
-			accessToken;
+		try {
+			String url = NAVER_URL +
+				"?service_provider=NAVER" +
+				"&grant_type=delete" +
+				"&client_id=" +
+				NAVER_CLIENT_ID +
+				"&client_secret=" +
+				NAVER_CLIENT_SECRET +
+				"&access_token=" +
+				accessToken;
 
-		NaverUnlinkResponse response = restTemplate.getForObject(url, NaverUnlinkResponse.class);
+			NaverUnlinkResponse response = restTemplate.getForObject(url, NaverUnlinkResponse.class);
 
-		if (response != null && !"success".equalsIgnoreCase(response.getResult())) {
+			if (response != null && !"success".equalsIgnoreCase(response.getResult())) {
+				throw new ValidationException(OAuth2ErrorCode.INTERNAL_SERVER_ERROR);
+			}
+		} catch (HttpClientErrorException.Unauthorized e) {
 			throw new ValidationException(OAuth2ErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
