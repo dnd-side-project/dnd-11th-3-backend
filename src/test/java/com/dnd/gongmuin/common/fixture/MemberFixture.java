@@ -20,7 +20,7 @@ public class MemberFixture {
 			"회원123",
 			JobGroup.ENG,
 			JobCategory.ME,
-			"KAKAO123/gongmuin@daum.net",
+			"kakao123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
 			10000,
 			"ROLE_USER"
@@ -33,7 +33,7 @@ public class MemberFixture {
 			"소셜회원",
 			JobGroup.ENG,
 			JobCategory.ME,
-			"KAKAO123/member2@daum.net",
+			"kakao123/member2@daum.net",
 			"member2@korea.kr",
 			20000,
 			"ROLE_USER"
@@ -43,7 +43,7 @@ public class MemberFixture {
 	public static Member member3() {
 		return Member.of(
 			"소셜회원",
-			"KAKAO123/member2@daum.net",
+			"kakao123/member2@daum.net",
 			20000,
 			"ROLE_GUEST"
 		);
@@ -55,7 +55,7 @@ public class MemberFixture {
 			"소셜회원",
 			JobGroup.AD,
 			JobCategory.ME,
-			"KAKAO1234/member2@daum.net",
+			"kakao1234/member2@daum.net",
 			"member@korea.kr",
 			20000,
 			"ROLE_USER"
@@ -68,7 +68,7 @@ public class MemberFixture {
 			"회원123",
 			JobGroup.ENG,
 			JobCategory.ME,
-			"KAKAO123/gongmuin@daum.net",
+			"kakao123/gongmuin@daum.net",
 			"gongmuin@korea.kr",
 			10000,
 			"ROLE_USER"
