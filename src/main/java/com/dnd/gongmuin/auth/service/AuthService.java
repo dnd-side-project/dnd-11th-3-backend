@@ -2,12 +2,15 @@ package com.dnd.gongmuin.auth.service;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.domain.Answer;
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
@@ -21,11 +24,16 @@ import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.repository.NotificationRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
@@ -43,11 +51,17 @@ public class AuthService {
 
 	private static final String LOGOUT = "logout";
 	private static final String DELETE = "delete";
+	private static final String ANONYMOUS = "ROLE_ANONYMOUS";
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
 	private final RedisUtil redisUtil;
 	private final OAuth2UnlinkService oAuth2UnlinkService;
+	private final CreditHistoryRepository creditHistoryRepository;
+	private final QuestionPostRepository questionPostRepository;
+	private final AnswerRepository answerRepository;
+	private final InteractionRepository interactionRepository;
+	private final NotificationRepository notificationRepository;
 
 	@Transactional
 	public TempSignResponse tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
@@ -211,7 +225,9 @@ public class AuthService {
 			throw new NotFoundException(MemberErrorCode.DELETE_FAILED);
 		}
 
-		// TODO: SOFT DELETE
+		deleteAssociation(member);
+		replaceWithAnonymous(member);
+		memberRepository.delete(member);
 
 		// oauth2 서비스 연결 끊기
 		oAuth2UnlinkService.unlink(member.getSocialEmail());
@@ -222,4 +238,23 @@ public class AuthService {
 		}
 		return new DeleteMemberResponse(member.getId());
 	}
+
+	private void deleteAssociation(Member member) {
+		creditHistoryRepository.deleteByMember(member);
+		notificationRepository.deleteByMember(member);
+		interactionRepository.deleteByMemberId(member.getId());
+	}
+
+	private void replaceWithAnonymous(Member member) {
+		Member anonymous = memberRepository.findByRole(ANONYMOUS)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+
+		List<QuestionPost> posts = questionPostRepository.findAllByMember(member);
+		posts.forEach(post -> post.updateMember(anonymous));
+
+		List<Answer> answers = answerRepository.findAllByMember(member);
+		answers.forEach(answer -> answer.updateMember(anonymous));
+
+	}
+
 }
