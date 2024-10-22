@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -19,20 +20,30 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import com.dnd.gongmuin.answer.domain.Answer;
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
+import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
+import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.repository.NotificationRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
+import com.dnd.gongmuin.security.service.OAuth2UnlinkService;
 
 import jakarta.servlet.http.Cookie;
 
@@ -41,6 +52,18 @@ class AuthServiceTest {
 
 	@Mock
 	private MemberRepository memberRepository;
+	@Mock
+	private OAuth2UnlinkService oAuth2UnlinkService;
+	@Mock
+	private CreditHistoryRepository creditHistoryRepository;
+	@Mock
+	private QuestionPostRepository questionPostRepository;
+	@Mock
+	private AnswerRepository answerRepository;
+	@Mock
+	private InteractionRepository interactionRepository;
+	@Mock
+	private NotificationRepository notificationRepository;
 
 	@Mock
 	private TokenProvider tokenProvider;
@@ -168,5 +191,66 @@ class AuthServiceTest {
 				.extracting(Cookie::getName, Cookie::getValue)
 				.containsExactly(tuple("Authorization", "reissueToken"))
 		);
+	}
+
+	@DisplayName("회원 삭제 시 크레딧 내역, 알림, 상호작용은 모두 삭제된다.")
+	@Test
+	void deleteMemberWithAssociatedDatas() {
+		// given
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.setCookies(new Cookie("Authorization", "testtesttesttest"));
+
+		Member principal = MemberFixture.member(1L);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
+
+		given(cookieUtil.getCookieValue(mockRequest)).willReturn("testtesttesttest");
+		given(tokenProvider.validateToken(anyString(), any(Date.class))).willReturn(true);
+		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
+		given(redisUtil.getValues(anyString())).willReturn("delete");
+		given(memberRepository.findByRole("ROLE_ANONYMOUS")).willReturn(Optional.of(principal));
+
+		doNothing().when(creditHistoryRepository).deleteByMember(principal);
+		doNothing().when(notificationRepository).deleteByMember(principal);
+		doNothing().when(interactionRepository).deleteByMemberId(principal.getId());
+		doNothing().when(memberRepository).delete(principal);
+
+		// when
+		authService.deleteMember(mockRequest);
+
+		// then
+		verify(creditHistoryRepository).deleteByMember(principal);
+		verify(notificationRepository).deleteByMember(principal);
+		verify(interactionRepository).deleteByMemberId(principal.getId());
+		verify(memberRepository).delete(principal);
+	}
+
+	@DisplayName("회원 삭제 시 연관된 답변과 게시글은 모두 익명 회원 정보로 교체된다.")
+	@Test
+	void deleteMember() {
+		// given
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.setCookies(new Cookie("Authorization", "testtesttesttest"));
+
+		Member principal = MemberFixture.member(1L);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
+
+		List<QuestionPost> mockQuestionPosts = List.of(QuestionPostFixture.questionPost(1L, principal));
+		List<Answer> mockAnswers = List.of(AnswerFixture.answer(1L, principal));
+
+		given(cookieUtil.getCookieValue(mockRequest)).willReturn("testtesttesttest");
+		given(tokenProvider.validateToken(anyString(), any(Date.class))).willReturn(true);
+		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
+		given(redisUtil.getValues(anyString())).willReturn("delete");
+		given(memberRepository.findByRole("ROLE_ANONYMOUS")).willReturn(Optional.of(principal));
+
+		given(questionPostRepository.findAllByMember(principal)).willReturn(mockQuestionPosts);
+		given(answerRepository.findAllByMember(principal)).willReturn(mockAnswers);
+
+		// when
+		authService.deleteMember(mockRequest);
+
+		// then
+		verify(questionPostRepository).findAllByMember(principal);
+		verify(answerRepository).findAllByMember(principal);
 	}
 }
