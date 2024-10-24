@@ -8,10 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.auth.dto.response.DeleteMemberResponse;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
@@ -20,16 +22,21 @@ import com.dnd.gongmuin.auth.dto.response.ValidateNickNameResponse;
 import com.dnd.gongmuin.auth.exception.AuthErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.repository.NotificationRepository;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
+import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
+import com.dnd.gongmuin.security.service.OAuth2UnlinkService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,10 +47,18 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
 	private static final String LOGOUT = "logout";
+	private static final String DELETE = "delete";
+	private static final String ANONYMOUS = "ROLE_ANONYMOUS";
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
 	private final RedisUtil redisUtil;
+	private final OAuth2UnlinkService oAuth2UnlinkService;
+	private final CreditHistoryRepository creditHistoryRepository;
+	private final QuestionPostRepository questionPostRepository;
+	private final AnswerRepository answerRepository;
+	private final InteractionRepository interactionRepository;
+	private final NotificationRepository notificationRepository;
 
 	@Transactional
 	public TempSignResponse tempSignUp(TempSignUpRequest tempSignUpRequest, HttpServletResponse response) {
@@ -179,6 +194,60 @@ public class AuthService {
 			JobGroup.from(request.jobGroup()),
 			JobCategory.from(request.jobCategory())
 		);
+	}
+
+	@Transactional
+	public DeleteMemberResponse deleteMember(HttpServletRequest request) {
+		String accessToken = cookieUtil.getCookieValue(request);
+
+		if (!tokenProvider.validateToken(accessToken, new Date())) {
+			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+		}
+
+		Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		Member member = (Member)authentication.getPrincipal();
+
+		// RefreshToken 삭제
+		if (!Objects.isNull(redisUtil.getValues("RT:" + member.getSocialEmail()))) {
+			redisUtil.deleteValues("RT:" + member.getSocialEmail());
+		}
+
+		// 현재 발급 되어 있는 AccessToken 블랙리스트 등록
+		Long expiration = tokenProvider.getExpiration(accessToken, new Date());
+		redisUtil.setValues(accessToken, DELETE, Duration.ofMillis(expiration));
+
+		// AccessToken 블랙리스트 등록 여부 검증
+		String values = redisUtil.getValues(accessToken);
+		if (!Objects.equals(values, DELETE)) {
+			throw new NotFoundException(MemberErrorCode.DELETE_FAILED);
+		}
+
+		deleteAssociation(member);
+		replaceWithAnonymous(member);
+		memberRepository.delete(member);
+
+		// oauth2 서비스 연결 끊기
+		oAuth2UnlinkService.unlink(member.getSocialEmail());
+
+		// oauth2 access 토큰 삭제
+		if (redisUtil.getValues("AT(oauth):" + member.getSocialEmail()) != null) {
+			redisUtil.deleteValues("AT(oauth):" + member.getSocialEmail());
+		}
+		return new DeleteMemberResponse(member.getId());
+	}
+
+	private void deleteAssociation(Member member) {
+		creditHistoryRepository.deleteByMember(member);
+		notificationRepository.deleteByMember(member);
+		interactionRepository.deleteByMemberId(member.getId());
+	}
+
+	private void replaceWithAnonymous(Member member) {
+		Member anonymous = memberRepository.findByRole(ANONYMOUS)
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+
+		questionPostRepository.updateQuestionPosts(member.getId(), anonymous);
+		answerRepository.updateAnswers(member.getId(), anonymous);
 	}
 
 }

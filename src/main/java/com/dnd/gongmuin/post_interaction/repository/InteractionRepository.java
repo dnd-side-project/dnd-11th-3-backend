@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.post_interaction.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,8 @@ public interface InteractionRepository extends JpaRepository<Interaction, Long> 
 	Optional<Interaction> findByQuestionPostIdAndMemberIdAndType(
 		Long questionPostId, Long memberId, InteractionType type
 	);
+
+	void deleteByMemberId(Long memberId);
+
+	List<Interaction> findAllByMemberId(Long memberId);
 }

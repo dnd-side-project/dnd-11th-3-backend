@@ -61,4 +61,7 @@ public class Answer extends TimeBaseEntity {
 		this.isChosen = true;
 	}
 
+	public void updateMember(Member anonymous) {
+		this.member = anonymous;
+	}
 }

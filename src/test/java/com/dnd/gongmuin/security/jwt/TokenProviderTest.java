@@ -111,7 +111,7 @@ class TokenProviderTest {
 
 		// then
 		assertThat(authentication.isAuthenticated()).isTrue();
-		assertThat(principal.getSocialEmail()).isEqualTo("KAKAO123/gongmuin@daum.net");
+		assertThat(principal.getSocialEmail()).isEqualTo(member.getSocialEmail());
 	}
 
 	@DisplayName("토큰의 만료일이 현재 시간보다 전이면 만료된 토큰이다.")

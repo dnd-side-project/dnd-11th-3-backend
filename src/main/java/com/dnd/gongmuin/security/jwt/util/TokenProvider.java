@@ -1,10 +1,10 @@
 package com.dnd.gongmuin.security.jwt.util;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
@@ -40,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class TokenProvider {
 
 	private static final String ROLE_KEY = "ROLE";
+	private static final String[] BLACKLIST = new String[] {"false", "delete"};
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 90L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final MemberRepository memberRepository;
@@ -136,9 +137,9 @@ public class TokenProvider {
 		return (expiration.getTime() - date.getTime());
 	}
 
-	public boolean verifyLogout(String accessToken) {
+	public boolean verifyBlackList(String accessToken) {
 		String value = redisUtil.getValues(accessToken);
-		return Objects.equals("false", value);
+		return Arrays.asList(BLACKLIST).contains(value);
 	}
 
 }

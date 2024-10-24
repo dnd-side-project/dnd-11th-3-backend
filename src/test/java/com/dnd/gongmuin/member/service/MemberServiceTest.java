@@ -71,8 +71,8 @@ class MemberServiceTest {
 		// then
 		assertThat(findMember).extracting("socialName", "socialEmail")
 			.containsExactlyInAnyOrder(
-				"회원123",
-				"KAKAO123/gongmuin@daum.net"
+				member.getSocialName(),
+				member.getSocialEmail()
 			);
 	}
 

@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.member.service;
 
+import java.time.Duration;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import com.dnd.gongmuin.member.dto.response.MemberProfileResponse;
 import com.dnd.gongmuin.member.dto.response.QuestionPostsResponse;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.oauth2.Oauth2Response;
 
 import lombok.RequiredArgsConstructor;
@@ -31,17 +34,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberService {
 
+	private static final long ACCESS_TOKEN_EXPIRATION = 3600 * 1000;
 	private final MemberRepository memberRepository;
+	private final RedisUtil redisUtil;
 
 	public Member saveOrUpdate(Oauth2Response oauth2Response) {
 		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
 			.map(m -> {
 				m.updateSocialEmail(oauth2Response.createSocialEmail());
+				deleteOauthAccessTokenIfExists(m);
+				saveOauth2AccessToken(oauth2Response, m);
 				return m;
 			})
 			.orElseGet(() -> createMemberFromOauth2Response(oauth2Response));
 
 		return memberRepository.save(member);
+	}
+
+	private void saveOauth2AccessToken(Oauth2Response oauth2Response, Member m) {
+		redisUtil.setValues(
+			"AT(oauth):" + m.getSocialEmail(),
+			oauth2Response.getOauth2AccessToken(),
+			Duration.ofMillis(ACCESS_TOKEN_EXPIRATION)
+		);
+	}
+
+	private void deleteOauthAccessTokenIfExists(Member m) {
+		if (redisUtil.getValues("AT(oauth2):" + m.getSocialEmail()) != null) {
+			redisUtil.deleteValues("AT(oauth2):" + m.getSocialEmail());
+		}
 	}
 
 	public Provider parseProviderFromSocialEmail(Member member) {
@@ -50,7 +71,9 @@ public class MemberService {
 	}
 
 	private Member createMemberFromOauth2Response(Oauth2Response oauth2Response) {
-		return Member.of(oauth2Response.getName(), oauth2Response.createSocialEmail(), 10000, "ROLE_GUEST");
+		Member member = Member.of(oauth2Response.getName(), oauth2Response.createSocialEmail(), 10000, "ROLE_GUEST");
+		saveOauth2AccessToken(oauth2Response, member);
+		return member;
 	}
 
 	public Member getMemberBySocialEmail(String socialEmail) {
