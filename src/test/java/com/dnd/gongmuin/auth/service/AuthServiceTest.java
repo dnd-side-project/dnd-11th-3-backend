@@ -243,14 +243,11 @@ class AuthServiceTest {
 		given(redisUtil.getValues(anyString())).willReturn("delete");
 		given(memberRepository.findByRole("ROLE_ANONYMOUS")).willReturn(Optional.of(principal));
 
-		given(questionPostRepository.findAllByMember(principal)).willReturn(mockQuestionPosts);
-		given(answerRepository.findAllByMember(principal)).willReturn(mockAnswers);
-
 		// when
 		authService.deleteMember(mockRequest);
 
 		// then
-		verify(questionPostRepository).findAllByMember(principal);
-		verify(answerRepository).findAllByMember(principal);
+		verify(questionPostRepository).updateQuestionPosts(any(), any());
+		verify(answerRepository).updateAnswers(any(), any());
 	}
 }
