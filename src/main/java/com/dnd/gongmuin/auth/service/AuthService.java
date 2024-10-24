@@ -2,14 +2,12 @@ package com.dnd.gongmuin.auth.service;
 
 import java.time.Duration;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
@@ -32,7 +30,6 @@ import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
 import com.dnd.gongmuin.security.jwt.util.CookieUtil;
@@ -249,12 +246,8 @@ public class AuthService {
 		Member anonymous = memberRepository.findByRole(ANONYMOUS)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-		List<QuestionPost> posts = questionPostRepository.findAllByMember(member);
-		posts.forEach(post -> post.updateMember(anonymous));
-
-		List<Answer> answers = answerRepository.findAllByMember(member);
-		answers.forEach(answer -> answer.updateMember(anonymous));
-
+		questionPostRepository.updateQuestionPosts(member.getId(), anonymous);
+		answerRepository.updateAnswers(member.getId(), anonymous);
 	}
 
 }
