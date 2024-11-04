@@ -17,6 +17,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     List<Answer> findAllByMember(Member member);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("UPDATE Answer a SET a.member = :anonymous WHERE a.member.id = :memberId")
+    @Query("UPDATE Answer a SET a.member = :member WHERE a.member.id = :memberId")
     public void updateAnswersMember(Long memberId, Member member);
 }

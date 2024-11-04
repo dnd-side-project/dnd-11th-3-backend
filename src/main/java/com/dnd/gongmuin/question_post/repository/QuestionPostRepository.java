@@ -15,6 +15,6 @@ public interface QuestionPostRepository extends JpaRepository<QuestionPost, Long
     List<QuestionPost> findAllByMember(Member member);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("UPDATE QuestionPost q SET q.member = :anonymous WHERE q.member.id = :memberId")
+    @Query("UPDATE QuestionPost q SET q.member = :member WHERE q.member.id = :memberId")
     public void updateQuestionPostsMember(Long memberId, Member member);
 }
