@@ -122,4 +122,8 @@ public class QuestionPost extends TimeBaseEntity {
 		this.reward = reward;
 		this.jobGroup = jobGroup;
 	}
+
+	public void updateMember(Member anonymous) {
+		this.member = anonymous;
+	}
 }

@@ -11,6 +11,7 @@ import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignInRequest;
 import com.dnd.gongmuin.auth.dto.request.TempSignUpRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.auth.dto.response.DeleteMemberResponse;
 import com.dnd.gongmuin.auth.dto.response.LogoutResponse;
 import com.dnd.gongmuin.auth.dto.response.ReissueResponse;
 import com.dnd.gongmuin.auth.dto.response.SignUpResponse;
@@ -92,6 +93,17 @@ public class AuthController {
 		ReissueResponse reissueResponse = authService.reissue(request, response);
 
 		return ResponseEntity.ok(reissueResponse);
+	}
+
+	@Operation(summary = "회원탈퇴 API", description = "회원 탈퇴한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@PostMapping("/delete")
+	public ResponseEntity<DeleteMemberResponse> deleteMember(
+		HttpServletRequest request
+	) {
+		DeleteMemberResponse deleteMemberResponse = authService.deleteMember(request);
+
+		return ResponseEntity.ok(deleteMemberResponse);
 	}
 }
 

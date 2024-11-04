@@ -34,13 +34,15 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 
+		String oauth2AccessToken = userRequest.getAccessToken().getTokenValue();
+
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 		Oauth2Response oauth2Response = null;
 
 		if (Objects.equals(registrationId, KAKAO.getLabel())) {
-			oauth2Response = new KakaoResponse(oAuth2User.getAttributes());
+			oauth2Response = new KakaoResponse(oAuth2User.getAttributes(), oauth2AccessToken);
 		} else if (Objects.equals(registrationId, NAVER.getLabel())) {
-			oauth2Response = new NaverResponse(oAuth2User.getAttributes());
+			oauth2Response = new NaverResponse(oAuth2User.getAttributes(), oauth2AccessToken);
 		} else {
 			throw new OAuth2AuthenticationException(
 				new OAuth2Error(UNSUPPORTED_SOCIAL_LOGIN.getCode()),
@@ -57,5 +59,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 		);
 		return new CustomOauth2User(authInfo);
 	}
+
 }
 

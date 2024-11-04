@@ -7,9 +7,11 @@ import com.dnd.gongmuin.member.domain.Provider;
 public class NaverResponse implements Oauth2Response {
 
 	private final Map<String, Object> attribute;
+	private final String oauth2AccessToken;
 
-	public NaverResponse(Map<String, Object> attribute) {
+	public NaverResponse(Map<String, Object> attribute, String oauth2AccessToken) {
 		this.attribute = (Map<String, Object>)attribute.get("response");
+		this.oauth2AccessToken = oauth2AccessToken;
 	}
 
 	@Override
@@ -39,5 +41,10 @@ public class NaverResponse implements Oauth2Response {
 			this.getProviderId(),
 			this.getEmail()
 		);
+	}
+
+	@Override
+	public String getOauth2AccessToken() {
+		return this.oauth2AccessToken;
 	}
 }

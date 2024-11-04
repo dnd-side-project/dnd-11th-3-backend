@@ -1,26 +1,46 @@
 package com.dnd.gongmuin.auth.controller;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.gongmuin.answer.domain.Answer;
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.auth.dto.request.AdditionalInfoRequest;
 import com.dnd.gongmuin.auth.dto.request.ValidateNickNameRequest;
+import com.dnd.gongmuin.common.fixture.AnswerFixture;
+import com.dnd.gongmuin.common.fixture.CreditHistoryFixture;
+import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
+import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.credit_history.domain.CreditHistory;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
+import com.dnd.gongmuin.notification.repository.NotificationRepository;
+import com.dnd.gongmuin.post_interaction.domain.Interaction;
+import com.dnd.gongmuin.post_interaction.domain.InteractionType;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
+import com.dnd.gongmuin.security.service.OAuth2UnlinkService;
 
 import jakarta.servlet.http.Cookie;
 
@@ -29,10 +49,20 @@ class AuthControllerTest extends ApiTestSupport {
 
 	@Autowired
 	private MemberRepository memberRepository;
-
+	@Autowired
+	private CreditHistoryRepository creditHistoryRepository;
+	@Autowired
+	private QuestionPostRepository questionPostRepository;
+	@Autowired
+	private AnswerRepository answerRepository;
+	@Autowired
+	private InteractionRepository interactionRepository;
+	@Autowired
+	private NotificationRepository notificationRepository;
+	@MockBean
+	private OAuth2UnlinkService oAuth2UnlinkService;
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
-
 	@Autowired
 	private TokenProvider tokenProvider;
 
@@ -112,5 +142,45 @@ class AuthControllerTest extends ApiTestSupport {
 			)
 			.andExpect(status().isOk())
 			.andExpect(cookie().exists("Authorization"));
+	}
+
+	@DisplayName("회원 탈퇴 시 정보를 삭제한다.")
+	@Test
+	void deleteMember() throws Exception {
+		// given
+		Member anonymous = MemberFixture.member4();
+		ReflectionTestUtils.setField(anonymous, "role", "ROLE_ANONYMOUS");
+		ReflectionTestUtils.setField(loginMember, "role", "ROLE_ANONYMOUS");
+		memberRepository.save(anonymous);
+
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(1L, loginMember);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(2L, loginMember);
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2));
+
+		Answer answer1 = AnswerFixture.answer(questionPost1.getId(), loginMember);
+		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
+		answerRepository.saveAll(List.of(answer1, answer2));
+
+		CreditHistory creditHistory = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, 1000, loginMember);
+		creditHistoryRepository.save(creditHistory);
+
+		Interaction interaction1 = InteractionFixture.interaction(InteractionType.RECOMMEND, loginMember.getId(),
+			questionPost1.getId());
+		Interaction interaction2 = InteractionFixture.interaction(InteractionType.SAVED, loginMember.getId(),
+			questionPost2.getId());
+		interactionRepository.saveAll(List.of(interaction1, interaction2));
+
+		// when  // then
+		mockMvc.perform(post("/api/auth/delete")
+				.contentType(APPLICATION_JSON)
+				.cookie(accessToken)
+			)
+			.andExpect(status().isOk());
+
+		assertThat(memberRepository.findById(loginMember.getId())).isEmpty();
+		assertThat(questionPostRepository.findAllByMember(loginMember)).isEmpty();
+		assertThat(answerRepository.findAllByMember(loginMember)).isEmpty();
+		assertThat(creditHistoryRepository.findAllByMember(loginMember)).isEmpty();
+		assertThat(interactionRepository.findAllByMemberId(loginMember.getId())).isEmpty();
 	}
 }
