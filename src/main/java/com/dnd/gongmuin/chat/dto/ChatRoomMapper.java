@@ -55,7 +55,7 @@ public class ChatRoomMapper {
 		Member chatPartner
 	) {
 		QuestionPost questionPost = chatRoom.getQuestionPost();
-
+		boolean isInquirer = !chatPartner.equals(chatRoom.getInquirer());
 		return new ChatRoomDetailResponse(
 			questionPost.getId(),
 			questionPost.getJobGroup().getLabel(),
@@ -66,7 +66,8 @@ public class ChatRoomMapper {
 				chatPartner.getJobGroup().getLabel(),
 				chatPartner.getProfileImageNo()
 			),
-			chatRoom.getStatus().getLabel()
+			chatRoom.getStatus().getLabel(),
+			isInquirer
 		);
 	}
 
