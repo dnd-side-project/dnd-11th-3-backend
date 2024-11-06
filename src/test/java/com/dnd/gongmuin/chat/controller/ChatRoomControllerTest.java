@@ -172,7 +172,8 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.receiverInfo.memberId").value(inquirer.getId()))
 			.andExpect(jsonPath("$.receiverInfo.nickname").value(inquirer.getNickname()))
 			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(inquirer.getJobGroup().getLabel()))
-			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(inquirer.getProfileImageNo()));
+			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(inquirer.getProfileImageNo()))
+			.andExpect(jsonPath("$.isInquirer").value(false));
 	}
 
 	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")
