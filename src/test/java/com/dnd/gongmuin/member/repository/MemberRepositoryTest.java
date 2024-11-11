@@ -39,8 +39,6 @@ import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-import jakarta.persistence.EntityManager;
-
 class MemberRepositoryTest extends DataJpaTestSupport {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 10);
