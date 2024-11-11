@@ -11,7 +11,7 @@ import com.dnd.gongmuin.member.domain.Member;
 
 public interface ChatRoomQueryRepository {
 
-	Slice<ChatRoomInfo> getChatRoomsByMember(Member member, ChatStatus chatStatus, Pageable pageable);
+	Slice<ChatRoomInfo> getChatRoomsByMember(Member member, List<ChatStatus> chatStatuses, Pageable pageable);
 
 	List<Long> getAutoRejectedInquirerIds();
 

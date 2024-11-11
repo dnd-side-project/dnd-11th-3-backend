@@ -94,11 +94,11 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, String chatStatus,
+	public PageResponse<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, List<String> chatStatuses,
 		Pageable pageable) {
 		// 회원 채팅방 정보 가져오기
 		Slice<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(
-			member, ChatStatus.from(chatStatus), pageable
+			member, ChatStatus.from(chatStatuses), pageable
 		);
 
 		// chatRoomId 리스트 추출
