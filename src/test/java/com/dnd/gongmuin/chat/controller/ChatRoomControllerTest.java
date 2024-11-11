@@ -141,7 +141,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		// when & then
 		mockMvc.perform(get("/api/chat-rooms")
 				.cookie(accessToken)
-				.param("status", ChatStatus.PENDING.getLabel()))
+				.param("statuses", ChatStatus.PENDING.getLabel()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.size").value(3))
 			.andExpect(jsonPath("$.content[0].chatRoomId").value(chatRoom3.getId()))
