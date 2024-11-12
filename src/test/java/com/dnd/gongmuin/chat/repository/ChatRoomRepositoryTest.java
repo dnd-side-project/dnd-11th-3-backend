@@ -20,15 +20,12 @@ import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.DataJpaTestSupport;
-import com.dnd.gongmuin.credit_history.domain.CreditHistory;
-import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -62,7 +59,7 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		));
 		//when
 
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, ChatStatus.PENDING,
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, List.of(ChatStatus.PENDING),
 				pageRequest)
 			.getContent();
 		//then

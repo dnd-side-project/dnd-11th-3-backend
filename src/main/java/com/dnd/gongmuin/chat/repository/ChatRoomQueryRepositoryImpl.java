@@ -1,7 +1,6 @@
 package com.dnd.gongmuin.chat.repository;
 
 import static com.dnd.gongmuin.chat.domain.QChatRoom.*;
-import static com.dnd.gongmuin.member.domain.QMember.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,16 +8,11 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.QChatRoomInfo;
-import com.dnd.gongmuin.credit_history.domain.CreditHistory;
-import com.dnd.gongmuin.credit_history.domain.CreditType;
-import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -28,17 +22,16 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final MemberRepository memberRepository;
-	private final CreditHistoryRepository creditHistoryRepository;
 
 	public Slice<ChatRoomInfo> getChatRoomsByMember(
 		Member member,
-		ChatStatus chatStatus,
+		List<ChatStatus> chatStatuses,
 		Pageable pageable
 	) {
 		List<ChatRoomInfo> content = queryFactory
 			.select(new QChatRoomInfo(
 				chatRoom.id,
+				chatRoom.status,
 				new CaseBuilder()
 					.when(chatRoom.inquirer.id.eq(member.getId()))
 					.then(chatRoom.answerer.id)
@@ -59,7 +52,7 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.from(chatRoom)
 			.where(chatRoom.inquirer.id.eq(member.getId())
 				.or(chatRoom.answerer.id.eq(member.getId()))
-				.and(chatRoom.status.eq(chatStatus)))
+				.and(chatRoom.status.in(chatStatuses)))
 			.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
@@ -77,7 +70,6 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.fetch();
 	}
 
-	@Transactional
 	public void updateChatRoomStatusRejected() {
 		queryFactory.update(chatRoom)
 			.set(chatRoom.status, ChatStatus.REJECTED)

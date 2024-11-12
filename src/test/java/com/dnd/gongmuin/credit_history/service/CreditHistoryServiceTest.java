@@ -3,7 +3,6 @@ package com.dnd.gongmuin.credit_history.service;
 import static org.mockito.BDDMockito.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;

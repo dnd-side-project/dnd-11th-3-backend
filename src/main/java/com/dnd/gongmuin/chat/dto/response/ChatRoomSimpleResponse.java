@@ -4,6 +4,7 @@ import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 
 public record ChatRoomSimpleResponse(
 	Long chatRoomId,
+	String chatStatus,
 	MemberInfo chatPartner,
 	String latestMessage,
 	String messageType,

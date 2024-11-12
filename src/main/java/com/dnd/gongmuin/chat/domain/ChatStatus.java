@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.chat.domain;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.dnd.gongmuin.chat.exception.ChatErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -23,6 +24,15 @@ public enum ChatStatus {
 			.filter(status -> status.isEqual(input))
 			.findAny()
 			.orElseThrow(() -> new ValidationException(ChatErrorCode.NOT_FOUND_CHAT_STATUS));
+	}
+
+	public static List<ChatStatus> from(List<String> inputs) {
+		return inputs.stream()
+			.map(input -> Arrays.stream(ChatStatus.values())
+				.filter(status -> status.isEqual(input))
+				.findAny()
+				.orElseThrow(() -> new ValidationException(ChatErrorCode.NOT_FOUND_CHAT_STATUS)))
+			.toList();
 	}
 
 	private boolean isEqual(String input) {

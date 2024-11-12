@@ -90,6 +90,7 @@ public class ChatRoomMapper {
 	) {
 		return new ChatRoomSimpleResponse(
 			chatRoomInfo.chatRoomId(),
+			chatRoomInfo.chatStatus(),
 			new MemberInfo(
 				chatRoomInfo.partnerId(),
 				chatRoomInfo.partnerNickname(),

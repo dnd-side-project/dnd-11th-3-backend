@@ -196,24 +196,24 @@ class ChatRoomServiceTest {
 	void getChatRoomsByMember() {
 		//given
 		Long chatRoomId = 1L;
-		ChatStatus status = ChatStatus.ACCEPTED;
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
 		ChatRoomInfo chatRoomInfo = new ChatRoomInfo(
-			chatRoomId, partner.getId(), partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
+			chatRoomId, ChatStatus.ACCEPTED, partner.getId(),
+			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
 		);
 		LatestChatMessage latestChatMessage = new LatestChatMessage(
 			chatRoomId, "와", "텍스트", LocalDateTime.now()
 		);
 
-		given(chatRoomRepository.getChatRoomsByMember(targetMember, status, pageRequest))
+		given(chatRoomRepository.getChatRoomsByMember(targetMember, List.of(ChatStatus.ACCEPTED), pageRequest))
 			.willReturn(new SliceImpl<>(List.of(chatRoomInfo), pageRequest, false));
 		given(chatMessageQueryRepository.findLatestChatByChatRoomIds(List.of(chatRoomId)))
 			.willReturn(List.of(latestChatMessage));
 
 		//when
 		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(
-			targetMember, status.getLabel(), pageRequest).content();
+			targetMember, List.of(ChatStatus.ACCEPTED.getLabel()), pageRequest).content();
 
 		//then
 		assertAll(
