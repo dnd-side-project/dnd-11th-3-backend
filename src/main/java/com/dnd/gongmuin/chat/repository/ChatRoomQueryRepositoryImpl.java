@@ -25,7 +25,6 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 
 	public Slice<ChatRoomInfo> getChatRoomsByMember(
 		Member member,
-		List<ChatStatus> chatStatuses,
 		Pageable pageable
 	) {
 		List<ChatRoomInfo> content = queryFactory
@@ -52,7 +51,7 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.from(chatRoom)
 			.where(chatRoom.inquirer.id.eq(member.getId())
 				.or(chatRoom.answerer.id.eq(member.getId()))
-				.and(chatRoom.status.in(chatStatuses)))
+				.and(chatRoom.status.eq(ChatStatus.ACCEPTED)))
 			.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
