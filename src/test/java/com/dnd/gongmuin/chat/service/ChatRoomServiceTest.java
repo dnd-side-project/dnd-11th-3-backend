@@ -206,14 +206,14 @@ class ChatRoomServiceTest {
 			chatRoomId, "와", "텍스트", LocalDateTime.now()
 		);
 
-		given(chatRoomRepository.getChatRoomsByMember(targetMember, List.of(ChatStatus.ACCEPTED), pageRequest))
+		given(chatRoomRepository.getChatRoomsByMember(targetMember, pageRequest))
 			.willReturn(new SliceImpl<>(List.of(chatRoomInfo), pageRequest, false));
 		given(chatMessageQueryRepository.findLatestChatByChatRoomIds(List.of(chatRoomId)))
 			.willReturn(List.of(latestChatMessage));
 
 		//when
 		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(
-			targetMember, List.of(ChatStatus.ACCEPTED.getLabel()), pageRequest).content();
+			targetMember, pageRequest).content();
 
 		//then
 		assertAll(
