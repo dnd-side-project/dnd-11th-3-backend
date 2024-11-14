@@ -44,7 +44,7 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 	@Autowired
 	CreditHistoryRepository creditHistoryRepository;
 
-	@DisplayName("회원이 속한 채팅방을 모두 조회할 수 있다.")
+	@DisplayName("회원이 속한 채팅방 목록을 조회할 수 있다.")
 	@Test
 	void getChatRoomsByMember() {
 		//given
@@ -53,15 +53,15 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		Member answerer = memberRepository.save(MemberFixture.member());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
 		List<ChatRoom> chatRooms = chatRoomRepository.saveAll(List.of(
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer)),
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, target)),
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
+			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, questioner, answerer)),
+			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, questioner, target)),
+			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, target, answerer))
 		));
-		//when
 
-		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, List.of(ChatStatus.PENDING),
-				pageRequest)
+		//when
+		List<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(target, pageRequest)
 			.getContent();
+
 		//then
 		Assertions.assertAll(
 			() -> assertThat(chatRoomInfos).hasSize(2),
