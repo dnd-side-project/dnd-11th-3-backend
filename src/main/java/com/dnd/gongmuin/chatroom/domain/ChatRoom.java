@@ -24,8 +24,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom extends TimeBaseEntity {
 
-	private static final int CHAT_REWARD = 2000;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "chat_room_id", nullable = false)
@@ -51,7 +49,6 @@ public class ChatRoom extends TimeBaseEntity {
 		this.questionPost = questionPost;
 		this.inquirer = inquirer;
 		this.answerer = answerer;
-		inquirer.decreaseCredit(CHAT_REWARD);
 	}
 
 	public static ChatRoom of(
