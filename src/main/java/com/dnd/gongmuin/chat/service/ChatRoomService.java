@@ -141,7 +141,7 @@ public class ChatRoomService {
 	@Transactional(readOnly = true)
 	public ChatRoomDetailResponse getChatRoomById(Long chatRoomId, Member member) {
 		ChatRoom chatRoom = getChatRoomById(chatRoomId);
-		Member chatPartner = getChatPartner(member.getId(), chatRoom);
+		Member chatPartner = getChatPartner(member, chatRoom);
 		return ChatRoomMapper.toChatRoomDetailResponse(chatRoom, chatPartner);
 	}
 
@@ -236,14 +236,13 @@ public class ChatRoomService {
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 	}
 
-	private Member getChatPartner(Long memberId, ChatRoom chatRoom) {
-		if (Objects.equals(chatRoom.getAnswerer().getId(), memberId)) {
+	private Member getChatPartner(Member member, ChatRoom chatRoom) {
+		if (member.isEqualMember(chatRoom.getAnswerer().getId())) {
 			return chatRoom.getInquirer();
-		} else if (Objects.equals(chatRoom.getInquirer().getId(), memberId)) {
+		} else if (member.isEqualMember(chatRoom.getInquirer().getId())) {
 			return chatRoom.getAnswerer();
-		} else {
-			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM);
 		}
+		throw new ValidationException(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM);
 	}
 }
 

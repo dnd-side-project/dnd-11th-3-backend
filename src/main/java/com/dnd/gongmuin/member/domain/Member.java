@@ -133,6 +133,10 @@ public class Member extends TimeBaseEntity {
 		this.jobCategory = jobCategory;
 	}
 
+	public boolean isEqualMember(Long id) {
+		return this.id.equals(id);
+	}
+
 	private int setRandomNumber() {
 		Random random = new Random();
 		return random.nextInt(1, 10);
