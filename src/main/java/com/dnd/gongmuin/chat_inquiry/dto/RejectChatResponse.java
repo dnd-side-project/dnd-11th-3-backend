@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.chatroom.dto.response;
+package com.dnd.gongmuin.chat_inquiry.dto;
 
 public record RejectChatResponse(
 	String chatStatus

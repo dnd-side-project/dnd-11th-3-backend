@@ -38,4 +38,24 @@ public class ChatInquiryController {
 			= chatInquiryService.createChatInquiry(request, member);
 		return ResponseEntity.ok(response);
 	}
+
+	@Operation(summary = "채팅 수락 API", description = "채팅방에서 요청자와의 채팅을 수락한다.")
+	@PatchMapping("/api/chat/inquires/{chatInquiryId}/accept")
+	public ResponseEntity<AcceptChatResponse> acceptChat(
+		@PathVariable("chatInquiryId") Long chatInquiryId,
+		@AuthenticationPrincipal Member member
+	) {
+		AcceptChatResponse response = chatInquiryService.acceptChat(chatInquiryId, member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "채팅 거절 API", description = "채팅방에서 요청자와의 채팅을 거절한다.")
+	@PatchMapping("/api/chat/inquires/{chatInquiryId}/reject")
+	public ResponseEntity<RejectChatResponse> rejectChat(
+		@PathVariable("chatInquiryId") Long chatInquiryId,
+		@AuthenticationPrincipal Member member
+	) {
+		RejectChatResponse response = chatInquiryService.rejectChat(chatInquiryId, member);
+		return ResponseEntity.ok(response);
+	}
 }
