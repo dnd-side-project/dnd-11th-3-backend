@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.InquiryStatus;
-import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
-import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
+import com.dnd.gongmuin.chatroom.domain.ChatRoom;
+import com.dnd.gongmuin.chatroom.domain.InquiryStatus;
+import com.dnd.gongmuin.chatroom.dto.response.ChatProposalInfo;
+import com.dnd.gongmuin.chatroom.dto.response.ChatRoomInfo;
+import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;

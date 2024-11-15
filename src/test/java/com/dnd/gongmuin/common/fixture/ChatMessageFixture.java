@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.dnd.gongmuin.chat.domain.ChatMessage;
-import com.dnd.gongmuin.chat.domain.MessageType;
+import com.dnd.gongmuin.chatroom.domain.ChatMessage;
+import com.dnd.gongmuin.chatroom.domain.MessageType;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

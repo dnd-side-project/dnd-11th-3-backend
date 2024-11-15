@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.dnd.gongmuin.chat.domain.ChatMessage;
-import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.InquiryStatus;
-import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
-import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
-import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
+import com.dnd.gongmuin.chatroom.domain.ChatMessage;
+import com.dnd.gongmuin.chatroom.domain.ChatRoom;
+import com.dnd.gongmuin.chatroom.domain.InquiryStatus;
+import com.dnd.gongmuin.chatroom.dto.request.CreateChatRoomRequest;
+import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
+import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
