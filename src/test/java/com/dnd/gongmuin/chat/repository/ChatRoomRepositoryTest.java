@@ -1,9 +1,7 @@
 package com.dnd.gongmuin.chat.repository;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -11,11 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
-import com.dnd.gongmuin.chatroom.domain.InquiryStatus;
-import com.dnd.gongmuin.chatroom.dto.response.ChatProposalInfo;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
@@ -55,9 +50,9 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		Member answerer = memberRepository.save(MemberFixture.member());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
 		List<ChatRoom> chatRooms = chatRoomRepository.saveAll(List.of(
-			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, questioner, answerer)),
-			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, questioner, target)),
-			chatRoomRepository.save(ChatRoomFixture.acceptedChatRoom(questionPost, target, answerer))
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer)),
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, target)),
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
 		));
 
 		//when
@@ -71,63 +66,6 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(chatRoomInfos.get(0).partnerId()).isEqualTo(questioner.getId()),
 			() -> assertThat(chatRoomInfos.get(1).chatRoomId()).isEqualTo(chatRooms.get(2).getId()),
 			() -> assertThat(chatRoomInfos.get(1).partnerId()).isEqualTo(answerer.getId())
-		);
-	}
-
-	@DisplayName("회원의 채팅 요청 목록을 조회할 수 있다.")
-	@Test
-	void getChatProposalsByMember() {
-		//given
-		Member questioner = memberRepository.save(MemberFixture.member());
-		Member target = memberRepository.save(MemberFixture.member());
-		Member answerer = memberRepository.save(MemberFixture.member());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
-		List<ChatRoom> chatRooms = chatRoomRepository.saveAll(List.of(
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer)),
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, target)),
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
-		));
-
-		//when
-		List<ChatProposalInfo> chatProposalInfos = chatRoomRepository.getChatProposalsByMember(target, pageRequest)
-			.getContent();
-
-		//then
-		Assertions.assertAll(
-			() -> assertThat(chatProposalInfos).hasSize(2),
-			() -> assertThat(chatProposalInfos.get(0).chatRoomId()).isEqualTo(chatRooms.get(1).getId()),
-			() -> assertThat(chatProposalInfos.get(0).partnerId()).isEqualTo(questioner.getId()),
-			() -> assertThat(chatProposalInfos.get(1).chatRoomId()).isEqualTo(chatRooms.get(2).getId()),
-			() -> assertThat(chatProposalInfos.get(1).partnerId()).isEqualTo(answerer.getId())
-		);
-	}
-
-	@DisplayName("요청중인 채팅방이 일주일이 지나면, 채팅방 상태를 거절함으로 바꾼다.")
-	@Test
-	void updateChatRoomStatusRejected() {
-		//given
-		Member questioner = memberRepository.save(MemberFixture.member());
-		Member answerer = memberRepository.save(MemberFixture.member());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
-
-		List<ChatRoom> chatRooms = chatRoomRepository.saveAll(List.of(
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer)),
-			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer))
-		));
-		ReflectionTestUtils.setField(chatRooms.get(0), "createdAt", LocalDateTime.now().minusWeeks(1));
-
-		//when
-		chatRoomRepository.updateChatRoomStatusRejected();
-
-		em.flush();
-		em.clear();
-
-		//then
-		ChatRoom chatRoom1 = chatRoomRepository.findById(chatRooms.get(0).getId()).orElseThrow();
-		ChatRoom chatRoom2 = chatRoomRepository.findById(chatRooms.get(1).getId()).orElseThrow();
-		assertAll(
-			() -> assertThat(chatRoom1.getStatus()).isEqualTo(InquiryStatus.REJECTED),
-			() -> assertThat(chatRoom2.getStatus()).isEqualTo(InquiryStatus.PENDING)
 		);
 	}
 }
