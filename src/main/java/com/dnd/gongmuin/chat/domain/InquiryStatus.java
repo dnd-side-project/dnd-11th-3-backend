@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ChatStatus {
+public enum InquiryStatus {
 
 	PENDING("요청중"),
 	ACCEPTED("수락됨"),
@@ -18,7 +18,7 @@ public enum ChatStatus {
 
 	private final String label;
 
-	public static ChatStatus from(String input) {
+	public static InquiryStatus from(String input) {
 		return Arrays.stream(values())
 			.filter(status -> status.isEqual(input))
 			.findAny()
