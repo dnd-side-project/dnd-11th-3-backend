@@ -1,0 +1,41 @@
+package com.dnd.gongmuin.chat_inquiry.controller;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
+import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
+import com.dnd.gongmuin.chat_inquiry.service.ChatInquiryService;
+import com.dnd.gongmuin.common.dto.PageResponse;
+import com.dnd.gongmuin.member.domain.Member;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+
+@Tag(name = "채팅 요청 API")
+@RestController
+@RequiredArgsConstructor
+public class ChatInquiryController {
+
+	private final ChatInquiryService chatInquiryService;
+
+	@Operation(summary = "채팅 요청 API", description = "답변자 아이디로 채팅 요청을 생성한다.")
+	@GetMapping("/api/chat/inquiries")
+	public ResponseEntity<CreateChatInquiryResponse> getChatProposalsByMember(
+		CreateChatInquiryRequest request,
+		@AuthenticationPrincipal Member member
+	) {
+		CreateChatInquiryResponse response
+			= chatInquiryService.createChatInquiry(request, member);
+		return ResponseEntity.ok(response);
+	}
+}
