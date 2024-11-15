@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.ChatStatus;
 import com.dnd.gongmuin.chat.dto.ChatMessageMapper;
 import com.dnd.gongmuin.chat.dto.ChatRoomMapper;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
@@ -94,11 +95,10 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, List<String> chatStatuses,
-		Pageable pageable) {
+	public PageResponse<ChatRoomSimpleResponse> getChatRoomsByMember(Member member, Pageable pageable) {
 		// 회원 채팅방 정보 가져오기
 		Slice<ChatRoomInfo> chatRoomInfos = chatRoomRepository.getChatRoomsByMember(
-			member, ChatStatus.from(chatStatuses), pageable
+			member, pageable
 		);
 
 		// chatRoomId 리스트 추출
@@ -117,6 +117,26 @@ public class ChatRoomService {
 		// PageResponse 객체 생성
 		return new PageResponse<>(responses, responses.size(), chatRoomInfos.hasNext());
 	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<ChatProposalResponse> getChatProposalsByMember(Member member, Pageable pageable) {
+		Slice<ChatProposalInfo> chatProposalInfos = chatRoomRepository.getChatProposalsByMember(
+			member, pageable
+		);
+
+		List<Long> chatRoomIds = chatProposalInfos.stream()
+			.map(ChatProposalInfo::chatRoomId)
+			.toList();
+
+		List<LatestChatMessage> latestChatMessages
+			= chatMessageQueryRepository.findLatestChatByChatRoomIds(chatRoomIds);
+
+		List<ChatProposalResponse> responses = getChatProposalResponse(latestChatMessages,
+			chatProposalInfos);
+
+		return new PageResponse<>(responses, responses.size(), chatProposalInfos.hasNext());
+	}
+
 
 	@Transactional(readOnly = true)
 	public ChatRoomDetailResponse getChatRoomById(Long chatRoomId, Member member) {
@@ -177,6 +197,26 @@ public class ChatRoomService {
 				LatestChatMessage latestMessage = messageMap.get(chatRoomInfo.chatRoomId());
 				return ChatRoomMapper.toChatRoomSimpleResponse(
 					chatRoomInfo, latestMessage
+				);
+			}).toList();
+	}
+
+	private List<ChatProposalResponse> getChatProposalResponse(List<LatestChatMessage> latestChatMessages,
+		Slice<ChatProposalInfo> chatProposalInfos) {
+		// <chatRoomId, LatestMessage> -> 순서 보장 x
+		Map<Long, LatestChatMessage> messageMap = latestChatMessages.stream()
+			.collect(Collectors.toMap(LatestChatMessage::chatRoomId, message -> message));
+
+		// 최신순 정렬 및 변환
+		return chatProposalInfos.stream()
+			.sorted(
+				Comparator.comparing(
+					(ChatProposalInfo info) -> messageMap.get(info.chatRoomId()).createdAt()
+				).reversed())
+			.map(chatProposalInfo -> {
+				LatestChatMessage latestMessage = messageMap.get(chatProposalInfo.chatRoomId());
+				return ChatRoomMapper.toChatProposalResponse(
+					chatProposalInfo, latestMessage
 				);
 			}).toList();
 	}
