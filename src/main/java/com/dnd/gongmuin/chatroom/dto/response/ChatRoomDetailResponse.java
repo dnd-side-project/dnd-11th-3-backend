@@ -7,7 +7,6 @@ public record ChatRoomDetailResponse(
 	String targetJobGroup,
 	String title,
 	MemberInfo receiverInfo,
-	String chatStatus,
 	boolean isInquirer
 ) {
 }

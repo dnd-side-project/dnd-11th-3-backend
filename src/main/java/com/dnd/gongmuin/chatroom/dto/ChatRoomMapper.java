@@ -1,15 +1,10 @@
 package com.dnd.gongmuin.chatroom.dto;
 
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
-import com.dnd.gongmuin.chatroom.dto.response.AcceptChatResponse;
-import com.dnd.gongmuin.chatroom.dto.response.ChatProposalInfo;
-import com.dnd.gongmuin.chatroom.dto.response.ChatProposalResponse;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomSimpleResponse;
-import com.dnd.gongmuin.chatroom.dto.response.CreateChatRoomResponse;
 import com.dnd.gongmuin.chatroom.dto.response.LatestChatMessage;
-import com.dnd.gongmuin.chatroom.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
@@ -32,26 +27,6 @@ public class ChatRoomMapper {
 		);
 	}
 
-	public static CreateChatRoomResponse toCreateChatRoomResponse(
-		ChatRoom chatRoom
-	) {
-		QuestionPost questionPost = chatRoom.getQuestionPost();
-		Member answerer = chatRoom.getAnswerer();
-		return new CreateChatRoomResponse(
-			questionPost.getId(),
-			questionPost.getJobGroup().getLabel(),
-			questionPost.getTitle(),
-			new MemberInfo(
-				answerer.getId(),
-				answerer.getNickname(),
-				answerer.getJobGroup().getLabel(),
-				answerer.getProfileImageNo()
-			),
-			chatRoom.getStatus().getLabel(),
-			chatRoom.getInquirer().getCredit()
-		);
-	}
-
 	public static ChatRoomDetailResponse toChatRoomDetailResponse(
 		ChatRoom chatRoom,
 		Member chatPartner
@@ -68,21 +43,7 @@ public class ChatRoomMapper {
 				chatPartner.getJobGroup().getLabel(),
 				chatPartner.getProfileImageNo()
 			),
-			chatRoom.getStatus().getLabel(),
 			isInquirer
-		);
-	}
-
-	public static AcceptChatResponse toAcceptChatResponse(ChatRoom chatRoom) {
-		return new AcceptChatResponse(
-			chatRoom.getStatus().getLabel(),
-			chatRoom.getAnswerer().getCredit()
-		);
-	}
-
-	public static RejectChatResponse toRejectChatResponse(ChatRoom chatRoom) {
-		return new RejectChatResponse(
-			chatRoom.getStatus().getLabel()
 		);
 	}
 
@@ -103,25 +64,4 @@ public class ChatRoomMapper {
 			latestChatMessage.createdAt().toString()
 		);
 	}
-
-	public static ChatProposalResponse toChatProposalResponse(
-		ChatProposalInfo chatProposalInfo,
-		LatestChatMessage latestChatMessage
-	) {
-		return new ChatProposalResponse(
-			chatProposalInfo.chatRoomId(),
-			chatProposalInfo.chatStatus(),
-			chatProposalInfo.isInquirer(),
-			new MemberInfo(
-				chatProposalInfo.partnerId(),
-				chatProposalInfo.partnerNickname(),
-				chatProposalInfo.partnerJobGroup(),
-				chatProposalInfo.partnerProfileImageNo()
-			),
-			latestChatMessage.content(),
-			latestChatMessage.type(),
-			latestChatMessage.createdAt().toString()
-		);
-	}
-
 }
