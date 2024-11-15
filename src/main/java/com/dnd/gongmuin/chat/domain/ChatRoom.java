@@ -51,15 +51,10 @@ public class ChatRoom extends TimeBaseEntity {
 		foreignKey = @ForeignKey(NO_CONSTRAINT))
 	private Member answerer;
 
-	@Enumerated(STRING)
-	@Column(name = "status", nullable = false)
-	private ChatStatus status;
-
 	private ChatRoom(QuestionPost questionPost, Member inquirer, Member answerer) {
 		this.questionPost = questionPost;
 		this.inquirer = inquirer;
 		this.answerer = answerer;
-		this.status = ChatStatus.PENDING;
 		inquirer.decreaseCredit(CHAT_REWARD);
 	}
 
@@ -69,21 +64,5 @@ public class ChatRoom extends TimeBaseEntity {
 		Member answerer
 	) {
 		return new ChatRoom(questionPost, inquirer, answerer);
-	}
-
-	public void updateStatusAccepted() {
-		if (status != ChatStatus.PENDING) {
-			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
-		}
-		status = ChatStatus.ACCEPTED;
-		answerer.increaseCredit(CHAT_REWARD);
-	}
-
-	public void updateStatusRejected() {
-		if (status != ChatStatus.PENDING) {
-			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
-		}
-		status = ChatStatus.REJECTED;
-		inquirer.increaseCredit(CHAT_REWARD);
 	}
 }
