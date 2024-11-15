@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.chatroom.domain;
+package com.dnd.gongmuin.chat_inquiry.domain;
 
 import java.util.Arrays;
 
