@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.QChatProposalInfo;
@@ -54,7 +54,7 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.from(chatRoom)
 			.where(chatRoom.inquirer.id.eq(member.getId())
 				.or(chatRoom.answerer.id.eq(member.getId()))
-				.and(chatRoom.status.eq(ChatStatus.ACCEPTED)))
+				.and(chatRoom.status.eq(InquiryStatus.ACCEPTED)))
 			.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
@@ -91,7 +91,7 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.from(chatRoom)
 			.where(chatRoom.inquirer.id.eq(member.getId())
 				.or(chatRoom.answerer.id.eq(member.getId()))
-				.and(chatRoom.status.in(List.of(ChatStatus.REJECTED, ChatStatus.PENDING))))
+				.and(chatRoom.status.in(List.of(InquiryStatus.REJECTED, InquiryStatus.PENDING))))
 			.fetch();
 
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
@@ -104,17 +104,17 @@ public class ChatRoomQueryRepositoryImpl implements ChatRoomQueryRepository {
 			.from(chatRoom)
 			.where(
 				chatRoom.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
-				chatRoom.status.eq(ChatStatus.PENDING)
+				chatRoom.status.eq(InquiryStatus.PENDING)
 			)
 			.fetch();
 	}
 
 	public void updateChatRoomStatusRejected() {
 		queryFactory.update(chatRoom)
-			.set(chatRoom.status, ChatStatus.REJECTED)
+			.set(chatRoom.status, InquiryStatus.REJECTED)
 			.where(
 				chatRoom.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
-				chatRoom.status.eq(ChatStatus.PENDING)
+				chatRoom.status.eq(InquiryStatus.PENDING)
 			)
 			.execute();
 	}

@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
@@ -125,8 +125,8 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		ChatRoom chatRoom1 = chatRoomRepository.findById(chatRooms.get(0).getId()).orElseThrow();
 		ChatRoom chatRoom2 = chatRoomRepository.findById(chatRooms.get(1).getId()).orElseThrow();
 		assertAll(
-			() -> assertThat(chatRoom1.getStatus()).isEqualTo(ChatStatus.REJECTED),
-			() -> assertThat(chatRoom2.getStatus()).isEqualTo(ChatStatus.PENDING)
+			() -> assertThat(chatRoom1.getStatus()).isEqualTo(InquiryStatus.REJECTED),
+			() -> assertThat(chatRoom2.getStatus()).isEqualTo(InquiryStatus.PENDING)
 		);
 	}
 }

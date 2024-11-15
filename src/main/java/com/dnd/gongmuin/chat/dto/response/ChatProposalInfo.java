@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.chat.dto.response;
 
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.querydsl.core.annotations.QueryProjection;
 
@@ -16,7 +16,7 @@ public record ChatProposalInfo(
 	@QueryProjection
 	public ChatProposalInfo(
 		Long chatRoomId,
-		ChatStatus chatStatus,
+		InquiryStatus inquiryStatus,
 		boolean isInquirer,
 		Long partnerId,
 		String partnerNickname,
@@ -25,7 +25,7 @@ public record ChatProposalInfo(
 	) {
 		this(
 			chatRoomId,
-			chatStatus.getLabel(),
+			inquiryStatus.getLabel(),
 			isInquirer,
 			partnerId,
 			partnerNickname,
