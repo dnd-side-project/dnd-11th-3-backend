@@ -199,7 +199,7 @@ class ChatRoomServiceTest {
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
 		ChatRoomInfo chatRoomInfo = new ChatRoomInfo(
-			chatRoomId, ChatStatus.ACCEPTED, partner.getId(),
+			chatRoomId, partner.getId(),
 			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
 		);
 		LatestChatMessage latestChatMessage = new LatestChatMessage(
