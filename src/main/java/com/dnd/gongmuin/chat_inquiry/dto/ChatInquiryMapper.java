@@ -3,8 +3,6 @@ package com.dnd.gongmuin.chat_inquiry.dto;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
-import com.dnd.gongmuin.chatroom.dto.response.AcceptChatResponse;
-import com.dnd.gongmuin.chatroom.dto.response.RejectChatResponse;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
@@ -40,6 +38,23 @@ public class ChatInquiryMapper {
 			answerer.getNickname(),
 			answerer.getJobGroup().getLabel(),
 			answerer.getProfileImageNo()
+		);
+	}
+
+	public static AcceptChatResponse toAcceptChatResponse(
+		ChatInquiry chatInquiry,
+		ChatRoom chatRoom
+	) {
+		return new AcceptChatResponse(
+			chatRoom.getId(),
+			chatInquiry.getStatus().getLabel(),
+			chatInquiry.getAnswerer().getCredit()
+		);
+	}
+
+	public static RejectChatResponse toRejectChatResponse(ChatInquiry chatInquiry) {
+		return new RejectChatResponse(
+			chatInquiry.getStatus().getLabel()
 		);
 	}
 }
