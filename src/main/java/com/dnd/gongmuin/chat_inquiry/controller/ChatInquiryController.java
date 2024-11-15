@@ -39,6 +39,17 @@ public class ChatInquiryController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "채팅방 요청 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@GetMapping("/api/chat/inquires")
+	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatProposalsByMember(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable
+	) {
+		PageResponse<ChatInquiryResponse> response
+			= chatInquiryService.getChatInquiresByMember(member, pageable);
+		return ResponseEntity.ok(response);
+	}
+
 	@Operation(summary = "채팅 수락 API", description = "채팅방에서 요청자와의 채팅을 수락한다.")
 	@PatchMapping("/api/chat/inquires/{chatInquiryId}/accept")
 	public ResponseEntity<AcceptChatResponse> acceptChat(
