@@ -156,6 +156,55 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print());
 	}
 
+	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
+	@Test
+	void getChatProposalsByMember() throws Exception {
+		//given
+		Member member1 = memberRepository.save(MemberFixture.member4());
+		Member member2 = memberRepository.save(MemberFixture.member5());
+		List<QuestionPost> questionPosts = questionPostRepository.saveAll(
+			List.of(
+				questionPostRepository.save(QuestionPostFixture.questionPost(member1)),
+				questionPostRepository.save(QuestionPostFixture.questionPost(member2))
+			)
+		);
+		ChatRoom chatRoom1 = chatRoomRepository.save(
+			ChatRoomFixture.chatRoom(questionPosts.get(0), member1, loginMember));
+		ChatRoom chatRoom2 = chatRoomRepository.save(
+			ChatRoomFixture.chatRoom(questionPosts.get(1), loginMember, member1));
+		ChatRoom unrelatedChatroom = chatRoomRepository.save(
+			ChatRoomFixture.chatRoom(questionPosts.get(1), member2, member1));
+
+		chatMessageRepository.saveAll(
+			List.of(
+				chatMessageRepository.save(
+					ChatMessageFixture.chatMessage(chatRoom1.getId(), "11", LocalDateTime.now())),
+				chatMessageRepository.save(
+					ChatMessageFixture.chatMessage(chatRoom2.getId(), "21", LocalDateTime.now())),
+				chatMessageRepository.save(
+					ChatMessageFixture.chatMessage(unrelatedChatroom.getId(), "31", LocalDateTime.now()))
+			)
+		);
+
+		// when & then
+		mockMvc.perform(get("/api/chat-rooms/proposals")
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.size").value(2))
+			.andExpect(jsonPath("$.content[0].chatRoomId").value(chatRoom2.getId()))
+			.andExpect(jsonPath("$.content[0].latestMessage").value("21"))
+			.andExpect(jsonPath("$.content[0].chatPartner.memberId").value(member1.getId()))
+			.andExpect(jsonPath("$.content[0].isInquirer").value(true))
+			.andExpect(jsonPath("$.content[0].chatStatus").value(ChatStatus.PENDING.getLabel()))
+
+			.andExpect(jsonPath("$.content[1].chatRoomId").value(chatRoom1.getId()))
+			.andExpect(jsonPath("$.content[1].latestMessage").value("11"))
+			.andExpect(jsonPath("$.content[1].chatPartner.memberId").value(member1.getId()))
+			.andExpect(jsonPath("$.content[1].isInquirer").value(false))
+			.andExpect(jsonPath("$.content[1].chatStatus").value(ChatStatus.PENDING.getLabel()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
 	@DisplayName("[채팅방 아이디로 채팅방을 상세조회할 수 있다.]")
 	@Test
 	void getChatRoomById() throws Exception {
