@@ -2,6 +2,8 @@ package com.dnd.gongmuin.chat.dto;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
@@ -90,12 +92,31 @@ public class ChatRoomMapper {
 	) {
 		return new ChatRoomSimpleResponse(
 			chatRoomInfo.chatRoomId(),
-			chatRoomInfo.chatStatus(),
 			new MemberInfo(
 				chatRoomInfo.partnerId(),
 				chatRoomInfo.partnerNickname(),
 				chatRoomInfo.partnerJobGroup(),
 				chatRoomInfo.partnerProfileImageNo()
+			),
+			latestChatMessage.content(),
+			latestChatMessage.type(),
+			latestChatMessage.createdAt().toString()
+		);
+	}
+
+	public static ChatProposalResponse toChatProposalResponse(
+		ChatProposalInfo chatProposalInfo,
+		LatestChatMessage latestChatMessage
+	) {
+		return new ChatProposalResponse(
+			chatProposalInfo.chatRoomId(),
+			chatProposalInfo.chatStatus(),
+			chatProposalInfo.isInquirer(),
+			new MemberInfo(
+				chatProposalInfo.partnerId(),
+				chatProposalInfo.partnerNickname(),
+				chatProposalInfo.partnerJobGroup(),
+				chatProposalInfo.partnerProfileImageNo()
 			),
 			latestChatMessage.content(),
 			latestChatMessage.type(),
