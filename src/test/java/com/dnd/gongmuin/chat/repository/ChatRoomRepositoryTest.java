@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
 import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -69,6 +70,34 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(chatRoomInfos.get(0).partnerId()).isEqualTo(questioner.getId()),
 			() -> assertThat(chatRoomInfos.get(1).chatRoomId()).isEqualTo(chatRooms.get(2).getId()),
 			() -> assertThat(chatRoomInfos.get(1).partnerId()).isEqualTo(answerer.getId())
+		);
+	}
+
+	@DisplayName("회원의 채팅 요청 목록을 조회할 수 있다.")
+	@Test
+	void getChatProposalsByMember() {
+		//given
+		Member questioner = memberRepository.save(MemberFixture.member());
+		Member target = memberRepository.save(MemberFixture.member());
+		Member answerer = memberRepository.save(MemberFixture.member());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
+		List<ChatRoom> chatRooms = chatRoomRepository.saveAll(List.of(
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, answerer)),
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, questioner, target)),
+			chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, target, answerer))
+		));
+
+		//when
+		List<ChatProposalInfo> chatProposalInfos = chatRoomRepository.getChatProposalsByMember(target, pageRequest)
+			.getContent();
+
+		//then
+		Assertions.assertAll(
+			() -> assertThat(chatProposalInfos).hasSize(2),
+			() -> assertThat(chatProposalInfos.get(0).chatRoomId()).isEqualTo(chatRooms.get(1).getId()),
+			() -> assertThat(chatProposalInfos.get(0).partnerId()).isEqualTo(questioner.getId()),
+			() -> assertThat(chatProposalInfos.get(1).chatRoomId()).isEqualTo(chatRooms.get(2).getId()),
+			() -> assertThat(chatProposalInfos.get(1).partnerId()).isEqualTo(answerer.getId())
 		);
 	}
 
