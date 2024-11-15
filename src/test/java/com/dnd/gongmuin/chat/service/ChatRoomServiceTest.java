@@ -26,6 +26,8 @@ import com.dnd.gongmuin.chat.domain.MessageType;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalInfo;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
@@ -191,7 +193,7 @@ class ChatRoomServiceTest {
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
 	}
 
-	@DisplayName("[회원이 속한 수락 상태 채팅방 목록을 조회할 수 있다.]")
+	@DisplayName("[회원이 속한 채팅방 목록을 조회할 수 있다.]")
 	@Test
 	void getChatRoomsByMember() {
 		//given
@@ -213,6 +215,42 @@ class ChatRoomServiceTest {
 
 		//when
 		List<ChatRoomSimpleResponse> response = chatRoomService.getChatRoomsByMember(
+			targetMember, pageRequest).content();
+
+		//then
+		assertAll(
+			() -> assertThat(response).hasSize(1),
+			() -> assertThat(response.get(0).chatRoomId())
+				.isEqualTo(chatRoomId),
+			() -> assertThat(response.get(0).chatPartner().memberId())
+				.isEqualTo(partner.getId()),
+			() -> assertThat(response.get(0).latestMessage())
+				.isEqualTo(latestChatMessage.content())
+		);
+	}
+
+	@DisplayName("[회원이 속한 채팅 요청 목록을 조회할 수 있다.]")
+	@Test
+	void getChatProposalsByMember() {
+		//given
+		Long chatRoomId = 1L;
+		Member targetMember = MemberFixture.member(1L);
+		Member partner = MemberFixture.member(2L);
+		ChatProposalInfo chatProposalInfo = new ChatProposalInfo(
+			chatRoomId, ChatStatus.PENDING, true, partner.getId(),
+			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
+		);
+		LatestChatMessage latestChatMessage = new LatestChatMessage(
+			chatRoomId, "와", "텍스트", LocalDateTime.now()
+		);
+
+		given(chatRoomRepository.getChatProposalsByMember(targetMember, pageRequest))
+			.willReturn(new SliceImpl<>(List.of(chatProposalInfo), pageRequest, false));
+		given(chatMessageQueryRepository.findLatestChatByChatRoomIds(List.of(chatRoomId)))
+			.willReturn(List.of(latestChatMessage));
+
+		//when
+		List<ChatProposalResponse> response = chatRoomService.getChatProposalsByMember(
 			targetMember, pageRequest).content();
 
 		//then
