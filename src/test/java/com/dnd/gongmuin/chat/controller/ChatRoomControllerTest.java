@@ -1,6 +1,5 @@
 package com.dnd.gongmuin.chat.controller;
 
-import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -15,8 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.dnd.gongmuin.chatroom.domain.ChatMessage;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
-import com.dnd.gongmuin.chatroom.domain.InquiryStatus;
-import com.dnd.gongmuin.chatroom.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
@@ -30,10 +27,8 @@ import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
-@DisplayName("[ChatMessage 통합 테스트]")
+@DisplayName("[채팅방 통합 테스트]")
 class ChatRoomControllerTest extends ApiTestSupport {
-
-	private static final int CHAT_REWARD = 2000;
 
 	@Autowired
 	private ChatMessageRepository chatMessageRepository;
@@ -76,28 +71,6 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].isRead").value(chatMessages.get(0).getIsRead()));
 	}
 
-	@DisplayName("[채팅방을 생성할 수 있다.]")
-	@Test
-	void createChatRoom() throws Exception {
-		Member answerer = memberRepository.save(MemberFixture.member4());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
-		CreateChatRoomRequest request = new CreateChatRoomRequest(questionPost.getId(), answerer.getId());
-
-		mockMvc.perform(post("/api/chat-rooms")
-				.cookie(accessToken)
-				.content(toJson(request))
-				.contentType(APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.credit").value(loginMember.getCredit() - CHAT_REWARD))
-			.andExpect(jsonPath("$.questionPostId").value(questionPost.getId()))
-			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup().getLabel()))
-			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
-			.andExpect(jsonPath("$.receiverInfo.memberId").value(answerer.getId()))
-			.andExpect(jsonPath("$.receiverInfo.nickname").value(answerer.getNickname()))
-			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(answerer.getJobGroup().getLabel()))
-			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(answerer.getProfileImageNo()));
-	}
-
 	@DisplayName("[회원의 채팅방 목록을 조회할 수 있다.]")
 	@Test
 	void getChatRoomsByMember() throws Exception {
@@ -111,13 +84,13 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			)
 		);
 		ChatRoom chatRoom1 = chatRoomRepository.save(
-			ChatRoomFixture.acceptedChatRoom(questionPosts.get(0), member1, loginMember));
+			ChatRoomFixture.chatRoom(questionPosts.get(0), member1, loginMember));
 		ChatRoom chatRoom2 = chatRoomRepository.save(
-			ChatRoomFixture.acceptedChatRoom(questionPosts.get(0), member2, loginMember));
+			ChatRoomFixture.chatRoom(questionPosts.get(0), member2, loginMember));
 		ChatRoom chatRoom3 = chatRoomRepository.save(
-			ChatRoomFixture.acceptedChatRoom(questionPosts.get(1), loginMember, member1));
+			ChatRoomFixture.chatRoom(questionPosts.get(1), loginMember, member1));
 		ChatRoom unrelatedChatroom = chatRoomRepository.save(
-			ChatRoomFixture.acceptedChatRoom(questionPosts.get(1), member2, member1));
+			ChatRoomFixture.chatRoom(questionPosts.get(1), member2, member1));
 
 		chatMessageRepository.saveAll(
 			List.of(
@@ -156,55 +129,6 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andDo(MockMvcResultHandlers.print());
 	}
 
-	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
-	@Test
-	void getChatProposalsByMember() throws Exception {
-		//given
-		Member member1 = memberRepository.save(MemberFixture.member4());
-		Member member2 = memberRepository.save(MemberFixture.member5());
-		List<QuestionPost> questionPosts = questionPostRepository.saveAll(
-			List.of(
-				questionPostRepository.save(QuestionPostFixture.questionPost(member1)),
-				questionPostRepository.save(QuestionPostFixture.questionPost(member2))
-			)
-		);
-		ChatRoom chatRoom1 = chatRoomRepository.save(
-			ChatRoomFixture.chatRoom(questionPosts.get(0), member1, loginMember));
-		ChatRoom chatRoom2 = chatRoomRepository.save(
-			ChatRoomFixture.chatRoom(questionPosts.get(1), loginMember, member1));
-		ChatRoom unrelatedChatroom = chatRoomRepository.save(
-			ChatRoomFixture.chatRoom(questionPosts.get(1), member2, member1));
-
-		chatMessageRepository.saveAll(
-			List.of(
-				chatMessageRepository.save(
-					ChatMessageFixture.chatMessage(chatRoom1.getId(), "11", LocalDateTime.now())),
-				chatMessageRepository.save(
-					ChatMessageFixture.chatMessage(chatRoom2.getId(), "21", LocalDateTime.now())),
-				chatMessageRepository.save(
-					ChatMessageFixture.chatMessage(unrelatedChatroom.getId(), "31", LocalDateTime.now()))
-			)
-		);
-
-		// when & then
-		mockMvc.perform(get("/api/chat-rooms/proposals")
-				.cookie(accessToken))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.size").value(2))
-			.andExpect(jsonPath("$.content[0].chatRoomId").value(chatRoom2.getId()))
-			.andExpect(jsonPath("$.content[0].latestMessage").value("21"))
-			.andExpect(jsonPath("$.content[0].chatPartner.memberId").value(member1.getId()))
-			.andExpect(jsonPath("$.content[0].isInquirer").value(true))
-			.andExpect(jsonPath("$.content[0].chatStatus").value(InquiryStatus.PENDING.getLabel()))
-
-			.andExpect(jsonPath("$.content[1].chatRoomId").value(chatRoom1.getId()))
-			.andExpect(jsonPath("$.content[1].latestMessage").value("11"))
-			.andExpect(jsonPath("$.content[1].chatPartner.memberId").value(member1.getId()))
-			.andExpect(jsonPath("$.content[1].isInquirer").value(false))
-			.andExpect(jsonPath("$.content[1].chatStatus").value(InquiryStatus.PENDING.getLabel()))
-			.andDo(MockMvcResultHandlers.print());
-	}
-
 	@DisplayName("[채팅방 아이디로 채팅방을 상세조회할 수 있다.]")
 	@Test
 	void getChatRoomById() throws Exception {
@@ -223,33 +147,5 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(inquirer.getJobGroup().getLabel()))
 			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(inquirer.getProfileImageNo()))
 			.andExpect(jsonPath("$.isInquirer").value(false));
-	}
-
-	@DisplayName("[답변자가 채팅 요청을 수락할 수 있다.]")
-	@Test
-	void acceptChatRoom() throws Exception {
-		Member inquirer = memberRepository.save(MemberFixture.member4());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
-		ChatRoom chatRoom = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, inquirer, loginMember));
-		int previousAnswererCredit = chatRoom.getAnswerer().getCredit();
-
-		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/accept", chatRoom.getId())
-				.cookie(accessToken))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.ACCEPTED.getLabel()))
-			.andExpect(jsonPath("$.credit").value(previousAnswererCredit + CHAT_REWARD));
-	}
-
-	@DisplayName("[답변자가 채팅 요청을 거절할 수 있다.]")
-	@Test
-	void rejectChatRoom() throws Exception {
-		Member inquirer = memberRepository.save(MemberFixture.member4());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
-		ChatRoom chatRoom = chatRoomRepository.save(ChatRoomFixture.chatRoom(questionPost, inquirer, loginMember));
-
-		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/reject", chatRoom.getId())
-				.cookie(accessToken))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.REJECTED.getLabel()));
 	}
 }
