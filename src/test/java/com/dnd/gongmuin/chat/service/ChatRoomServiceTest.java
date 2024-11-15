@@ -21,7 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
 import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.chat.domain.MessageType;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
@@ -237,7 +237,7 @@ class ChatRoomServiceTest {
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
 		ChatProposalInfo chatProposalInfo = new ChatProposalInfo(
-			chatRoomId, ChatStatus.PENDING, true, partner.getId(),
+			chatRoomId, InquiryStatus.PENDING, true, partner.getId(),
 			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
 		);
 		LatestChatMessage latestChatMessage = new LatestChatMessage(
@@ -357,7 +357,7 @@ class ChatRoomServiceTest {
 		//then
 		assertAll(
 			() -> assertThat(response.chatStatus())
-				.isEqualTo(ChatStatus.ACCEPTED.getLabel()),
+				.isEqualTo(InquiryStatus.ACCEPTED.getLabel()),
 			() -> assertThat(response.credit())
 				.isEqualTo(previousCredit + CHAT_REWARD)
 		);
@@ -383,7 +383,7 @@ class ChatRoomServiceTest {
 		//then
 		assertAll(
 			() -> assertThat(response.chatStatus())
-				.isEqualTo(ChatStatus.ACCEPTED.getLabel()),
+				.isEqualTo(InquiryStatus.ACCEPTED.getLabel()),
 			() -> assertThat(response.credit())
 				.isEqualTo(previousCredit + CHAT_REWARD),
 			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
@@ -408,7 +408,7 @@ class ChatRoomServiceTest {
 
 		//then
 		assertThat(response.chatStatus())
-			.isEqualTo(ChatStatus.REJECTED.getLabel());
+			.isEqualTo(InquiryStatus.REJECTED.getLabel());
 	}
 
 	@DisplayName("[답변자가 채팅 요청을 거절할 때 채팅 거절 알림이 발행된다.]")
@@ -429,7 +429,7 @@ class ChatRoomServiceTest {
 
 		//then
 		assertAll(
-			() -> assertThat(response.chatStatus()).isEqualTo(ChatStatus.REJECTED.getLabel()),
+			() -> assertThat(response.chatStatus()).isEqualTo(InquiryStatus.REJECTED.getLabel()),
 			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
 		);
 	}

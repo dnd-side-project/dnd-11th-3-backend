@@ -3,7 +3,7 @@ package com.dnd.gongmuin.common.fixture;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
@@ -35,7 +35,7 @@ public class ChatRoomFixture {
 			inquirer,
 			answerer
 		);
-		ReflectionTestUtils.setField(chatRoom, "status", ChatStatus.ACCEPTED);
+		ReflectionTestUtils.setField(chatRoom, "status", InquiryStatus.ACCEPTED);
 		return chatRoom;
 	}
 

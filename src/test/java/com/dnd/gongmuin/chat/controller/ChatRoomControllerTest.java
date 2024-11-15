@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.dnd.gongmuin.chat.domain.ChatMessage;
 import com.dnd.gongmuin.chat.domain.ChatRoom;
-import com.dnd.gongmuin.chat.domain.ChatStatus;
+import com.dnd.gongmuin.chat.domain.InquiryStatus;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chat.repository.ChatRoomRepository;
@@ -195,13 +195,13 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].latestMessage").value("21"))
 			.andExpect(jsonPath("$.content[0].chatPartner.memberId").value(member1.getId()))
 			.andExpect(jsonPath("$.content[0].isInquirer").value(true))
-			.andExpect(jsonPath("$.content[0].chatStatus").value(ChatStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.content[0].chatStatus").value(InquiryStatus.PENDING.getLabel()))
 
 			.andExpect(jsonPath("$.content[1].chatRoomId").value(chatRoom1.getId()))
 			.andExpect(jsonPath("$.content[1].latestMessage").value("11"))
 			.andExpect(jsonPath("$.content[1].chatPartner.memberId").value(member1.getId()))
 			.andExpect(jsonPath("$.content[1].isInquirer").value(false))
-			.andExpect(jsonPath("$.content[1].chatStatus").value(ChatStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.content[1].chatStatus").value(InquiryStatus.PENDING.getLabel()))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
@@ -236,7 +236,7 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/accept", chatRoom.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(ChatStatus.ACCEPTED.getLabel()))
+			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.ACCEPTED.getLabel()))
 			.andExpect(jsonPath("$.credit").value(previousAnswererCredit + CHAT_REWARD));
 	}
 
@@ -250,6 +250,6 @@ class ChatRoomControllerTest extends ApiTestSupport {
 		mockMvc.perform(patch("/api/chat-rooms/{chatRoomId}/reject", chatRoom.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(ChatStatus.REJECTED.getLabel()));
+			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.REJECTED.getLabel()));
 	}
 }
