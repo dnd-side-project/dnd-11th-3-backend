@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.gongmuin.chat.dto.request.CreateChatRoomRequest;
 import com.dnd.gongmuin.chat.dto.response.AcceptChatResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatMessageResponse;
+import com.dnd.gongmuin.chat.dto.response.ChatProposalResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chat.dto.response.ChatRoomSimpleResponse;
 import com.dnd.gongmuin.chat.dto.response.CreateChatRoomResponse;
@@ -54,7 +55,7 @@ public class ChatRoomController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅방 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@Operation(summary = "채팅방 활성화 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
 	@GetMapping("/api/chat-rooms")
 	public ResponseEntity<PageResponse<ChatRoomSimpleResponse>> getChatRoomsByMember(
 		@AuthenticationPrincipal Member member,
@@ -62,6 +63,17 @@ public class ChatRoomController {
 	) {
 		PageResponse<ChatRoomSimpleResponse> response
 			= chatRoomService.getChatRoomsByMember(member, pageable);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "채팅방 요청 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@GetMapping("/api/chat-rooms/proposals")
+	public ResponseEntity<PageResponse<ChatProposalResponse>> getChatProposalsByMember(
+		@AuthenticationPrincipal Member member,
+		Pageable pageable
+	) {
+		PageResponse<ChatProposalResponse> response
+			= chatRoomService.getChatProposalsByMember(member, pageable);
 		return ResponseEntity.ok(response);
 	}
 
