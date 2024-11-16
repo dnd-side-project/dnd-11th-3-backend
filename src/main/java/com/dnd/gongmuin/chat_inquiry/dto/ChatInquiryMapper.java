@@ -5,6 +5,7 @@ import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,10 +35,12 @@ public class ChatInquiryMapper {
 			chatInquiry.getId(),
 			chatInquiry.getMessage(),
 			InquiryStatus.PENDING.getLabel(),
-			answerer.getId(),
-			answerer.getNickname(),
-			answerer.getJobGroup().getLabel(),
-			answerer.getProfileImageNo()
+			new MemberInfo(
+				answerer.getId(),
+				answerer.getNickname(),
+				answerer.getJobGroup().getLabel(),
+				answerer.getProfileImageNo()
+			)
 		);
 	}
 
