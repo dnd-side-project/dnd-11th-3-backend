@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
@@ -20,6 +21,7 @@ import com.dnd.gongmuin.member.domain.Member;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "채팅 요청 API")
@@ -32,7 +34,7 @@ public class ChatInquiryController {
 	@Operation(summary = "채팅 요청 생성 API", description = "답변자 아이디로 채팅 요청을 생성한다.")
 	@PostMapping("/api/chat/inquiries")
 	public ResponseEntity<CreateChatInquiryResponse> createChatInquiry(
-		CreateChatInquiryRequest request,
+		@Valid @RequestBody CreateChatInquiryRequest request,
 		@AuthenticationPrincipal Member member
 	) {
 		CreateChatInquiryResponse response
