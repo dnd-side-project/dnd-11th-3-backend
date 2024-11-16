@@ -7,10 +7,10 @@ import com.querydsl.core.annotations.QueryProjection;
 
 public record ChatInquiryResponse(
 	Long chatInquiryId,
-	String message,
+	String inquiryMessage,
 	String inquiryStatus,
 	boolean isInquirer,
-	MemberInfo partnerInfo
+	MemberInfo chatPartner
 ) {
 	@QueryProjection
 	public ChatInquiryResponse(

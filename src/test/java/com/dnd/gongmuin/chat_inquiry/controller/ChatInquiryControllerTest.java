@@ -105,12 +105,12 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.size").value(2))
 			.andExpect(jsonPath("$.content[0].chatInquiryId").value(chatInquiry2.getId())) // 내림차순
-			.andExpect(jsonPath("$.content[0].partnerInfo.memberId").value(member2.getId()))
+			.andExpect(jsonPath("$.content[0].chatPartner.memberId").value(member2.getId()))
 			.andExpect(jsonPath("$.content[0].isInquirer").value(true))
 			.andExpect(jsonPath("$.content[0].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
 
 			.andExpect(jsonPath("$.content[1].chatInquiryId").value(chatInquiry1.getId()))
-			.andExpect(jsonPath("$.content[1].partnerInfo.memberId").value(member1.getId()))
+			.andExpect(jsonPath("$.content[1].chatPartner.memberId").value(member1.getId()))
 			.andExpect(jsonPath("$.content[1].isInquirer").value(false))
 			.andExpect(jsonPath("$.content[1].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
 			.andDo(MockMvcResultHandlers.print());
