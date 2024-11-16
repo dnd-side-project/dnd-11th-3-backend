@@ -6,6 +6,6 @@ public record CreateChatInquiryResponse(
 	Long chatInquiryId,
 	String inquiryMessage,
 	String inquiryStatus,
-	MemberInfo partnerInfo
+	MemberInfo chatPartner
 ) {
 }
