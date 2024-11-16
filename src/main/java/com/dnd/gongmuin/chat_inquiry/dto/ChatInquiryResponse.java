@@ -2,6 +2,7 @@ package com.dnd.gongmuin.chat_inquiry.dto;
 
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.member.domain.JobGroup;
+import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record ChatInquiryResponse(
@@ -9,10 +10,7 @@ public record ChatInquiryResponse(
 	String message,
 	String inquiryStatus,
 	boolean isInquirer,
-	Long partnerId,
-	String partnerNickname,
-	String partnerJobGroup,
-	int partnerProfileImageNo
+	MemberInfo partnerInfo
 ) {
 	@QueryProjection
 	public ChatInquiryResponse(
@@ -30,10 +28,12 @@ public record ChatInquiryResponse(
 			message,
 			inquiryStatus.getLabel(),
 			isInquirer,
-			partnerId,
-			partnerNickname,
-			partnerJobGroup.getLabel(),
-			partnerProfileImageNo
+			new MemberInfo(
+				partnerId,
+				partnerNickname,
+				partnerJobGroup.getLabel(),
+				partnerProfileImageNo
+			)
 		);
 	}
 }
