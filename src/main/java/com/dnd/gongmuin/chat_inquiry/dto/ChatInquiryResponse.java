@@ -15,7 +15,7 @@ public record ChatInquiryResponse(
 	@QueryProjection
 	public ChatInquiryResponse(
 		Long chatInquiryId,
-		String message,
+		String inquiryMessage,
 		InquiryStatus inquiryStatus,
 		boolean isInquirer,
 		Long partnerId,
@@ -25,7 +25,7 @@ public record ChatInquiryResponse(
 	) {
 		this(
 			chatInquiryId,
-			message,
+			inquiryMessage,
 			inquiryStatus.getLabel(),
 			isInquirer,
 			new MemberInfo(
