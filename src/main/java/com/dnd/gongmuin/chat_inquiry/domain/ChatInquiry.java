@@ -54,7 +54,7 @@ public class ChatInquiry extends TimeBaseEntity {
 	@Column(name = "status", nullable = false)
 	private InquiryStatus status;
 
-	@Column(name = "message", nullable = false)
+	@Column(name = "inquiryMessage", nullable = false)
 	private String message;
 
 	private ChatInquiry(QuestionPost questionPost, Member inquirer, Member answerer, String message) {
