@@ -84,12 +84,12 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].chatInquiryId").value(chatInquiry2.getId())) // 내림차순
 			.andExpect(jsonPath("$.content[0].partnerId").value(member2.getId()))
 			.andExpect(jsonPath("$.content[0].isInquirer").value(true))
-			.andExpect(jsonPath("$.content[0].chatStatus").value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.content[0].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
 
 			.andExpect(jsonPath("$.content[1].chatInquiryId").value(chatInquiry1.getId()))
 			.andExpect(jsonPath("$.content[1].partnerId").value(member1.getId()))
 			.andExpect(jsonPath("$.content[1].isInquirer").value(false))
-			.andExpect(jsonPath("$.content[1].chatStatus").value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.content[1].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
@@ -105,7 +105,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		mockMvc.perform(patch("/api/chat/inquires/{chatInquiryId}/accept", chatInquiry.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.ACCEPTED.getLabel()))
+			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.ACCEPTED.getLabel()))
 			.andExpect(jsonPath("$.credit").value(previousAnswererCredit + CHAT_REWARD));
 	}
 
@@ -120,6 +120,6 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		mockMvc.perform(patch("/api/chat/inquires/{chatInquiryId}/reject", chatInquiry.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.chatStatus").value(InquiryStatus.REJECTED.getLabel()));
+			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.REJECTED.getLabel()));
 	}
 }

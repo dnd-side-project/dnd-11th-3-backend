@@ -23,6 +23,7 @@ import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
+import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -70,13 +71,40 @@ class ChatInquiryServiceTest {
 	@InjectMocks
 	private ChatInquiryService chatInquiryService;
 
-	@DisplayName("[요청자의 크레딧이 2000미만이면 채팅을 요청할 수 없다.]")
+	@DisplayName("[댓글 작성자에게 채팅을 요청할 수 있다.]")
 	@Test
-	void createChatRoom_fail() {
+	void createInquiry() {
 		//given
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
-		ReflectionTestUtils.setField(inquirer, "credit", 1999);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			CHAT_MESSAGE
+		);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+
+		CreateChatInquiryResponse response = chatInquiryService.createChatInquiry(request, inquirer);
+		System.out.println("response = " + response);
+		// //then
+		// assertAll(
+		//
+		// );
+
+	}
+
+	@DisplayName("[요청자의 크레딧이 2000미만이면 채팅을 요청할 수 없다.]")
+	@Test
+	void createInquiry_fails() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		ReflectionTestUtils.setField(inquirer, "credit", CHAT_REWARD - 1);
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
 			questionPost.getId(),
@@ -97,7 +125,7 @@ class ChatInquiryServiceTest {
 
 	@DisplayName("[회원이 속한 채팅 요청 목록을 조회할 수 있다.]")
 	@Test
-	void getChatProposalsByMember() {
+	void getChatInquiresByMember() {
 		//given
 		Long chatInquiryId = 1L;
 		Member targetMember = MemberFixture.member(1L);
@@ -146,7 +174,7 @@ class ChatInquiryServiceTest {
 
 		//then
 		assertAll(
-			() -> assertThat(response.chatStatus())
+			() -> assertThat(response.inquiryStatus())
 				.isEqualTo(InquiryStatus.ACCEPTED.getLabel()),
 			() -> assertThat(response.credit())
 				.isEqualTo(previousCredit + CHAT_REWARD)
@@ -174,7 +202,7 @@ class ChatInquiryServiceTest {
 
 		//then
 		assertAll(
-			() -> assertThat(response.chatStatus())
+			() -> assertThat(response.inquiryStatus())
 				.isEqualTo(InquiryStatus.ACCEPTED.getLabel()),
 			() -> assertThat(response.credit())
 				.isEqualTo(previousCredit + CHAT_REWARD),
@@ -199,7 +227,7 @@ class ChatInquiryServiceTest {
 		RejectChatResponse response = chatInquiryService.rejectChat(chatInquiryId, answerer);
 
 		//then
-		assertThat(response.chatStatus())
+		assertThat(response.inquiryStatus())
 			.isEqualTo(InquiryStatus.REJECTED.getLabel());
 	}
 
@@ -221,7 +249,7 @@ class ChatInquiryServiceTest {
 
 		//then
 		assertAll(
-			() -> assertThat(response.chatStatus()).isEqualTo(InquiryStatus.REJECTED.getLabel()),
+			() -> assertThat(response.inquiryStatus()).isEqualTo(InquiryStatus.REJECTED.getLabel()),
 			() -> verify(eventPublisher, times(1)).publishEvent(any(NotificationEvent.class))
 		);
 	}
