@@ -128,7 +128,7 @@ class ChatRoomServiceTest {
 		assertAll(
 			() -> assertThat(response.questionPostId())
 				.isEqualTo(questionPost.getId()),
-			() -> assertThat(response.receiverInfo().memberId())
+			() -> assertThat(response.chatPartner().memberId())
 				.isEqualTo(answerer.getId())
 		);
 	}
@@ -154,7 +154,7 @@ class ChatRoomServiceTest {
 		assertAll(
 			() -> assertThat(response.questionPostId())
 				.isEqualTo(questionPost.getId()),
-			() -> assertThat(response.receiverInfo().memberId())
+			() -> assertThat(response.chatPartner().memberId())
 				.isEqualTo(inquirer.getId())
 		);
 	}

@@ -142,10 +142,10 @@ class ChatRoomControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.questionPostId").value(questionPost.getId()))
 			.andExpect(jsonPath("$.targetJobGroup").value(questionPost.getJobGroup().getLabel()))
 			.andExpect(jsonPath("$.title").value(questionPost.getTitle()))
-			.andExpect(jsonPath("$.receiverInfo.memberId").value(inquirer.getId()))
-			.andExpect(jsonPath("$.receiverInfo.nickname").value(inquirer.getNickname()))
-			.andExpect(jsonPath("$.receiverInfo.memberJobGroup").value(inquirer.getJobGroup().getLabel()))
-			.andExpect(jsonPath("$.receiverInfo.profileImageNo").value(inquirer.getProfileImageNo()))
+			.andExpect(jsonPath("$.chatPartner.memberId").value(inquirer.getId()))
+			.andExpect(jsonPath("$.chatPartner.nickname").value(inquirer.getNickname()))
+			.andExpect(jsonPath("$.chatPartner.memberJobGroup").value(inquirer.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.chatPartner.profileImageNo").value(inquirer.getProfileImageNo()))
 			.andExpect(jsonPath("$.isInquirer").value(false));
 	}
 }
