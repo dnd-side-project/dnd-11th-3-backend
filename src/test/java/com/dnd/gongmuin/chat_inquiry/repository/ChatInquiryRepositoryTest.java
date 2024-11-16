@@ -64,9 +64,9 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		Assertions.assertAll(
 			() -> assertThat(responses).hasSize(2),
 			() -> assertThat(responses.get(0).chatInquiryId()).isEqualTo(chatInquiries.get(1).getId()),
-			() -> assertThat(responses.get(0).partnerId()).isEqualTo(questioner.getId()),
+			() -> assertThat(responses.get(0).partnerInfo().memberId()).isEqualTo(questioner.getId()),
 			() -> assertThat(responses.get(1).chatInquiryId()).isEqualTo(chatInquiries.get(0).getId()),
-			() -> assertThat(responses.get(1).partnerId()).isEqualTo(answerer.getId())
+			() -> assertThat(responses.get(1).partnerInfo().memberId()).isEqualTo(answerer.getId())
 		);
 	}
 

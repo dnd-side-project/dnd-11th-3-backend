@@ -146,7 +146,7 @@ class ChatInquiryServiceTest {
 			() -> assertThat(response).hasSize(1),
 			() -> assertThat(response.get(0).chatInquiryId())
 				.isEqualTo(chatInquiryId),
-			() -> assertThat(response.get(0).partnerId())
+			() -> assertThat(response.get(0).partnerInfo().memberId())
 				.isEqualTo(partner.getId()),
 			() -> assertThat(response.get(0).message())
 				.isEqualTo(CHAT_MESSAGE)
