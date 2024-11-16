@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
@@ -28,8 +29,8 @@ public class ChatInquiryController {
 
 	private final ChatInquiryService chatInquiryService;
 
-	@Operation(summary = "채팅 요청 API", description = "답변자 아이디로 채팅 요청을 생성한다.")
-	@GetMapping("/api/chat/inquiries")
+	@Operation(summary = "채팅 요청 생성 API", description = "답변자 아이디로 채팅 요청을 생성한다.")
+	@PostMapping("/api/chat/inquiries")
 	public ResponseEntity<CreateChatInquiryResponse> createChatInquiry(
 		CreateChatInquiryRequest request,
 		@AuthenticationPrincipal Member member
@@ -40,7 +41,7 @@ public class ChatInquiryController {
 	}
 
 	@Operation(summary = "채팅방 요청 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
-	@GetMapping("/api/chat/inquires")
+	@GetMapping("/api/chat/inquiries")
 	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatInquiresByMember(
 		@AuthenticationPrincipal Member member,
 		Pageable pageable
@@ -51,7 +52,7 @@ public class ChatInquiryController {
 	}
 
 	@Operation(summary = "채팅 수락 API", description = "채팅방에서 요청자와의 채팅을 수락한다.")
-	@PatchMapping("/api/chat/inquires/{chatInquiryId}/accept")
+	@PatchMapping("/api/chat/inquiries/{chatInquiryId}/accept")
 	public ResponseEntity<AcceptChatResponse> acceptChat(
 		@PathVariable("chatInquiryId") Long chatInquiryId,
 		@AuthenticationPrincipal Member member
@@ -61,7 +62,7 @@ public class ChatInquiryController {
 	}
 
 	@Operation(summary = "채팅 거절 API", description = "채팅방에서 요청자와의 채팅을 거절한다.")
-	@PatchMapping("/api/chat/inquires/{chatInquiryId}/reject")
+	@PatchMapping("/api/chat/inquiries/{chatInquiryId}/reject")
 	public ResponseEntity<RejectChatResponse> rejectChat(
 		@PathVariable("chatInquiryId") Long chatInquiryId,
 		@AuthenticationPrincipal Member member

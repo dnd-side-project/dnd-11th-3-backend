@@ -59,6 +59,29 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		chatMessageRepository.deleteAll();
 	}
 
+	@DisplayName("[답변자 아이디로 채팅을 요청할 수 있다.]")
+	@Test
+	void createChatInquiry() throws Exception {
+	    //given
+		Member answerer = memberRepository.save(MemberFixture.member5());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+
+	    //when & then
+		mockMvc.perform(post("/api/chat/inquiries")
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			// .andExpect(jsonPath("$.content[0].chatInquiryId").value(chatInquiry2.getId())) // 내림차순
+			// .andExpect(jsonPath("$.content[0].partnerInfo.memberId").value(member2.getId()))
+			// .andExpect(jsonPath("$.content[0].isInquirer").value(true))
+			// .andExpect(jsonPath("$.content[0].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
+			//
+			// .andExpect(jsonPath("$.content[1].chatInquiryId").value(chatInquiry1.getId()))
+			// .andExpect(jsonPath("$.content[1].partnerInfo.memberId").value(member1.getId()))
+			// .andExpect(jsonPath("$.content[1].isInquirer").value(false))
+			// .andExpect(jsonPath("$.content[1].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
 	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
 	@Test
 	void getChatInquiresByMember() throws Exception {
@@ -77,7 +100,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			ChatInquiryFixture.chatInquiry(questionPosts.get(1), loginMember, member2, CHAT_MESSAGE));
 
 		// when & then
-		mockMvc.perform(get("/api/chat/inquires")
+		mockMvc.perform(get("/api/chat/inquiries")
 				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.size").value(2))
@@ -102,7 +125,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, CHAT_MESSAGE));
 		int previousAnswererCredit = loginMember.getCredit();
 
-		mockMvc.perform(patch("/api/chat/inquires/{chatInquiryId}/accept", chatInquiry.getId())
+		mockMvc.perform(patch("/api/chat/inquiries/{chatInquiryId}/accept", chatInquiry.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.ACCEPTED.getLabel()))
@@ -117,7 +140,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, CHAT_MESSAGE));
 
-		mockMvc.perform(patch("/api/chat/inquires/{chatInquiryId}/reject", chatInquiry.getId())
+		mockMvc.perform(patch("/api/chat/inquiries/{chatInquiryId}/reject", chatInquiry.getId())
 				.cookie(accessToken))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.REJECTED.getLabel()));
