@@ -36,7 +36,7 @@ public class ChatRoomController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅방 활성화 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@Operation(summary = "채팅방 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
 	@GetMapping("/api/chat-rooms")
 	public ResponseEntity<PageResponse<ChatRoomSimpleResponse>> getChatRoomsByMember(
 		@AuthenticationPrincipal Member member,
@@ -47,7 +47,7 @@ public class ChatRoomController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅방 조회 API", description = "채팅방 아이디로 채팅방을 조회한다.")
+	@Operation(summary = "채팅방 상세조회 API", description = "채팅방 아이디로 채팅방을 조회한다.")
 	@GetMapping("/api/chat-rooms/{chatRoomId}")
 	public ResponseEntity<ChatRoomDetailResponse> createChatRoom(
 		@PathVariable("chatRoomId") Long chatRoomId,

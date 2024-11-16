@@ -6,7 +6,7 @@ public record ChatRoomDetailResponse(
 	Long questionPostId,
 	String targetJobGroup,
 	String title,
-	MemberInfo receiverInfo,
+	MemberInfo chatPartner,
 	boolean isInquirer
 ) {
 }
