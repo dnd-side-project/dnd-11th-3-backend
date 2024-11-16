@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.common.fixture;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
@@ -22,5 +24,22 @@ public class ChatInquiryFixture {
 			answerer,
 			message
 		);
+	}
+
+	public static ChatInquiry chatInquiry(
+		Long id,
+		QuestionPost questionPost,
+		Member inquirer,
+		Member answerer,
+		String message
+	) {
+		ChatInquiry chatInquiry = ChatInquiry.of(
+			questionPost,
+			inquirer,
+			answerer,
+			message
+		);
+		ReflectionTestUtils.setField(chatInquiry, "id", id);
+		return chatInquiry;
 	}
 }
