@@ -10,6 +10,6 @@ public record CreateChatInquiryRequest(
 	Long answererId,
 
 	@NotNull(message = "요청 메시지는 필수 입력 항목입니다.")
-	String message
+	String inquiryMessage
 ) {
 }

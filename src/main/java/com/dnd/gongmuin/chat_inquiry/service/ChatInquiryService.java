@@ -56,7 +56,7 @@ public class ChatInquiryService {
 		Member answerer = getMemberById(request.answererId());
 
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
-			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.message())
+			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
 
 		eventPublisher.publishEvent(
