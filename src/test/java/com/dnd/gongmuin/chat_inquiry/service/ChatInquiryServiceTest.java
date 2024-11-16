@@ -47,7 +47,7 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 class ChatInquiryServiceTest {
 
 	private static final int CHAT_REWARD = 2000;
-	private static final String CHAT_MESSAGE = "와";
+	private static final String INQUIRY_MESSAGE = "채팅을 요청합니다.";
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
 
 	@Mock
@@ -75,27 +75,34 @@ class ChatInquiryServiceTest {
 	@Test
 	void createInquiry() {
 		//given
+		Long chatInquiryId = 1L;
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(
+			chatInquiryId, questionPost, inquirer, answerer, INQUIRY_MESSAGE
+		);
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
 			questionPost.getId(),
 			answerer.getId(),
-			CHAT_MESSAGE
+			INQUIRY_MESSAGE
 		);
 
 		given(questionPostRepository.findById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 		given(memberRepository.findById(answerer.getId()))
 			.willReturn(Optional.of(answerer));
+		given(chatInquiryRepository.save(any(ChatInquiry.class))).willReturn(chatInquiry);
 
 		CreateChatInquiryResponse response = chatInquiryService.createChatInquiry(request, inquirer);
-		System.out.println("response = " + response);
-		// //then
-		// assertAll(
-		//
-		// );
-
+		assertAll(
+			() -> assertThat(response.chatInquiryId())
+				.isEqualTo(chatInquiryId),
+			() -> assertThat(response.partnerInfo().memberId())
+				.isEqualTo(answerer.getId()),
+			() -> assertThat(response.inquiryMessage())
+				.isEqualTo(INQUIRY_MESSAGE)
+		);
 	}
 
 	@DisplayName("[요청자의 크레딧이 2000미만이면 채팅을 요청할 수 없다.]")
@@ -109,7 +116,7 @@ class ChatInquiryServiceTest {
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
 			questionPost.getId(),
 			answerer.getId(),
-			CHAT_MESSAGE
+			INQUIRY_MESSAGE
 		);
 
 		given(questionPostRepository.findById(questionPost.getId()))
@@ -131,7 +138,7 @@ class ChatInquiryServiceTest {
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
 		ChatInquiryResponse chatInquiryResponse = new ChatInquiryResponse(
-			chatInquiryId, CHAT_MESSAGE, InquiryStatus.PENDING, true, partner.getId(),
+			chatInquiryId, INQUIRY_MESSAGE, InquiryStatus.PENDING, true, partner.getId(),
 			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
 		);
 		given(chatInquiryRepository.getChatInquiresByMember(targetMember, pageRequest))
@@ -149,7 +156,7 @@ class ChatInquiryServiceTest {
 			() -> assertThat(response.get(0).partnerInfo().memberId())
 				.isEqualTo(partner.getId()),
 			() -> assertThat(response.get(0).message())
-				.isEqualTo(CHAT_MESSAGE)
+				.isEqualTo(INQUIRY_MESSAGE)
 		);
 	}
 
@@ -162,7 +169,7 @@ class ChatInquiryServiceTest {
 		Member answerer = MemberFixture.member(2L);
 		int previousCredit = answerer.getCredit();
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
-		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, CHAT_MESSAGE);
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, INQUIRY_MESSAGE);
 		ChatRoom chatRoom = ChatRoomFixture.chatRoom(1L, questionPost, inquirer, answerer);
 		given(chatInquiryRepository.findById(chatInquiryId))
 			.willReturn(Optional.of(chatInquiry));
@@ -190,7 +197,7 @@ class ChatInquiryServiceTest {
 		Member answerer = MemberFixture.member(2L);
 		int previousCredit = answerer.getCredit();
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
-		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, CHAT_MESSAGE);
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, INQUIRY_MESSAGE);
 		ChatRoom chatRoom = ChatRoomFixture.chatRoom(1L, questionPost, inquirer, answerer);
 		given(chatInquiryRepository.findById(chatInquiryId))
 			.willReturn(Optional.of(chatInquiry));
@@ -218,7 +225,7 @@ class ChatInquiryServiceTest {
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
-		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, CHAT_MESSAGE);
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, INQUIRY_MESSAGE);
 
 		given(chatInquiryRepository.findById(chatInquiryId))
 			.willReturn(Optional.of(chatInquiry));
@@ -239,7 +246,7 @@ class ChatInquiryServiceTest {
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
-		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, CHAT_MESSAGE);
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(questionPost, inquirer, answerer, INQUIRY_MESSAGE);
 
 		given(chatInquiryRepository.findById(chatInquiryId))
 			.willReturn(Optional.of(chatInquiry));
