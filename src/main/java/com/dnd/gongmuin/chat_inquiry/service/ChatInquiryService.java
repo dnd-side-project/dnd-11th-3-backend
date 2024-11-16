@@ -15,8 +15,8 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryMapper;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
+import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.chatroom.dto.ChatRoomMapper;
 import com.dnd.gongmuin.chatroom.exception.ChatErrorCode;
@@ -126,7 +126,6 @@ public class ChatInquiryService {
 			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
 		}
 	}
-
 
 	private QuestionPost getQuestionPostById(Long id) {
 		return questionPostRepository.findById(id)

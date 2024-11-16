@@ -30,7 +30,7 @@ public class ChatInquiryController {
 
 	@Operation(summary = "채팅 요청 API", description = "답변자 아이디로 채팅 요청을 생성한다.")
 	@GetMapping("/api/chat/inquiries")
-	public ResponseEntity<CreateChatInquiryResponse> getChatProposalsByMember(
+	public ResponseEntity<CreateChatInquiryResponse> createChatInquiry(
 		CreateChatInquiryRequest request,
 		@AuthenticationPrincipal Member member
 	) {
@@ -41,7 +41,7 @@ public class ChatInquiryController {
 
 	@Operation(summary = "채팅방 요청 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
 	@GetMapping("/api/chat/inquires")
-	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatProposalsByMember(
+	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatInquiresByMember(
 		@AuthenticationPrincipal Member member,
 		Pageable pageable
 	) {

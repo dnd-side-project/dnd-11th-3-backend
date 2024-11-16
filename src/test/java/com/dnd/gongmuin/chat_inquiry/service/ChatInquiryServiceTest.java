@@ -43,11 +43,10 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[채팅 요청 서비스 단위 테스트]")
 @ExtendWith(MockitoExtension.class)
-class ChatInquiryServiceTest{
+class ChatInquiryServiceTest {
 
 	private static final int CHAT_REWARD = 2000;
 	private static final String CHAT_MESSAGE = "와";
-	private static final String REQUEST_MESSAGE_POSTFIX = "님이 채팅을 요청하셨습니다.";
 	private final PageRequest pageRequest = PageRequest.of(0, 5);
 
 	@Mock

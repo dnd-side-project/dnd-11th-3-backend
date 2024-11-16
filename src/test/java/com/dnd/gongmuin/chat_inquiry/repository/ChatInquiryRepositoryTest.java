@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;

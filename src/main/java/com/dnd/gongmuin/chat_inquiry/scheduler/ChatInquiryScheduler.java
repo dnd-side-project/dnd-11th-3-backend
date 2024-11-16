@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat_inquiry.service.ChatInquiryService;
-import com.dnd.gongmuin.chatroom.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
 
