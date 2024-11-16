@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.dnd.gongmuin.chat.dto.response.LatestChatMessage;
+import com.dnd.gongmuin.chatroom.dto.response.LatestChatMessage;
+import com.dnd.gongmuin.chatroom.repository.ChatMessageQueryRepository;
+import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.support.TestContainerSupport;
 
