@@ -51,6 +51,16 @@ public class ChatRoomMapper {
 		ChatRoomInfo chatRoomInfo,
 		LatestChatMessage latestChatMessage
 	) {
+		String content = null;
+		String type = null;
+		String createdAt = null;
+
+		if (latestChatMessage != null) {
+			content = latestChatMessage.content();
+			type = latestChatMessage.type();
+			createdAt = latestChatMessage.createdAt().toString();
+		}
+
 		return new ChatRoomSimpleResponse(
 			chatRoomInfo.chatRoomId(),
 			new MemberInfo(
@@ -59,9 +69,9 @@ public class ChatRoomMapper {
 				chatRoomInfo.partnerJobGroup(),
 				chatRoomInfo.partnerProfileImageNo()
 			),
-			latestChatMessage.content(),
-			latestChatMessage.type(),
-			latestChatMessage.createdAt().toString()
+			content,
+			type,
+			createdAt
 		);
 	}
 }
