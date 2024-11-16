@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.chat_inquiry.controller;
 
+import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
+import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
@@ -30,7 +32,7 @@ import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 class ChatInquiryControllerTest extends ApiTestSupport {
 
 	private static final int CHAT_REWARD = 2000;
-	private static final String CHAT_MESSAGE = "와";
+	private static final String INQUIRY_MESSAGE = "와";
 
 	@Autowired
 	private ChatMessageRepository chatMessageRepository;
@@ -62,23 +64,21 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 	@DisplayName("[답변자 아이디로 채팅을 요청할 수 있다.]")
 	@Test
 	void createChatInquiry() throws Exception {
-	    //given
+		//given
 		Member answerer = memberRepository.save(MemberFixture.member5());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
-
-	    //when & then
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+		//when & then
 		mockMvc.perform(post("/api/chat/inquiries")
-				.cookie(accessToken))
+				.cookie(accessToken)
+				.content(toJson(request))
+				.contentType(APPLICATION_JSON))
 			.andExpect(status().isOk())
-			// .andExpect(jsonPath("$.content[0].chatInquiryId").value(chatInquiry2.getId())) // 내림차순
-			// .andExpect(jsonPath("$.content[0].partnerInfo.memberId").value(member2.getId()))
-			// .andExpect(jsonPath("$.content[0].isInquirer").value(true))
-			// .andExpect(jsonPath("$.content[0].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
-			//
-			// .andExpect(jsonPath("$.content[1].chatInquiryId").value(chatInquiry1.getId()))
-			// .andExpect(jsonPath("$.content[1].partnerInfo.memberId").value(member1.getId()))
-			// .andExpect(jsonPath("$.content[1].isInquirer").value(false))
-			// .andExpect(jsonPath("$.content[1].inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel())) // 내림차순
 			.andDo(MockMvcResultHandlers.print());
 	}
 
@@ -95,9 +95,9 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			)
 		);
 		ChatInquiry chatInquiry1 = chatInquiryRepository.save(
-			ChatInquiryFixture.chatInquiry(questionPosts.get(0), member1, loginMember, CHAT_MESSAGE));
+			ChatInquiryFixture.chatInquiry(questionPosts.get(0), member1, loginMember, INQUIRY_MESSAGE));
 		ChatInquiry chatInquiry2 = chatInquiryRepository.save(
-			ChatInquiryFixture.chatInquiry(questionPosts.get(1), loginMember, member2, CHAT_MESSAGE));
+			ChatInquiryFixture.chatInquiry(questionPosts.get(1), loginMember, member2, INQUIRY_MESSAGE));
 
 		// when & then
 		mockMvc.perform(get("/api/chat/inquiries")
@@ -122,7 +122,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		Member inquirer = memberRepository.save(MemberFixture.member4());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
-			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, CHAT_MESSAGE));
+			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, INQUIRY_MESSAGE));
 		int previousAnswererCredit = loginMember.getCredit();
 
 		mockMvc.perform(patch("/api/chat/inquiries/{chatInquiryId}/accept", chatInquiry.getId())
@@ -138,7 +138,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		Member inquirer = memberRepository.save(MemberFixture.member4());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(inquirer));
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
-			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, CHAT_MESSAGE));
+			ChatInquiryFixture.chatInquiry(questionPost, inquirer, loginMember, INQUIRY_MESSAGE));
 
 		mockMvc.perform(patch("/api/chat/inquiries/{chatInquiryId}/reject", chatInquiry.getId())
 				.cookie(accessToken))
