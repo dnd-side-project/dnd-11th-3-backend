@@ -80,7 +80,7 @@ public class ChatInquiryService {
 
 	@Transactional
 	public AcceptChatResponse acceptChat(Long chatInquiryId, Member answerer) {
-		ChatInquiry chatInquiry = getChatProposalById(chatInquiryId);
+		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusAccepted();
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_ACCEPT, answerer);
@@ -101,7 +101,7 @@ public class ChatInquiryService {
 
 	@Transactional
 	public RejectChatResponse rejectChat(Long chatInquiryId, Member answerer) {
-		ChatInquiry chatInquiry = getChatProposalById(chatInquiryId);
+		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
 
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusRejected();
@@ -124,7 +124,7 @@ public class ChatInquiryService {
 		);
 	}
 
-	private ChatInquiry getChatProposalById(Long id) {
+	private ChatInquiry getChatInquiryById(Long id) {
 		return chatInquiryRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ChatInquiryErrorCode.NOT_FOUND_INQUIRY));
 	}
