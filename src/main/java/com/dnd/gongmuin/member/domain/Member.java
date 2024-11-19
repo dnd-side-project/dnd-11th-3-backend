@@ -147,12 +147,8 @@ public class Member extends TimeBaseEntity {
 		if (!(o instanceof Member)) {
 			return false;
 		}
-		Member member = (Member) o;
+		Member member = (Member)o;
 		return Objects.equals(id, member.getId());
-	}
-
-	public boolean isEqualMember(Long id) {
-		return this.id.equals(id);
 	}
 
 	@Override
