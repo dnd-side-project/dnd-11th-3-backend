@@ -27,6 +27,18 @@ public class ChatMessageMapper {
 	}
 
 	public static ChatMessage toChatMessage(
+		String message,
+		ChatRoom chatRoom
+	) {
+		return ChatMessage.of(
+			message,
+			chatRoom.getId(),
+			chatRoom.getInquirer().getId(),
+			MessageType.TEXT
+		);
+	}
+
+	public static ChatMessage toChatMessage(
 		ChatMessageRequest request,
 		long chatRoomId
 	) {
