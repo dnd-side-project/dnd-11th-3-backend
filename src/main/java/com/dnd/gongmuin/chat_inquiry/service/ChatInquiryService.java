@@ -113,17 +113,19 @@ public class ChatInquiryService {
 		List<Long> rejectedInquirerIds = chatInquiryRepository.getAutoRejectedInquirerIds();
 		chatInquiryRepository.updateChatInquiryStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
-		creditHistoryService.saveCreditHistoryInMemberIds(rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD);
+		creditHistoryService.saveCreditHistoryInMemberIds(
+			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
+		);
 	}
 
 	private ChatInquiry getChatProposalById(Long id) {
 		return chatInquiryRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ChatErrorCode.NOT_FOUND_CHAT_ROOM));
+			.orElseThrow(() -> new NotFoundException(ChatInquiryErrorCode.NOT_FOUND_INQUIRY));
 	}
 
 	private static void validateIfAnswerer(Member member, ChatInquiry chatInquiry) {
 		if (!Objects.equals(member.getId(), chatInquiry.getAnswerer().getId())) {
-			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
+			throw new ValidationException(ChatInquiryErrorCode.UNAUTHORIZED_REQUEST);
 		}
 	}
 
