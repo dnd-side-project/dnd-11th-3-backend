@@ -4,6 +4,7 @@ import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+import java.util.Objects;
 import java.util.Random;
 
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
@@ -133,12 +134,29 @@ public class Member extends TimeBaseEntity {
 		this.jobCategory = jobCategory;
 	}
 
+	private int setRandomNumber() {
+		Random random = new Random();
+		return random.nextInt(1, 10);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Member)) {
+			return false;
+		}
+		Member member = (Member) o;
+		return Objects.equals(id, member.getId());
+	}
+
 	public boolean isEqualMember(Long id) {
 		return this.id.equals(id);
 	}
 
-	private int setRandomNumber() {
-		Random random = new Random();
-		return random.nextInt(1, 10);
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }
