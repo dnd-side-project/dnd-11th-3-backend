@@ -2,7 +2,7 @@ package com.dnd.gongmuin.chat_inquiry.domain;
 
 import java.util.Arrays;
 
-import com.dnd.gongmuin.chatroom.exception.ChatErrorCode;
+import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 
 import lombok.Getter;
@@ -22,7 +22,7 @@ public enum InquiryStatus {
 		return Arrays.stream(values())
 			.filter(status -> status.isEqual(input))
 			.findAny()
-			.orElseThrow(() -> new ValidationException(ChatErrorCode.NOT_FOUND_CHAT_STATUS));
+			.orElseThrow(() -> new ValidationException(ChatInquiryErrorCode.NOT_FOUND_STATUS));
 	}
 
 	private boolean isEqual(String input) {
