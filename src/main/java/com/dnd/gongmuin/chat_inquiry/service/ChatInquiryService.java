@@ -16,10 +16,12 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
+import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
+import com.dnd.gongmuin.chatroom.dto.ChatMessageMapper;
 import com.dnd.gongmuin.chatroom.dto.ChatRoomMapper;
-import com.dnd.gongmuin.chatroom.exception.ChatErrorCode;
+import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
@@ -49,6 +51,7 @@ public class ChatInquiryService {
 	private final QuestionPostRepository questionPostRepository;
 	private final CreditHistoryService creditHistoryService;
 	private final ApplicationEventPublisher eventPublisher;
+	private final ChatMessageRepository chatMessageRepository;
 
 	@Transactional
 	public CreateChatInquiryResponse createChatInquiry(CreateChatInquiryRequest request, Member inquirer) {
@@ -77,13 +80,16 @@ public class ChatInquiryService {
 
 	@Transactional
 	public AcceptChatResponse acceptChat(Long chatInquiryId, Member answerer) {
-		ChatInquiry chatInquiry = getChatProposalById(chatInquiryId);
+		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusAccepted();
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_ACCEPT, answerer);
 
 		ChatRoom chatRoom = chatRoomRepository.save(
 			ChatRoomMapper.toChatRoom(chatInquiry.getQuestionPost(), chatInquiry.getInquirer(), answerer)
+		);
+		chatMessageRepository.save(
+			ChatMessageMapper.toChatMessage(chatInquiry.getMessage(), chatRoom)
 		);
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_ACCEPT, chatInquiry.getId(), answerer.getId(),
@@ -95,7 +101,7 @@ public class ChatInquiryService {
 
 	@Transactional
 	public RejectChatResponse rejectChat(Long chatInquiryId, Member answerer) {
-		ChatInquiry chatInquiry = getChatProposalById(chatInquiryId);
+		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
 
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusRejected();
@@ -113,17 +119,19 @@ public class ChatInquiryService {
 		List<Long> rejectedInquirerIds = chatInquiryRepository.getAutoRejectedInquirerIds();
 		chatInquiryRepository.updateChatInquiryStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
-		creditHistoryService.saveCreditHistoryInMemberIds(rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD);
+		creditHistoryService.saveCreditHistoryInMemberIds(
+			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
+		);
 	}
 
-	private ChatInquiry getChatProposalById(Long id) {
+	private ChatInquiry getChatInquiryById(Long id) {
 		return chatInquiryRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException(ChatErrorCode.NOT_FOUND_CHAT_ROOM));
+			.orElseThrow(() -> new NotFoundException(ChatInquiryErrorCode.NOT_FOUND_INQUIRY));
 	}
 
 	private static void validateIfAnswerer(Member member, ChatInquiry chatInquiry) {
 		if (!Objects.equals(member.getId(), chatInquiry.getAnswerer().getId())) {
-			throw new ValidationException(ChatErrorCode.UNAUTHORIZED_REQUEST);
+			throw new ValidationException(ChatInquiryErrorCode.UNAUTHORIZED_REQUEST);
 		}
 	}
 

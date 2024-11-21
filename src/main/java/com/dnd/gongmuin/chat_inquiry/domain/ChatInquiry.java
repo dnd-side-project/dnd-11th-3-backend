@@ -4,7 +4,7 @@ import static jakarta.persistence.ConstraintMode.*;
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
 
-import com.dnd.gongmuin.chatroom.exception.ChatErrorCode;
+import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.common.entity.TimeBaseEntity;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
@@ -77,7 +77,7 @@ public class ChatInquiry extends TimeBaseEntity {
 
 	public void updateStatusAccepted() {
 		if (status != InquiryStatus.PENDING) {
-			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
+			throw new ValidationException(ChatInquiryErrorCode.UNABLE_TO_CHANGE_STATUS);
 		}
 		status = InquiryStatus.ACCEPTED;
 		answerer.increaseCredit(CHAT_REWARD);
@@ -85,7 +85,7 @@ public class ChatInquiry extends TimeBaseEntity {
 
 	public void updateStatusRejected() {
 		if (status != InquiryStatus.PENDING) {
-			throw new ValidationException(ChatErrorCode.UNABLE_TO_CHANGE_CHAT_STATUS);
+			throw new ValidationException(ChatInquiryErrorCode.UNABLE_TO_CHANGE_STATUS);
 		}
 		status = InquiryStatus.REJECTED;
 		inquirer.increaseCredit(CHAT_REWARD);

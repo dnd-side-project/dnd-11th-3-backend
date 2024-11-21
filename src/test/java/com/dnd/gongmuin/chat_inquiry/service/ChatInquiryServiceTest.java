@@ -27,6 +27,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
+import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.ChatInquiryFixture;
@@ -67,6 +68,9 @@ class ChatInquiryServiceTest {
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
+
+	@Mock
+	private ChatMessageRepository chatMessageRepository;
 
 	@InjectMocks
 	private ChatInquiryService chatInquiryService;

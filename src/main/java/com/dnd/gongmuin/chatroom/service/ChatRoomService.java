@@ -103,9 +103,10 @@ public class ChatRoomService {
 	}
 
 	private Member getChatPartner(Member member, ChatRoom chatRoom) {
-		if (member.isEqualMember(chatRoom.getAnswerer().getId())) {
+		if (member.equals(chatRoom.getAnswerer())) {
 			return chatRoom.getInquirer();
-		} else if (member.isEqualMember(chatRoom.getInquirer().getId())) {
+		}
+		if (member.equals(chatRoom.getInquirer())) {
 			return chatRoom.getAnswerer();
 		}
 		throw new ValidationException(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM);
