@@ -54,8 +54,8 @@ public abstract class ApiTestSupport extends TestContainerSupport {
 			savedMember.getSocialEmail(),
 			savedMember.getRole()
 		);
-		String token = tokenProvider.generateAccessToken(new CustomOauth2User(authInfo), new Date());
-		tokenProvider.generateRefreshToken(new CustomOauth2User(authInfo), new Date());
+		String token = tokenProvider.generateAccessToken(savedMember, new CustomOauth2User(authInfo), new Date());
+		tokenProvider.generateRefreshToken(savedMember, new CustomOauth2User(authInfo), new Date());
 		this.loginMember = savedMember;
 		this.accessToken = cookieUtil.createCookie(token);
 	}
