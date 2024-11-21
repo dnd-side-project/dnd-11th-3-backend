@@ -28,6 +28,7 @@ import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.answer.repository.AnswerSimpleQueryRepository;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
@@ -40,6 +41,7 @@ import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
+import com.dnd.gongmuin.question_post.repository.QuestionPostSimpleQueryRepository;
 
 @DisplayName("[AnswerService 테스트]")
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +53,13 @@ class AnswerServiceTest {
 	private QuestionPostRepository questionPostRepository;
 
 	@Mock
+	private QuestionPostSimpleQueryRepository questionPostSimpleQueryRepository;
+
+	@Mock
 	private AnswerRepository answerRepository;
+
+	@Mock
+	private AnswerSimpleQueryRepository answerSimpleQueryRepository;
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
@@ -134,6 +142,27 @@ class AnswerServiceTest {
 		Assertions.assertThat(response.isChosen()).isTrue();
 	}
 
+	@DisplayName("[답변을 채택할 수 있다.]")
+	@Test
+	void chooseAnswerV2() {
+		//given
+		Long questionPostId = 1L;
+		Member member = MemberFixture.member(1L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
+		Answer answer = AnswerFixture.answer(1L, questionPostId);
+
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
+			.willReturn(Optional.of(answer));
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+
+		//when
+		AnswerDetailResponse response = answerService.chooseAnswerV2(answer.getId(), member);
+
+		//then
+		Assertions.assertThat(response.isChosen()).isTrue();
+	}
+
 	@DisplayName("[크레딧이 부족하면 답변을 채택할 수 없다.]")
 	@Test
 	void chooseAnswer_fail() {
@@ -177,7 +206,7 @@ class AnswerServiceTest {
 			.hasMessageContaining(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
 	}
 
-	@DisplayName("[동시간대에 100명의 사용자에게 입금을 받는다.]")
+	@DisplayName("[동시에 10_000개의 채택이 일어나 크레딧을 입금 받는다.]")
 	@Test
 	void creditHistoryWithOneHundred() throws Exception {
 		// given
@@ -221,7 +250,6 @@ class AnswerServiceTest {
 		latch.await();
 
 		long endTime = System.currentTimeMillis();
-
 		System.out.println("Execution time: " + (endTime - startTime) + " ms");
 
 		// then
