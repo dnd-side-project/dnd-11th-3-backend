@@ -174,10 +174,16 @@ class AuthServiceTest {
 		given(cookieUtil.createCookie(anyString())).willReturn(new Cookie("Authorization", "reissueToken"));
 		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
 		given(redisUtil.getValues(anyString())).willReturn("refreshToken");
-		given(tokenProvider.generateAccessToken(any(CustomOauth2User.class), any(Date.class))).willReturn(
-			"reissueToken");
-		given(tokenProvider.generateRefreshToken(any(CustomOauth2User.class), any(Date.class))).willReturn(
-			"reissueToken");
+		given(tokenProvider.generateAccessToken(
+			any(Member.class),
+			any(CustomOauth2User.class),
+			any(Date.class)))
+			.willReturn("reissueToken");
+		given(tokenProvider.generateRefreshToken(
+			any(Member.class),
+			any(CustomOauth2User.class),
+			any(Date.class)))
+			.willReturn("reissueToken");
 
 		// when
 		ReissueResponse response = authService.reissue(mockRequest, mockResponse);

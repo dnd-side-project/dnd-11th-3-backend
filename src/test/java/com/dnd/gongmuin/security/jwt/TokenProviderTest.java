@@ -66,7 +66,7 @@ class TokenProviderTest {
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
-		String accessToken = tokenProvider.generateAccessToken(authentication, now);
+		String accessToken = tokenProvider.generateAccessToken(MemberFixture.member(1L), authentication, now);
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
 		Date expiration = claims.getExpiration();
 
@@ -85,7 +85,7 @@ class TokenProviderTest {
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
-		String accessToken = tokenProvider.generateRefreshToken(authentication, now);
+		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), authentication, now);
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
 		Date expiration = claims.getExpiration();
 
@@ -93,17 +93,17 @@ class TokenProviderTest {
 		assertThat(expiration.getTime()).isCloseTo(expectedExpirationTime, within(1000L));
 	}
 
-	@DisplayName("토큰 파싱을 통해 만들어진 인증 객체의 이메일은 토큰 정보의 이메일 값과 동일하다.")
+	@DisplayName("토큰 파싱을 통해 만들어진 인증 객체의 이메일은 회원 이메일과 동일하다.")
 	@Test
 	void getAuthentication() {
 		// given
 		Date now = new Date();
 
-		Member member = MemberFixture.member();
+		Member member = MemberFixture.member(1L);
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
-		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(member, customOauth2User, now);
 
-		given(memberRepository.findBySocialEmail(anyString())).willReturn(Optional.ofNullable(member));
+		given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
 
 		// when
 		Authentication authentication = tokenProvider.getAuthentication(accessToken);
@@ -121,7 +121,7 @@ class TokenProviderTest {
 		Date past = new Date(124, 6, 30, 16, 0, 0);
 
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
-		String accessToken = tokenProvider.generateRefreshToken(customOauth2User, past);
+		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), customOauth2User, past);
 
 		// when
 		boolean result = tokenProvider.validateToken(accessToken, new Date());

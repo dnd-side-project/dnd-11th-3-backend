@@ -54,12 +54,12 @@ public class TokenProvider {
 		this.secretKey = Keys.hmacShaKeyFor(key.getBytes());
 	}
 
-	public String generateAccessToken(CustomOauth2User authentication, Date now) {
-		return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME, now);
+	public String generateAccessToken(Member findMember, CustomOauth2User authentication, Date now) {
+		return generateToken(findMember, authentication, ACCESS_TOKEN_EXPIRE_TIME, now);
 	}
 
-	public String generateRefreshToken(CustomOauth2User authentication, Date now) {
-		String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
+	public String generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
+		String refreshToken = generateToken(findMember, authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
 
 		// redis Refresh 저장
 		redisUtil.setValues("RT:" + authentication.getEmail(), refreshToken,
@@ -67,12 +67,12 @@ public class TokenProvider {
 		return refreshToken;
 	}
 
-	private String generateToken(CustomOauth2User authentication, long tokenExpireTime, Date now) {
+	private String generateToken(Member findMember, CustomOauth2User authentication, long tokenExpireTime, Date now) {
 		Date expiredTime = createExpiredDateWithTokenType(now, tokenExpireTime);
 		String authorities = getAuthorities(authentication);
 
 		return Jwts.builder()
-			.subject(authentication.getEmail())
+			.subject(String.valueOf(findMember.getId()))
 			.claim(ROLE_KEY, authorities)
 			.issuedAt(now)
 			.expiration(expiredTime)
@@ -94,8 +94,8 @@ public class TokenProvider {
 		Claims claims = parseToken(token);
 		List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-		String socialEmail = claims.getSubject();
-		Member principal = memberRepository.findBySocialEmail(socialEmail)
+		String subject = claims.getSubject();
+		Member principal = memberRepository.findById(Long.valueOf(subject))
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);

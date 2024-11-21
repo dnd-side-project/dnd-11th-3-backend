@@ -74,13 +74,13 @@ public class AuthService {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER);
 		}
 
-		memberRepository.save(member);
+		Member savedMember = memberRepository.save(member);
 
 		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
-		tokenProvider.generateRefreshToken(customOauth2User, now);
-		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+		tokenProvider.generateRefreshToken(savedMember, customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(savedMember, customOauth2User, now);
 		response.addCookie(cookieUtil.createCookie(accessToken));
 
 		return new TempSignResponse(true);
@@ -98,8 +98,8 @@ public class AuthService {
 		AuthInfo authInfo = AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole());
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 
-		tokenProvider.generateRefreshToken(customOauth2User, now);
-		String accessToken = tokenProvider.generateAccessToken(customOauth2User, now);
+		tokenProvider.generateRefreshToken(member, customOauth2User, now);
+		String accessToken = tokenProvider.generateAccessToken(member, customOauth2User, now);
 		response.addCookie(cookieUtil.createCookie(accessToken));
 
 		return new TempSignResponse(true);
@@ -175,8 +175,8 @@ public class AuthService {
 
 		CustomOauth2User customUser = new CustomOauth2User(
 			AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole()));
-		String reissuedAccessToken = tokenProvider.generateAccessToken(customUser, new Date());
-		tokenProvider.generateRefreshToken(customUser, new Date());
+		String reissuedAccessToken = tokenProvider.generateAccessToken(member, customUser, new Date());
+		tokenProvider.generateRefreshToken(member, customUser, new Date());
 
 		response.addCookie(cookieUtil.createCookie(reissuedAccessToken));
 
