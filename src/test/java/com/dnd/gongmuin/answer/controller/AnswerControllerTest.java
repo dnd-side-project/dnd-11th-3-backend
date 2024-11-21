@@ -125,6 +125,7 @@ class AnswerControllerTest extends ApiTestSupport {
 			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 		Member answerer = memberRepository.save(MemberFixture.member2());
 		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
+		long startTime = System.currentTimeMillis();
 
 		mockMvc.perform(post("/api/question-posts/answers/{answerId}", answer.getId())
 				.cookie(accessToken)
@@ -137,5 +138,31 @@ class AnswerControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.nickname").value(answerer.getNickname()))
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(answerer.getJobGroup().getLabel())
 			);
+		long endTime = System.currentTimeMillis();
+		System.out.println("Execution time: " + (endTime - startTime) + " ms");
+	}
+
+	@DisplayName("[질문자는 답변을 채택할 수 있다.V2]")
+	@Test
+	void chooseAnswerV2() throws Exception {
+		QuestionPost questionPost
+			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		Member answerer = memberRepository.save(MemberFixture.member2());
+		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
+		long startTime = System.currentTimeMillis();
+
+		mockMvc.perform(post("/api/v2/question-posts/answers/{answerId}", answer.getId())
+				.cookie(accessToken)
+			)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.content").value(answer.getContent()))
+			.andExpect(jsonPath("$.isChosen").value(true))
+			.andExpect(jsonPath("$.isQuestioner").value(false))
+			.andExpect(jsonPath("$.memberInfo.memberId").value(answerer.getId()))
+			.andExpect(jsonPath("$.memberInfo.nickname").value(answerer.getNickname()))
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(answerer.getJobGroup().getLabel())
+			);
+		long endTime = System.currentTimeMillis();
+		System.out.println("Execution time: " + (endTime - startTime) + " ms");
 	}
 }
