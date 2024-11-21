@@ -13,6 +13,7 @@ import com.dnd.gongmuin.answer.dto.AnswerMapper;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.exception.AnswerErrorCode;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.answer.repository.AnswerSimpleQueryRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
@@ -23,6 +24,7 @@ import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
+import com.dnd.gongmuin.question_post.repository.QuestionPostSimpleQueryRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,8 @@ public class AnswerService {
 	private final AnswerRepository answerRepository;
 	private final CreditHistoryService creditHistoryService;
 	private final ApplicationEventPublisher eventPublisher;
+	private final QuestionPostSimpleQueryRepository questionPostSimpleQueryRepository;
+	private final AnswerSimpleQueryRepository answerSimpleQueryRepository;
 
 	private static void validateIfQuestioner(Member member, QuestionPost questionPost) {
 		if (!questionPost.isQuestioner(member.getId())) {
@@ -85,6 +89,23 @@ public class AnswerService {
 		return AnswerMapper.toAnswerDetailResponse(answer);
 	}
 
+	@Transactional
+	public AnswerDetailResponse chooseAnswerV2(
+		Long answerId,
+		Member member
+	) {
+		Answer answer = getAnswerByIdV2(answerId);
+		QuestionPost questionPost = findQuestionPostByIdV2(answer.getQuestionPostId());
+		validateIfQuestioner(member, questionPost);
+		chooseAnswer(questionPost, answer);
+
+		eventPublisher.publishEvent(new NotificationEvent(
+			CHOSEN, questionPost.getId(), member.getId(), answer.getMember()
+		));
+
+		return AnswerMapper.toAnswerDetailResponse(answer);
+	}
+
 	private void chooseAnswer(QuestionPost questionPost, Answer answer) {
 		questionPost.updateIsChosen(answer);
 		answer.getMember().increaseCredit(questionPost.getReward());
@@ -106,6 +127,16 @@ public class AnswerService {
 
 	private QuestionPost findQuestionPostById(Long questionPostId) {
 		return questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+	}
+
+	private Answer getAnswerByIdV2(Long answerId) {
+		return answerSimpleQueryRepository.findAnswerById(answerId)
+			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
+	}
+
+	private QuestionPost findQuestionPostByIdV2(Long questionPostId) {
+		return questionPostSimpleQueryRepository.findQuestionPostById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 	}
 }
