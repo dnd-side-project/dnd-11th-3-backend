@@ -57,6 +57,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
+		chatInquiryRepository.deleteAll();
 		chatRoomRepository.deleteAll();
 		chatMessageRepository.deleteAll();
 	}
@@ -80,6 +81,32 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel())) // 내림차순
 			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[채팅 요청 아이디로 상세 채팅 요청을 조회할 수 있다.]")
+	@Test
+	void getChatInquiryById() throws Exception {
+		//given
+		Member chatPartner = memberRepository.save(MemberFixture.member5());
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		ChatInquiry chatInquiry = chatInquiryRepository.save(
+			ChatInquiryFixture.chatInquiry(questionPost, loginMember, chatPartner, INQUIRY_MESSAGE)
+		);
+
+		//when & then
+		mockMvc.perform(get("/api/chat/inquiries/{chatInquiryId}", chatInquiry.getId())
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.chatInquiryId")
+				.value(chatInquiry.getId()))
+			.andExpect(jsonPath("$.inquiryStatus")
+				.value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.chatPartner.memberId")
+				.value(chatPartner.getId()))
+			.andExpect(jsonPath("$.isInquirer")
+				.value(chatInquiry.getInquirer().equals(loginMember)))
+			.andExpect(jsonPath("$.inquiryStatus")
+				.value(InquiryStatus.PENDING.getLabel()));
 	}
 
 	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
