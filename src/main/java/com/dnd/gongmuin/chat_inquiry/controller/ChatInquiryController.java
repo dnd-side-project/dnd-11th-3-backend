@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
@@ -42,7 +43,17 @@ public class ChatInquiryController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅방 요청 목록 조회 API", description = "회원의 채팅방 목록을 조회한다.")
+	@Operation(summary = "채팅 요청 상세 조회 API", description = "채팅방 요청을 조회한다.")
+	@GetMapping("/api/chat/inquiries/{chatInquiryId}")
+	public ResponseEntity<ChatInquiryDetailResponse> getChatInquiryById(
+		@PathVariable("chatInquiryId") Long chatInquiryId,
+		@AuthenticationPrincipal Member member
+	) {
+		ChatInquiryDetailResponse response = chatInquiryService.getChatInquiryById(chatInquiryId, member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "채팅 요청 목록 조회 API", description = "회원의 채팅 목록을 조회한다.")
 	@GetMapping("/api/chat/inquiries")
 	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatInquiresByMember(
 		@AuthenticationPrincipal Member member,
