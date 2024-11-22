@@ -31,7 +31,7 @@ public class ChatInquiry extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_proposal_id", nullable = false)
+	@Column(name = "chat_inquiry_id", nullable = false)
 	private Long id;
 
 	@ManyToOne(fetch = LAZY)
