@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
@@ -132,6 +134,24 @@ class ChatInquiryServiceTest {
 		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")
+	@Test
+	void getChatInquiryById() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		given(chatInquiryRepository.findById(1L))
+			.willReturn(Optional.of(ChatInquiryFixture.chatInquiry(
+				1L, QuestionPostFixture.questionPost(inquirer), inquirer, answerer, INQUIRY_MESSAGE)
+			));
+		//when
+		ChatInquiryDetailResponse response = chatInquiryService.getChatInquiryById(1L, inquirer);
+
+		//then
+		Assertions.assertThat(response.chatPartner().memberId())
+			.isEqualTo(answerer.getId());
 	}
 
 	@DisplayName("[회원이 속한 채팅 요청 목록을 조회할 수 있다.]")
