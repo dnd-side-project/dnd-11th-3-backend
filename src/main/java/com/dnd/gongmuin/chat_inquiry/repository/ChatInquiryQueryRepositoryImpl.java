@@ -26,29 +26,11 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 	public Slice<ChatInquiryResponse> getChatInquiresByMember(Member member, Pageable pageable) {
 		List<ChatInquiryResponse> content = queryFactory
 			.select(new QChatInquiryResponse(
-				chatInquiry.id,
-				chatInquiry.message,
-				chatInquiry.status,
+				chatInquiry,
 				new CaseBuilder()
 					.when(chatInquiry.inquirer.id.eq(member.getId()))
 					.then(true)
-					.otherwise(false),
-				new CaseBuilder()
-					.when(chatInquiry.inquirer.id.eq(member.getId()))
-					.then(chatInquiry.answerer.id)
-					.otherwise(chatInquiry.inquirer.id),
-				new CaseBuilder()
-					.when(chatInquiry.inquirer.id.eq(member.getId()))
-					.then(chatInquiry.answerer.nickname)
-					.otherwise(chatInquiry.inquirer.nickname),
-				new CaseBuilder()
-					.when(chatInquiry.inquirer.id.eq(member.getId()))
-					.then(chatInquiry.answerer.jobGroup)
-					.otherwise(chatInquiry.inquirer.jobGroup),
-				new CaseBuilder()
-					.when(chatInquiry.inquirer.id.eq(member.getId()))
-					.then(chatInquiry.answerer.profileImageNo)
-					.otherwise(chatInquiry.inquirer.profileImageNo)
+					.otherwise(false)
 			))
 			.from(chatInquiry)
 			.where(chatInquiry.inquirer.id.eq(member.getId())
