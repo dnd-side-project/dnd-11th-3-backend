@@ -44,6 +44,25 @@ public class ChatInquiryMapper {
 		);
 	}
 
+	public static ChatInquiryDetailResponse toChatInquiryDetailResponse(
+		ChatInquiry chatInquiry,
+		Member member
+	) {
+		boolean isInquirer = chatInquiry.getInquirer().equals(member);
+		Member chatPartner = isInquirer ? chatInquiry.getAnswerer() : chatInquiry.getInquirer();
+		return new ChatInquiryDetailResponse(chatInquiry.getId(),
+			chatInquiry.getMessage(),
+			chatInquiry.getStatus().getLabel(),
+			isInquirer,
+			new MemberInfo(
+				chatPartner.getId(),
+				chatPartner.getNickname(),
+				chatPartner.getJobGroup().getLabel(),
+				chatPartner.getProfileImageNo()
+			)
+		);
+	}
+
 	public static AcceptChatResponse toAcceptChatResponse(
 		ChatInquiry chatInquiry,
 		ChatRoom chatRoom
