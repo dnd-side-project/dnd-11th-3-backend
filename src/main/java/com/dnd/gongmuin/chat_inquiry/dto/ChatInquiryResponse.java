@@ -10,7 +10,8 @@ public record ChatInquiryResponse(
 	String inquiryMessage,
 	String inquiryStatus,
 	boolean isInquirer,
-	MemberInfo chatPartner
+	MemberInfo chatPartner,
+	String createdAt
 ) {
 	@QueryProjection
 	public ChatInquiryResponse(
