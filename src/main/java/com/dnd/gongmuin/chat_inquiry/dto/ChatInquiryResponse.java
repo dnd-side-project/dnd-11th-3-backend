@@ -29,7 +29,7 @@ public record ChatInquiryResponse(
 	}
 
 	private static MemberInfo createPartnerInfo(boolean isInquirer, ChatInquiry chatInquiry) {
-		Member partner = isInquirer ? chatInquiry.getAnswerer(): chatInquiry.getInquirer();
+		Member partner = isInquirer ? chatInquiry.getAnswerer() : chatInquiry.getInquirer();
 		return new MemberInfo(
 			partner.getId(),
 			partner.getNickname(),
