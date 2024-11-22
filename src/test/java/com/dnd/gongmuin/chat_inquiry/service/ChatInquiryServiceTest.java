@@ -142,7 +142,7 @@ class ChatInquiryServiceTest {
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
 		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(
-			QuestionPostFixture.questionPost(targetMember), targetMember, partner, INQUIRY_MESSAGE
+			1L, QuestionPostFixture.questionPost(targetMember), targetMember, partner, INQUIRY_MESSAGE
 		);
 		ChatInquiryResponse chatInquiryResponse = new ChatInquiryResponse(chatInquiry, true);
 		given(chatInquiryRepository.getChatInquiresByMember(targetMember, pageRequest))
