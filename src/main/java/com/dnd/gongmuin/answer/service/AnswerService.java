@@ -47,7 +47,7 @@ public class AnswerService {
 		RegisterAnswerRequest request,
 		Member member
 	) {
-		QuestionPost questionPost = findQuestionPostById(questionPostId);
+		QuestionPost questionPost = getQuestionPostById(questionPostId);
 		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
 			member);
 		Answer savedAnswer = answerRepository.save(answer);
@@ -73,8 +73,8 @@ public class AnswerService {
 		Long answerId,
 		Member member
 	) {
-		Answer answer = getAnswerById(answerId);
-		QuestionPost questionPost = findQuestionPostById(answer.getQuestionPostId());
+		Answer answer = getAnswerWithMember(answerId);
+		QuestionPost questionPost = getQuestionPostWithMember(answer.getQuestionPostId());
 		validateIfQuestioner(member, questionPost);
 		chooseAnswer(questionPost, answer);
 
@@ -99,13 +99,18 @@ public class AnswerService {
 		}
 	}
 
-	private Answer getAnswerById(Long answerId) {
-		return answerRepository.findById(answerId)
+	private Answer getAnswerWithMember(Long answerId) {
+		return answerRepository.findByIdWithMember(answerId)
 			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
 	}
 
-	private QuestionPost findQuestionPostById(Long questionPostId) {
+	private QuestionPost getQuestionPostById(Long questionPostId) {
 		return questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+	}
+
+	private QuestionPost getQuestionPostWithMember(Long questionPostId) {
+		return questionPostRepository.findByIdWithMember(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 	}
 }
