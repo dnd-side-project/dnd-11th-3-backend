@@ -89,23 +89,6 @@ public class AnswerService {
 		return AnswerMapper.toAnswerDetailResponse(answer);
 	}
 
-	@Transactional
-	public AnswerDetailResponse chooseAnswerV2(
-		Long answerId,
-		Member member
-	) {
-		Answer answer = getAnswerByIdV2(answerId);
-		QuestionPost questionPost = findQuestionPostByIdV2(answer.getQuestionPostId());
-		validateIfQuestioner(member, questionPost);
-		chooseAnswer(questionPost, answer);
-
-		eventPublisher.publishEvent(new NotificationEvent(
-			CHOSEN, questionPost.getId(), member.getId(), answer.getMember()
-		));
-
-		return AnswerMapper.toAnswerDetailResponse(answer);
-	}
-
 	private void chooseAnswer(QuestionPost questionPost, Answer answer) {
 		questionPost.updateIsChosen(answer);
 		answer.getMember().increaseCredit(questionPost.getReward());
@@ -121,21 +104,11 @@ public class AnswerService {
 	}
 
 	private Answer getAnswerById(Long answerId) {
-		return answerRepository.findById(answerId)
-			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
-	}
-
-	private QuestionPost findQuestionPostById(Long questionPostId) {
-		return questionPostRepository.findById(questionPostId)
-			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-	}
-
-	private Answer getAnswerByIdV2(Long answerId) {
 		return answerSimpleQueryRepository.findAnswerById(answerId)
 			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
 	}
 
-	private QuestionPost findQuestionPostByIdV2(Long questionPostId) {
+	private QuestionPost findQuestionPostById(Long questionPostId) {
 		return questionPostSimpleQueryRepository.findQuestionPostById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 	}

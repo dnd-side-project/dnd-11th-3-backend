@@ -58,15 +58,4 @@ public class AnswerController {
 		AnswerDetailResponse response = answerService.chooseAnswer(answerId, member);
 		return ResponseEntity.ok(response);
 	}
-
-	@Operation(summary = "답변 채택 API", description = "질문자가 답변을 채택한다.")
-	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/api/v2/question-posts/answers/{answerId}")
-	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostIdV2(
-		@PathVariable("answerId") Long answerId,
-		@AuthenticationPrincipal Member member
-	) {
-		AnswerDetailResponse response = answerService.chooseAnswerV2(answerId, member);
-		return ResponseEntity.ok(response);
-	}
 }
