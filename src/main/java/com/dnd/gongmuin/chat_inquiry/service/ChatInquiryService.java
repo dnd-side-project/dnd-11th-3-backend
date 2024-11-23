@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryMapper;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
@@ -68,6 +69,17 @@ public class ChatInquiryService {
 		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
 
 		return ChatInquiryMapper.toCreateChatInquiryResponse(chatInquiry);
+	}
+
+	@Transactional(readOnly = true)
+	public ChatInquiryDetailResponse getChatInquiryById(Long chatInquiryId, Member member) {
+		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
+
+		return ChatInquiryMapper.toChatInquiryDetailResponse(
+			chatInquiry,
+			chatInquiry.getChatPartner(member),
+			chatInquiry.isInquirer(member)
+		);
 	}
 
 	@Transactional(readOnly = true)

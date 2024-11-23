@@ -58,4 +58,12 @@ public class ChatRoom extends TimeBaseEntity {
 	) {
 		return new ChatRoom(questionPost, inquirer, answerer);
 	}
+
+	public boolean isInquirer(Member member) {
+		return member.equals(this.inquirer);
+	}
+
+	public Member getChatPartner(Member member) {
+		return isInquirer(member) ? this.answerer : this.inquirer;
+	}
 }

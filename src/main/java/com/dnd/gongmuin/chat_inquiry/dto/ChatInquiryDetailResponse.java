@@ -2,10 +2,11 @@ package com.dnd.gongmuin.chat_inquiry.dto;
 
 import com.dnd.gongmuin.member.dto.response.MemberInfo;
 
-public record CreateChatInquiryResponse(
+public record ChatInquiryDetailResponse(
 	Long chatInquiryId,
 	String inquiryMessage,
 	String inquiryStatus,
+	boolean isInquirer,
 	MemberInfo chatPartner
 ) {
 }

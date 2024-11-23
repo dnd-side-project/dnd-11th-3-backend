@@ -25,7 +25,6 @@ import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
-import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -73,8 +72,12 @@ public class ChatRoomService {
 	@Transactional(readOnly = true)
 	public ChatRoomDetailResponse getChatRoomById(Long chatRoomId, Member member) {
 		ChatRoom chatRoom = getChatRoomById(chatRoomId);
-		Member chatPartner = getChatPartner(member, chatRoom);
-		return ChatRoomMapper.toChatRoomDetailResponse(chatRoom, chatPartner);
+
+		return ChatRoomMapper.toChatRoomDetailResponse(
+			chatRoom,
+			chatRoom.getChatPartner(member),
+			chatRoom.isInquirer(member)
+		);
 	}
 
 	private List<ChatRoomSimpleResponse> getChatRoomSimpleResponses(List<LatestChatMessage> latestChatMessages,
@@ -100,15 +103,5 @@ public class ChatRoomService {
 	private ChatRoom getChatRoomById(Long id) {
 		return chatRoomRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException(ChatErrorCode.NOT_FOUND_CHAT_ROOM));
-	}
-
-	private Member getChatPartner(Member member, ChatRoom chatRoom) {
-		if (member.equals(chatRoom.getAnswerer())) {
-			return chatRoom.getInquirer();
-		}
-		if (member.equals(chatRoom.getInquirer())) {
-			return chatRoom.getAnswerer();
-		}
-		throw new ValidationException(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM);
 	}
 }

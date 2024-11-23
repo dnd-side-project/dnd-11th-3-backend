@@ -31,7 +31,7 @@ public class ChatInquiry extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_proposal_id", nullable = false)
+	@Column(name = "chat_inquiry_id", nullable = false)
 	private Long id;
 
 	@ManyToOne(fetch = LAZY)
@@ -89,5 +89,13 @@ public class ChatInquiry extends TimeBaseEntity {
 		}
 		status = InquiryStatus.REJECTED;
 		inquirer.increaseCredit(CHAT_REWARD);
+	}
+
+	public boolean isInquirer(Member member) {
+		return member.equals(this.inquirer);
+	}
+
+	public Member getChatPartner(Member member) {
+		return isInquirer(member) ? this.answerer : this.inquirer;
 	}
 }

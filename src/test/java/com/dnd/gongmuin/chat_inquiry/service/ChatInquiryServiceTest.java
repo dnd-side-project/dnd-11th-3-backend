@@ -21,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
@@ -134,6 +135,23 @@ class ChatInquiryServiceTest {
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
 	}
 
+	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")
+	@Test
+	void getChatInquiryById() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		given(chatInquiryRepository.findById(1L))
+			.willReturn(Optional.of(ChatInquiryFixture.chatInquiry(
+				1L, QuestionPostFixture.questionPost(inquirer), inquirer, answerer, INQUIRY_MESSAGE)
+			));
+		//when
+		ChatInquiryDetailResponse response = chatInquiryService.getChatInquiryById(1L, inquirer);
+
+		//then
+		assertThat(response.chatPartner().memberId()).isEqualTo(answerer.getId());
+	}
+
 	@DisplayName("[회원이 속한 채팅 요청 목록을 조회할 수 있다.]")
 	@Test
 	void getChatInquiresByMember() {
@@ -238,8 +256,7 @@ class ChatInquiryServiceTest {
 		RejectChatResponse response = chatInquiryService.rejectChat(chatInquiryId, answerer);
 
 		//then
-		assertThat(response.inquiryStatus())
-			.isEqualTo(InquiryStatus.REJECTED.getLabel());
+		assertThat(response.inquiryStatus()).isEqualTo(InquiryStatus.REJECTED.getLabel());
 	}
 
 	@DisplayName("[답변자가 채팅 요청을 거절할 때 채팅 거절 알림이 발행된다.]")

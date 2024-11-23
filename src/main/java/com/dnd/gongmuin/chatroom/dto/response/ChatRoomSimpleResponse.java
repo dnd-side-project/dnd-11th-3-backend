@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.chatroom.dto.response;
 
-import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 
 public record ChatRoomSimpleResponse(
 	Long chatRoomId,
