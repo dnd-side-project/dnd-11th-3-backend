@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.answer.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,8 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 	@Modifying(flushAutomatically = true, clearAutomatically = true)
 	@Query("UPDATE Answer a SET a.member = :member WHERE a.member.id = :memberId")
 	void updateAnswersMember(Long memberId, Member member);
+
+	@Query("select a from Answer a "
+		+ "join fetch a.member where a.id = :answerId")
+	Optional<Answer> findByIdWithMember(Long answerId);
 }

@@ -125,7 +125,6 @@ class AnswerControllerTest extends ApiTestSupport {
 			= questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 		Member answerer = memberRepository.save(MemberFixture.member2());
 		Answer answer = answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
-		long startTime = System.currentTimeMillis();
 
 		mockMvc.perform(post("/api/question-posts/answers/{answerId}", answer.getId())
 				.cookie(accessToken)
@@ -138,7 +137,5 @@ class AnswerControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.memberInfo.nickname").value(answerer.getNickname()))
 			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(answerer.getJobGroup().getLabel())
 			);
-		long endTime = System.currentTimeMillis();
-		System.out.println("Execution time: " + (endTime - startTime) + " ms");
 	}
 }

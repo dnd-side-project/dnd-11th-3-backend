@@ -1,10 +1,8 @@
 package com.dnd.gongmuin.chat_inquiry.dto;
 
-import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
-import com.dnd.gongmuin.member.domain.JobGroup;
-import com.dnd.gongmuin.member.dto.response.MemberInfo;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record ChatInquiryResponse(

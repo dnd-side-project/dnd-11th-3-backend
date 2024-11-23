@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.question_post.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +17,11 @@ public interface QuestionPostRepository extends JpaRepository<QuestionPost, Long
 
 	List<QuestionPost> findAllByMember(Member member);
 
+	@Query("select q from QuestionPost q "
+		+ "join fetch q.member where q.id = :questionPostId")
+	Optional<QuestionPost> findByIdWithMember(Long questionPostId);
+
 	@Modifying(flushAutomatically = true, clearAutomatically = true)
 	@Query("UPDATE QuestionPost q SET q.member = :member WHERE q.member.id = :memberId")
-	public void updateQuestionPostsMember(Long memberId, Member member);
+	void updateQuestionPostsMember(Long memberId, Member member);
 }
