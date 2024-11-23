@@ -90,4 +90,12 @@ public class ChatInquiry extends TimeBaseEntity {
 		status = InquiryStatus.REJECTED;
 		inquirer.increaseCredit(CHAT_REWARD);
 	}
+
+	public boolean isInquirer(Member member) {
+		return member.equals(this.inquirer);
+	}
+
+	public Member getChatPartner(Member member) {
+		return isInquirer(member) ? this.answerer : this.inquirer;
+	}
 }
