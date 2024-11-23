@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,6 @@ import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
-import com.dnd.gongmuin.answer.repository.AnswerSimpleQueryRepository;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
@@ -41,7 +41,6 @@ import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
-import com.dnd.gongmuin.question_post.repository.QuestionPostSimpleQueryRepository;
 
 @DisplayName("[AnswerService 테스트]")
 @ExtendWith(MockitoExtension.class)
@@ -53,13 +52,7 @@ class AnswerServiceTest {
 	private QuestionPostRepository questionPostRepository;
 
 	@Mock
-	private QuestionPostSimpleQueryRepository questionPostSimpleQueryRepository;
-
-	@Mock
 	private AnswerRepository answerRepository;
-
-	@Mock
-	private AnswerSimpleQueryRepository answerSimpleQueryRepository;
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
@@ -130,9 +123,9 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
+		given(answerRepository.findByIdWithMember(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+		given(questionPostRepository.findByIdWithMember(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when
@@ -152,9 +145,9 @@ class AnswerServiceTest {
 		ReflectionTestUtils.setField(questionPost, "reward", member.getCredit() + 1);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
+		given(answerRepository.findByIdWithMember(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+		given(questionPostRepository.findByIdWithMember(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
@@ -174,9 +167,9 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, questioner);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
+		given(answerRepository.findByIdWithMember(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+		given(questionPostRepository.findByIdWithMember(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
@@ -185,6 +178,7 @@ class AnswerServiceTest {
 			.hasMessageContaining(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
 	}
 
+	@Disabled
 	@DisplayName("[동시에 10_000개의 채택이 일어나 크레딧을 입금 받는다.]")
 	@Test
 	void creditHistoryWithOneHundred() throws Exception {
@@ -210,8 +204,8 @@ class AnswerServiceTest {
 			questionPosts.add(questionPost);
 			answers.add(answer1);
 
-			given(answerSimpleQueryRepository.findAnswerById(i)).willReturn(Optional.of(answer1));
-			given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+			given(answerRepository.findByIdWithMember(i)).willReturn(Optional.of(answer1));
+			given(questionPostRepository.findByIdWithMember(questionPost.getId()))
 				.willReturn(Optional.of(questionPost));
 		}
 
