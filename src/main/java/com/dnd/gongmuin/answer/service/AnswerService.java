@@ -51,7 +51,7 @@ public class AnswerService {
 		RegisterAnswerRequest request,
 		Member member
 	) {
-		QuestionPost questionPost = findQuestionPostById(questionPostId);
+		QuestionPost questionPost = getQuestionPostById(questionPostId);
 		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
 			member);
 		Answer savedAnswer = answerRepository.save(answer);
@@ -106,6 +106,11 @@ public class AnswerService {
 	private Answer getAnswerById(Long answerId) {
 		return answerSimpleQueryRepository.findAnswerById(answerId)
 			.orElseThrow(() -> new NotFoundException(AnswerErrorCode.NOT_FOUND_ANSWER));
+	}
+
+	private QuestionPost getQuestionPostById(Long questionPostId) {
+		return questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 	}
 
 	private QuestionPost findQuestionPostById(Long questionPostId) {
