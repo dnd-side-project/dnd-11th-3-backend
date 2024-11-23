@@ -6,8 +6,8 @@ import com.dnd.gongmuin.chatroom.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomSimpleResponse;
 import com.dnd.gongmuin.chatroom.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.member.dto.response.MemberInfo;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,10 +29,10 @@ public class ChatRoomMapper {
 
 	public static ChatRoomDetailResponse toChatRoomDetailResponse(
 		ChatRoom chatRoom,
-		Member chatPartner
+		Member chatPartner,
+		boolean isInquirer
 	) {
 		QuestionPost questionPost = chatRoom.getQuestionPost();
-		boolean isInquirer = !chatPartner.equals(chatRoom.getInquirer());
 		return new ChatRoomDetailResponse(
 			questionPost.getId(),
 			questionPost.getJobGroup().getLabel(),

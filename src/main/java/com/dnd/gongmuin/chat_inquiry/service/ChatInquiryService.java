@@ -74,7 +74,12 @@ public class ChatInquiryService {
 	@Transactional(readOnly = true)
 	public ChatInquiryDetailResponse getChatInquiryById(Long chatInquiryId, Member member) {
 		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
-		return ChatInquiryMapper.toChatInquiryDetailResponse(chatInquiry, member);
+
+		return ChatInquiryMapper.toChatInquiryDetailResponse(
+			chatInquiry,
+			chatInquiry.getChatPartner(member),
+			chatInquiry.isInquirer(member)
+		);
 	}
 
 	@Transactional(readOnly = true)

@@ -4,8 +4,8 @@ import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.member.dto.response.MemberInfo;
+import com.dnd.gongmuin.question_post.domain.QuestionPost;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -46,10 +46,9 @@ public class ChatInquiryMapper {
 
 	public static ChatInquiryDetailResponse toChatInquiryDetailResponse(
 		ChatInquiry chatInquiry,
-		Member member
+		Member chatPartner,
+		boolean isInquirer
 	) {
-		boolean isInquirer = chatInquiry.getInquirer().equals(member);
-		Member chatPartner = isInquirer ? chatInquiry.getAnswerer() : chatInquiry.getInquirer();
 		return new ChatInquiryDetailResponse(chatInquiry.getId(),
 			chatInquiry.getMessage(),
 			chatInquiry.getStatus().getLabel(),
