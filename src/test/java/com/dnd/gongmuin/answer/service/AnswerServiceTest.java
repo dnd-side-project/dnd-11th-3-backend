@@ -130,9 +130,9 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when
@@ -152,9 +152,9 @@ class AnswerServiceTest {
 		ReflectionTestUtils.setField(questionPost, "reward", member.getCredit() + 1);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
@@ -174,9 +174,9 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, questioner);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
@@ -210,8 +210,9 @@ class AnswerServiceTest {
 			questionPosts.add(questionPost);
 			answers.add(answer1);
 
-			given(answerRepository.findById(i)).willReturn(Optional.of(answer1));
-			given(questionPostRepository.findById(questionPost.getId())).willReturn(Optional.of(questionPost));
+			given(answerSimpleQueryRepository.findAnswerById(i)).willReturn(Optional.of(answer1));
+			given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+				.willReturn(Optional.of(questionPost));
 		}
 
 		// when
