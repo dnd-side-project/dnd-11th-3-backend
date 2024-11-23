@@ -141,10 +141,10 @@ class ChatInquiryServiceTest {
 		Long chatInquiryId = 1L;
 		Member targetMember = MemberFixture.member(1L);
 		Member partner = MemberFixture.member(2L);
-		ChatInquiryResponse chatInquiryResponse = new ChatInquiryResponse(
-			chatInquiryId, INQUIRY_MESSAGE, InquiryStatus.PENDING, true, partner.getId(),
-			partner.getNickname(), partner.getJobGroup(), partner.getProfileImageNo()
+		ChatInquiry chatInquiry = ChatInquiryFixture.chatInquiry(
+			1L, QuestionPostFixture.questionPost(targetMember), targetMember, partner, INQUIRY_MESSAGE
 		);
+		ChatInquiryResponse chatInquiryResponse = new ChatInquiryResponse(chatInquiry, true);
 		given(chatInquiryRepository.getChatInquiresByMember(targetMember, pageRequest))
 			.willReturn(new SliceImpl<>(List.of(chatInquiryResponse), pageRequest, false));
 
