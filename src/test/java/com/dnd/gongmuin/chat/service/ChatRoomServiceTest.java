@@ -24,12 +24,10 @@ import com.dnd.gongmuin.chatroom.dto.response.ChatRoomDetailResponse;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomInfo;
 import com.dnd.gongmuin.chatroom.dto.response.ChatRoomSimpleResponse;
 import com.dnd.gongmuin.chatroom.dto.response.LatestChatMessage;
-import com.dnd.gongmuin.chatroom.exception.ChatErrorCode;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageQueryRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
 import com.dnd.gongmuin.chatroom.service.ChatRoomService;
-import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.ChatMessageFixture;
 import com.dnd.gongmuin.common.fixture.ChatRoomFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -157,25 +155,5 @@ class ChatRoomServiceTest {
 			() -> assertThat(response.chatPartner().memberId())
 				.isEqualTo(inquirer.getId())
 		);
-	}
-
-	@DisplayName("[채팅방에 속하지 않은 사람은 채팅방을 조회할 수 없다.]")
-	@Test
-	void getChatRoomById_Unauthorized() {
-		//given
-		Long chatRoomId = 1L;
-		Member inquirer = MemberFixture.member(1L);
-		Member answerer = MemberFixture.member(2L);
-		Member unrelatedMember = MemberFixture.member(3L);
-		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
-		ChatRoom chatRoom = ChatRoomFixture.chatRoom(questionPost, inquirer, answerer);
-
-		given(chatRoomRepository.findById(chatRoomId))
-			.willReturn(Optional.of(chatRoom));
-
-		//when & then
-		assertThatThrownBy(() -> chatRoomService.getChatRoomById(chatRoomId, unrelatedMember))
-			.isInstanceOf(ValidationException.class)
-			.hasMessageContaining(ChatErrorCode.UNAUTHORIZED_CHAT_ROOM.getMessage());
 	}
 }

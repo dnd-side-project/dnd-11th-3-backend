@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
-import com.dnd.gongmuin.member.dto.response.MemberInfo;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
