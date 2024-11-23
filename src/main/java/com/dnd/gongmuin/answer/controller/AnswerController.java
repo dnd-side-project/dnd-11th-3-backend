@@ -52,7 +52,7 @@ public class AnswerController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/question-posts/answers/{answerId}")
 	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostId(
-		@PathVariable Long answerId,
+		@PathVariable("answerId") Long answerId,
 		@AuthenticationPrincipal Member member
 	) {
 		AnswerDetailResponse response = answerService.chooseAnswer(answerId, member);

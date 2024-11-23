@@ -4,8 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +28,7 @@ import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.answer.repository.AnswerSimpleQueryRepository;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
@@ -36,6 +41,7 @@ import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
+import com.dnd.gongmuin.question_post.repository.QuestionPostSimpleQueryRepository;
 
 @DisplayName("[AnswerService 테스트]")
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +53,13 @@ class AnswerServiceTest {
 	private QuestionPostRepository questionPostRepository;
 
 	@Mock
+	private QuestionPostSimpleQueryRepository questionPostSimpleQueryRepository;
+
+	@Mock
 	private AnswerRepository answerRepository;
+
+	@Mock
+	private AnswerSimpleQueryRepository answerSimpleQueryRepository;
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
@@ -118,9 +130,9 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when
@@ -140,9 +152,9 @@ class AnswerServiceTest {
 		ReflectionTestUtils.setField(questionPost, "reward", member.getCredit() + 1);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
@@ -162,14 +174,65 @@ class AnswerServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, questioner);
 		Answer answer = AnswerFixture.answer(1L, questionPostId);
 
-		given(answerRepository.findById(answer.getId()))
+		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
 			.willReturn(Optional.of(answer));
-		given(questionPostRepository.findById(questionPost.getId()))
+		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
 			.willReturn(Optional.of(questionPost));
 
 		//when & then
 		assertThatThrownBy(() -> answerService.chooseAnswer(answer.getId(), notQuestioner))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
+	}
+
+	@DisplayName("[동시에 10_000개의 채택이 일어나 크레딧을 입금 받는다.]")
+	@Test
+	void creditHistoryWithOneHundred() throws Exception {
+		// given
+		final long threadCount = 10_000L;
+		final int writerCredit = 10_000_000;
+		ExecutorService executorService = Executors.newFixedThreadPool(32);
+		CountDownLatch latch = new CountDownLatch((int)threadCount);
+
+		Member writer = MemberFixture.member(1L);
+		Member answer = MemberFixture.member(2L);
+		ReflectionTestUtils.setField(writer, "credit", writerCredit);
+		ReflectionTestUtils.setField(answer, "credit", 0);
+
+		List<QuestionPost> questionPosts = new ArrayList<>();
+		List<Answer> answers = new ArrayList<>();
+
+		for (long i = 1L; i <= threadCount; i++) {
+			QuestionPost questionPost = QuestionPostFixture.questionPost(i, writer);
+
+			Answer answer1 = AnswerFixture.answer(questionPost.getId(), answer);
+			ReflectionTestUtils.setField(answer1, "id", i);
+			questionPosts.add(questionPost);
+			answers.add(answer1);
+
+			given(answerSimpleQueryRepository.findAnswerById(i)).willReturn(Optional.of(answer1));
+			given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
+				.willReturn(Optional.of(questionPost));
+		}
+
+		// when
+		long startTime = System.currentTimeMillis();
+		for (long i = 0L; i < threadCount; i++) {
+			final int index = (int)i;
+			executorService.submit(() -> {
+				try {
+					answerService.chooseAnswer(answers.get(index).getId(), writer);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+		latch.await();
+
+		long endTime = System.currentTimeMillis();
+		System.out.println("Execution time: " + (endTime - startTime) + " ms");
+
+		// then
+		assertEquals(answer.getCredit(), writerCredit);
 	}
 }
