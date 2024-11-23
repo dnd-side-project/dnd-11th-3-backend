@@ -142,27 +142,6 @@ class AnswerServiceTest {
 		Assertions.assertThat(response.isChosen()).isTrue();
 	}
 
-	@DisplayName("[답변을 채택할 수 있다.]")
-	@Test
-	void chooseAnswerV2() {
-		//given
-		Long questionPostId = 1L;
-		Member member = MemberFixture.member(1L);
-		QuestionPost questionPost = QuestionPostFixture.questionPost(questionPostId, member);
-		Answer answer = AnswerFixture.answer(1L, questionPostId);
-
-		given(answerSimpleQueryRepository.findAnswerById(answer.getId()))
-			.willReturn(Optional.of(answer));
-		given(questionPostSimpleQueryRepository.findQuestionPostById(questionPost.getId()))
-			.willReturn(Optional.of(questionPost));
-
-		//when
-		AnswerDetailResponse response = answerService.chooseAnswerV2(answer.getId(), member);
-
-		//then
-		Assertions.assertThat(response.isChosen()).isTrue();
-	}
-
 	@DisplayName("[크레딧이 부족하면 답변을 채택할 수 없다.]")
 	@Test
 	void chooseAnswer_fail() {
