@@ -149,8 +149,7 @@ class ChatInquiryServiceTest {
 		ChatInquiryDetailResponse response = chatInquiryService.getChatInquiryById(1L, inquirer);
 
 		//then
-		assertThat(response.chatPartner().memberId())
-			.isEqualTo(answerer.getId());
+		assertThat(response.chatPartner().memberId()).isEqualTo(answerer.getId());
 	}
 
 	@DisplayName("[회원이 속한 채팅 요청 목록을 조회할 수 있다.]")
@@ -257,8 +256,7 @@ class ChatInquiryServiceTest {
 		RejectChatResponse response = chatInquiryService.rejectChat(chatInquiryId, answerer);
 
 		//then
-		assertThat(response.inquiryStatus())
-			.isEqualTo(InquiryStatus.REJECTED.getLabel());
+		assertThat(response.inquiryStatus()).isEqualTo(InquiryStatus.REJECTED.getLabel());
 	}
 
 	@DisplayName("[답변자가 채팅 요청을 거절할 때 채팅 거절 알림이 발행된다.]")
