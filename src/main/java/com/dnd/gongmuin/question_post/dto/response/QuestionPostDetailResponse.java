@@ -2,6 +2,8 @@ package com.dnd.gongmuin.question_post.dto.response;
 
 import java.util.List;
 
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
+
 public record QuestionPostDetailResponse(
 	Long questionPostId,
 	String title,

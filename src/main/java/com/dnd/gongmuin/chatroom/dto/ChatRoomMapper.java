@@ -7,7 +7,7 @@ import com.dnd.gongmuin.chatroom.dto.response.ChatRoomSimpleResponse;
 import com.dnd.gongmuin.chatroom.dto.response.LatestChatMessage;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
-import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

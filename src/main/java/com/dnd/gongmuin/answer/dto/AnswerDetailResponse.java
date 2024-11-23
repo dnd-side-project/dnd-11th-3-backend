@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.answer.dto;
 
-import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 
 public record AnswerDetailResponse(
 	Long answerId,

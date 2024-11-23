@@ -1,4 +1,4 @@
-package com.dnd.gongmuin.question_post.dto.response;
+package com.dnd.gongmuin.member.dto.response;
 
 public record MemberInfo(
 	Long memberId,

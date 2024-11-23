@@ -1,6 +1,6 @@
 package com.dnd.gongmuin.chat_inquiry.dto;
 
-import com.dnd.gongmuin.question_post.dto.response.MemberInfo;
+import com.dnd.gongmuin.member.dto.response.MemberInfo;
 
 public record CreateChatInquiryResponse(
 	Long chatInquiryId,
