@@ -3,6 +3,8 @@ package com.dnd.gongmuin.chat_inquiry.dto;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.dto.response.MemberInfo;
+import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
+import com.dnd.gongmuin.member.domain.Member;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record ChatInquiryResponse(
@@ -10,30 +12,31 @@ public record ChatInquiryResponse(
 	String inquiryMessage,
 	String inquiryStatus,
 	boolean isInquirer,
-	MemberInfo chatPartner
+	MemberInfo chatPartner,
+	String createdAt
 ) {
 	@QueryProjection
 	public ChatInquiryResponse(
-		Long chatInquiryId,
-		String inquiryMessage,
-		InquiryStatus inquiryStatus,
-		boolean isInquirer,
-		Long partnerId,
-		String partnerNickname,
-		JobGroup partnerJobGroup,
-		int partnerProfileImageNo
+		ChatInquiry chatInquiry,
+		boolean isInquirer
 	) {
 		this(
-			chatInquiryId,
-			inquiryMessage,
-			inquiryStatus.getLabel(),
+			chatInquiry.getId(),
+			chatInquiry.getMessage(),
+			chatInquiry.getStatus().getLabel(),
 			isInquirer,
-			new MemberInfo(
-				partnerId,
-				partnerNickname,
-				partnerJobGroup.getLabel(),
-				partnerProfileImageNo
-			)
+			createPartnerInfo(isInquirer, chatInquiry),
+			chatInquiry.getCreatedAt().toString()
+		);
+	}
+
+	private static MemberInfo createPartnerInfo(boolean isInquirer, ChatInquiry chatInquiry) {
+		Member partner = isInquirer ? chatInquiry.getAnswerer() : chatInquiry.getInquirer();
+		return new MemberInfo(
+			partner.getId(),
+			partner.getNickname(),
+			partner.getJobGroup().getLabel(),
+			partner.getProfileImageNo()
 		);
 	}
 }

@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.common.fixture;
 
+import java.time.LocalDateTime;
+
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
@@ -40,6 +42,7 @@ public class ChatInquiryFixture {
 			message
 		);
 		ReflectionTestUtils.setField(chatInquiry, "id", id);
+		ReflectionTestUtils.setField(chatInquiry, "createdAt", LocalDateTime.now());
 		return chatInquiry;
 	}
 }
