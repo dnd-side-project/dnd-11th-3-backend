@@ -16,6 +16,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryMapper;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
@@ -129,11 +130,33 @@ public class ChatInquiryService {
 	@Transactional
 	public void rejectChatAuto() {
 		List<Long> rejectedInquirerIds = chatInquiryRepository.getAutoRejectedInquirerIds();
+		List<RejectChatInquiryDto> rejectChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiry();
 		chatInquiryRepository.updateChatInquiryStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		creditHistoryService.saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
 		);
+
+		autoRejectedChatInquiryNotification(rejectChatInquiryDtos);
+	}
+
+	private void autoRejectedChatInquiryNotification(List<RejectChatInquiryDto> rejectChatInquiryDtos) {
+		for (RejectChatInquiryDto rejectChatInquiry : rejectChatInquiryDtos) {
+			eventPublisher.publishEvent(    // 채팅 요청자 알림
+				new NotificationEvent(
+					NotificationType.AUTO_CHAT_REJECT,
+					rejectChatInquiry.chatInquiryId(),
+					rejectChatInquiry.inquirer().getId(),
+					rejectChatInquiry.inquirer())
+			);
+			eventPublisher.publishEvent(
+				new NotificationEvent(        // 채팅 답변자 알림
+					NotificationType.AUTO_CHAT_REJECT,
+					rejectChatInquiry.chatInquiryId(),
+					rejectChatInquiry.answer().getId(),
+					rejectChatInquiry.answer())
+			);
+		}
 	}
 
 	private ChatInquiry getChatInquiryById(Long id) {
