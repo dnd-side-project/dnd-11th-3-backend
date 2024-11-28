@@ -12,6 +12,8 @@ import org.springframework.data.domain.SliceImpl;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.QChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.QRejectChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectChatInquiryDto;
 import com.dnd.gongmuin.member.domain.Member;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -46,6 +48,19 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 	public List<Long> getAutoRejectedInquirerIds() {
 		return queryFactory
 			.select(chatInquiry.inquirer.id)
+			.from(chatInquiry)
+			.where(
+				chatInquiry.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
+				chatInquiry.status.eq(InquiryStatus.PENDING)
+			)
+			.fetch();
+	}
+
+	public List<RejectChatInquiryDto> getAutoRejectedChatInquiry() {
+		return queryFactory
+			.select(new QRejectChatInquiryDto(
+				chatInquiry
+			))
 			.from(chatInquiry)
 			.where(
 				chatInquiry.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
