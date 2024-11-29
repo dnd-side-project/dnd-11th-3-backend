@@ -17,6 +17,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -128,12 +129,40 @@ public class ChatInquiryService {
 
 	@Transactional
 	public void rejectChatAuto() {
-		List<Long> rejectedInquirerIds = chatInquiryRepository.getAutoRejectedInquirerIds();
+		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiries();
+		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectedChatInquiryDtos);
 		chatInquiryRepository.updateChatInquiryStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		creditHistoryService.saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
 		);
+
+		autoRejectedChatInquiryNotification(rejectedChatInquiryDtos);
+	}
+
+	private List<Long> getRejectedInquirerIds(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
+		return rejectedChatInquiryDtos.stream()
+			.map(dto -> dto.inquirer().getId())
+			.toList();
+	}
+
+	private void autoRejectedChatInquiryNotification(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
+		for (RejectedChatInquiryDto rejectChatInquiry : rejectedChatInquiryDtos) {
+			eventPublisher.publishEvent(    // 채팅 요청자 알림
+				new NotificationEvent(
+					NotificationType.AUTO_CHAT_REJECT,
+					rejectChatInquiry.chatInquiryId(),
+					rejectChatInquiry.inquirer().getId(),
+					rejectChatInquiry.inquirer())
+			);
+			eventPublisher.publishEvent(
+				new NotificationEvent(        // 채팅 답변자 알림
+					NotificationType.AUTO_CHAT_REJECT,
+					rejectChatInquiry.chatInquiryId(),
+					rejectChatInquiry.answer().getId(),
+					rejectChatInquiry.answer())
+			);
+		}
 	}
 
 	private ChatInquiry getChatInquiryById(Long id) {

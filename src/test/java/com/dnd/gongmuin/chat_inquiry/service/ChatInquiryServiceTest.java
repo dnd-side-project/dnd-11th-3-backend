@@ -26,6 +26,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
@@ -286,15 +287,21 @@ class ChatInquiryServiceTest {
 	@Test
 	void rejectChatAuto() {
 		// given
-		List<Long> rejectedInquirerIds = List.of(1L, 2L);
-		given(chatInquiryRepository.getAutoRejectedInquirerIds())
-			.willReturn(rejectedInquirerIds);
+		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = List.of(
+			new RejectedChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
+			new RejectedChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
+		);
+		List<Long> rejectedInquirerIds = rejectedChatInquiryDtos.stream()
+			.map(dto -> dto.inquirer().getId())
+			.toList();
+
+		given(chatInquiryRepository.getAutoRejectedChatInquiries()).willReturn(rejectedChatInquiryDtos);
 
 		// when
 		chatInquiryService.rejectChatAuto();
 
 		// then
-		verify(chatInquiryRepository).getAutoRejectedInquirerIds();
+		verify(chatInquiryRepository).getAutoRejectedChatInquiries();
 		verify(chatInquiryRepository).updateChatInquiryStatusRejected();
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(

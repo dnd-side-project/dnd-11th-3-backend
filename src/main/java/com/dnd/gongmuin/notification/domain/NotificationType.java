@@ -16,7 +16,8 @@ public enum NotificationType {
 	CHOSEN("채택"),
 	CHAT_REQUEST("채팅신청"),
 	CHAT_REJECT("채팅거절"),
-	CHAT_ACCEPT("채팅수락");
+	CHAT_ACCEPT("채팅수락"),
+	AUTO_CHAT_REJECT("채팅자동거절");
 
 	private final String label;
 
