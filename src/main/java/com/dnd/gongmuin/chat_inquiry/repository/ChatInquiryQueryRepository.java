@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
 import com.dnd.gongmuin.member.domain.Member;
 
 public interface ChatInquiryQueryRepository {
@@ -16,5 +16,5 @@ public interface ChatInquiryQueryRepository {
 
 	void updateChatInquiryStatusRejected();
 
-	List<RejectChatInquiryDto> getAutoRejectedChatInquiry();
+	List<RejectedChatInquiryDto> getAutoRejectedChatInquiries();
 }
