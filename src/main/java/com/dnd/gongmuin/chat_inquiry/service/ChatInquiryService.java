@@ -129,8 +129,8 @@ public class ChatInquiryService {
 
 	@Transactional
 	public void rejectChatAuto() {
-		List<Long> rejectedInquirerIds = chatInquiryRepository.getAutoRejectedInquirerIds();
 		List<RejectChatInquiryDto> rejectChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiry();
+		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectChatInquiryDtos);
 		chatInquiryRepository.updateChatInquiryStatusRejected();
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		creditHistoryService.saveCreditHistoryInMemberIds(
@@ -138,6 +138,12 @@ public class ChatInquiryService {
 		);
 
 		autoRejectedChatInquiryNotification(rejectChatInquiryDtos);
+	}
+
+	private List<Long> getRejectedInquirerIds(List<RejectChatInquiryDto> rejectChatInquiryDtos) {
+		return rejectChatInquiryDtos.stream()
+			.map(dto -> dto.inquirer().getId())
+			.toList();
 	}
 
 	private void autoRejectedChatInquiryNotification(List<RejectChatInquiryDto> rejectChatInquiryDtos) {
