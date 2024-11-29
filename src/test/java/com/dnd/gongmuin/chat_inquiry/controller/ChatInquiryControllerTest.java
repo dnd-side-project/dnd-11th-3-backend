@@ -66,6 +66,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 	@Test
 	void createChatInquiry() throws Exception {
 		//given
+		int previousCredit = loginMember.getCredit();
 		Member answerer = memberRepository.save(MemberFixture.member5());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
@@ -79,7 +80,8 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel())) // 내림차순
+			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.credit").value(previousCredit-CHAT_REWARD))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
