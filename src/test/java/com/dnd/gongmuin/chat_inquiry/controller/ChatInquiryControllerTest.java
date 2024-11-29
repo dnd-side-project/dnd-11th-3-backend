@@ -81,7 +81,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 				.contentType(APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
-			.andExpect(jsonPath("$.credit").value(previousCredit-CHAT_REWARD))
+			.andExpect(jsonPath("$.credit").value(previousCredit - CHAT_REWARD))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
