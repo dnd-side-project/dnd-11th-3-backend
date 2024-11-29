@@ -35,6 +35,7 @@ public class ChatInquiryMapper {
 			chatInquiry.getId(),
 			chatInquiry.getMessage(),
 			InquiryStatus.PENDING.getLabel(),
+			chatInquiry.getInquirer().getCredit(),
 			new MemberInfo(
 				answerer.getId(),
 				answerer.getNickname(),
