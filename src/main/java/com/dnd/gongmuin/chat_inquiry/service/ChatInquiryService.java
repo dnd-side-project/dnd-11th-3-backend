@@ -59,15 +59,14 @@ public class ChatInquiryService {
 	public CreateChatInquiryResponse createChatInquiry(CreateChatInquiryRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
-
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
-
+		memberRepository.save(inquirer);
+		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_REQUEST, chatInquiry.getId(), inquirer.getId(), answerer)
 		);
-		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
 
 		return ChatInquiryMapper.toCreateChatInquiryResponse(chatInquiry);
 	}
