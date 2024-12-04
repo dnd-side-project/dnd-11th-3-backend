@@ -34,6 +34,7 @@ import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.JobCategory;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.notification.repository.NotificationRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
@@ -127,6 +128,63 @@ class AuthServiceTest {
 				JobGroup.ENG,
 				JobCategory.GME
 			);
+	}
+
+	@DisplayName("추가정보 업데이트할 때 닉네임이 중복이라면 예외가 발생한다.")
+	@Test
+	void throwExceptionWhenSignUpWithDuplicatedNickName() {
+		// given
+		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "김신규", "공업", "일반기계");
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+		Member member = MemberFixture.member3();
+
+		given(memberRepository.findBySocialEmail(member.getSocialEmail())).willReturn(
+			Optional.of(member));
+		given(memberRepository.existsByNickname(request.nickname())).willReturn(Boolean.TRUE);
+
+		// when		// then
+		assertThatThrownBy(() -> authService.signUp(request, member.getSocialEmail(), mockResponse))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessage(MemberErrorCode.DUPLICATED_NICKNAME.getMessage());
+	}
+
+	@DisplayName("추가정보 업데이트할 때 공백이 포함된 닉네임이라면 예외가 발생한다.")
+	@Test
+	void throwExceptionWhenSignUpWithWhiteSpaceNickName() {
+		// given
+		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "　김신규", "공업", "일반기계");
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+		Member member = MemberFixture.member3();
+
+		given(memberRepository.findBySocialEmail(member.getSocialEmail())).willReturn(
+			Optional.of(member));
+		given(memberRepository.existsByNickname(request.nickname())).willReturn(Boolean.FALSE);
+
+		// when		// then
+		assertThatThrownBy(() -> authService.signUp(request, member.getSocialEmail(), mockResponse))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessage(MemberErrorCode.INVALID_NICKNAME.getMessage());
+	}
+
+	@DisplayName("추가정보 업데이트할 때 유효하지 않은 닉네임이라면 예외가 발생한다.")
+	@Test
+	void throwExceptionWhenSignUpWithInvalidNickName() {
+		// given
+		AdditionalInfoRequest request = new AdditionalInfoRequest("abc123@korea.com", "abcㄱㄴ123", "공업", "일반기계");
+		MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+		Member member = MemberFixture.member3();
+
+		given(memberRepository.findBySocialEmail(member.getSocialEmail())).willReturn(
+			Optional.of(member));
+		given(memberRepository.existsByNickname(request.nickname())).willReturn(Boolean.FALSE);
+
+		// when		// then
+		assertThatThrownBy(() -> authService.signUp(request, member.getSocialEmail(), mockResponse))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessage(MemberErrorCode.INVALID_NICKNAME.getMessage());
 	}
 
 	@DisplayName("로그인 회원은 로그아웃 할 수 있다.")
