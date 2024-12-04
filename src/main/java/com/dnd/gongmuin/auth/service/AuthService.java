@@ -123,7 +123,7 @@ public class AuthService {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
 
-		checkNickName(request.nickname());
+		checkNickname(request.nickname());
 
 		updateAdditionalInfo(request, foundMember);
 		cookieUtil.deleteCookie(response);
@@ -131,7 +131,7 @@ public class AuthService {
 		return new SignUpResponse(foundMember.getNickname());
 	}
 
-	private void checkNickName(String nickname) {
+	private void checkNickname(String nickname) {
 		boolean isDuplicated = memberRepository.existsByNickname(nickname);
 		if (isDuplicated) {
 			throw new NotFoundException(MemberErrorCode.DUPLICATED_NICKNAME);
