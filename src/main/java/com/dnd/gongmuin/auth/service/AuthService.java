@@ -51,8 +51,6 @@ public class AuthService {
 	private static final String DELETE = "delete";
 	private static final String ANONYMOUS = "ROLE_ANONYMOUS";
 	private static final Pattern nicknamePattern = Pattern.compile("^[a-zA-Z0-9가-힣]+$");
-	private static final Pattern spaceUnicodePattern =
-		Pattern.compile("[\\\\s\\\\u00A0\\\\u3000\\\\u2000-\\\\u200B\\\\uFEFF]");
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
