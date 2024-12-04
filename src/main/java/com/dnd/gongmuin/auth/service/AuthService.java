@@ -3,6 +3,7 @@ package com.dnd.gongmuin.auth.service;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class AuthService {
 	private static final String LOGOUT = "logout";
 	private static final String DELETE = "delete";
 	private static final String ANONYMOUS = "ROLE_ANONYMOUS";
+	private static final Pattern nicknamePattern = Pattern.compile("^[a-zA-Z0-9가-힣]+$");
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
 	private final CookieUtil cookieUtil;
@@ -121,11 +123,23 @@ public class AuthService {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
 
-		updateAdditionalInfo(request, foundMember);
+		checkNickname(request.nickname());
 
+		updateAdditionalInfo(request, foundMember);
 		cookieUtil.deleteCookie(response);
 
 		return new SignUpResponse(foundMember.getNickname());
+	}
+
+	private void checkNickname(String nickname) {
+		boolean isDuplicated = memberRepository.existsByNickname(nickname);
+		if (isDuplicated) {
+			throw new NotFoundException(MemberErrorCode.DUPLICATED_NICKNAME);
+		}
+
+		if (!nicknamePattern.matcher(nickname).matches()) {
+			throw new NotFoundException(MemberErrorCode.INVALID_NICKNAME);
+		}
 	}
 
 	public LogoutResponse logout(HttpServletRequest request, HttpServletResponse response) {
