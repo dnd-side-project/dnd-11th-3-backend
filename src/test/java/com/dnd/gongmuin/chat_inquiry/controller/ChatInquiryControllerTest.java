@@ -80,8 +80,9 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 				.content(toJson(request))
 				.contentType(APPLICATION_JSON))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.chatPartner.memberId").value(answerer.getId()))
 			.andExpect(jsonPath("$.inquiryStatus").value(InquiryStatus.PENDING.getLabel()))
-			.andExpect(jsonPath("$.credit").value(previousCredit - CHAT_REWARD))
+			.andExpect(jsonPath("$.memberCredit").value(previousCredit - CHAT_REWARD))
 			.andDo(MockMvcResultHandlers.print());
 	}
 
@@ -94,6 +95,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryFixture.chatInquiry(questionPost, loginMember, chatPartner, INQUIRY_MESSAGE)
 		);
+		memberRepository.save(loginMember); // credit 변경사항 flush
 
 		//when & then
 		mockMvc.perform(get("/api/chat/inquiries/{chatInquiryId}", chatInquiry.getId())
@@ -107,8 +109,14 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 				.value(chatPartner.getId()))
 			.andExpect(jsonPath("$.isInquirer")
 				.value(chatInquiry.getInquirer().equals(loginMember)))
+			.andExpect(jsonPath("$.memberCredit")
+				.value(loginMember.getCredit()))
 			.andExpect(jsonPath("$.inquiryStatus")
-				.value(InquiryStatus.PENDING.getLabel()));
+				.value(InquiryStatus.PENDING.getLabel()))
+			.andExpect(jsonPath("$.questionPostId")
+				.value(chatInquiry.getQuestionPost().getId()))
+			.andExpect(jsonPath("$.createdAt")
+				.value(chatInquiry.getCreatedAt().toString()));
 	}
 
 	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
