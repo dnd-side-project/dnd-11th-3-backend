@@ -77,6 +77,7 @@ public class ChatInquiryService {
 
 		return ChatInquiryMapper.toChatInquiryDetailResponse(
 			chatInquiry,
+			member,
 			chatInquiry.getChatPartner(member),
 			chatInquiry.isInquirer(member)
 		);

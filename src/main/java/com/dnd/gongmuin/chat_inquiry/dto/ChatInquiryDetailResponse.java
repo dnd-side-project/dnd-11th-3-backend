@@ -7,6 +7,11 @@ public record ChatInquiryDetailResponse(
 	String inquiryMessage,
 	String inquiryStatus,
 	boolean isInquirer,
-	MemberInfo chatPartner
+	int memberCredit,
+	Long questionPostId,
+	String targetJobGroup,
+	String title,
+	MemberInfo chatPartner,
+	String createdAt
 ) {
 }
