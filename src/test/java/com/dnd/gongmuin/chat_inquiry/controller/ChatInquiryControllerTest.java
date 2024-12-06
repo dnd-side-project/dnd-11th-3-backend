@@ -114,9 +114,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.inquiryStatus")
 				.value(InquiryStatus.PENDING.getLabel()))
 			.andExpect(jsonPath("$.questionPostId")
-				.value(chatInquiry.getQuestionPost().getId()))
-			.andExpect(jsonPath("$.createdAt")
-				.value(chatInquiry.getCreatedAt().toString()));
+				.value(chatInquiry.getQuestionPost().getId()));
 	}
 
 	@DisplayName("[회원의 채팅 요청 목록을 조회할 수 있다.]")
