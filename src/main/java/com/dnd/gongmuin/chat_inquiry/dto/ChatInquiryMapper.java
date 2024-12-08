@@ -47,19 +47,27 @@ public class ChatInquiryMapper {
 
 	public static ChatInquiryDetailResponse toChatInquiryDetailResponse(
 		ChatInquiry chatInquiry,
+		Member member,
 		Member chatPartner,
 		boolean isInquirer
 	) {
-		return new ChatInquiryDetailResponse(chatInquiry.getId(),
+		QuestionPost questionPost = chatInquiry.getQuestionPost();
+		return new ChatInquiryDetailResponse(
+			chatInquiry.getId(),
 			chatInquiry.getMessage(),
 			chatInquiry.getStatus().getLabel(),
 			isInquirer,
+			member.getCredit(),
+			questionPost.getId(),
+			questionPost.getJobGroup().toString(),
+			questionPost.getTitle(),
 			new MemberInfo(
 				chatPartner.getId(),
 				chatPartner.getNickname(),
 				chatPartner.getJobGroup().getLabel(),
 				chatPartner.getProfileImageNo()
-			)
+			),
+			chatInquiry.getCreatedAt().toString()
 		);
 	}
 
