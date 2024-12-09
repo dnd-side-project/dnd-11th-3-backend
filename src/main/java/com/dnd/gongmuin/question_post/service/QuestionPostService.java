@@ -141,6 +141,7 @@ public class QuestionPostService {
 			.orElse(0);
 	}
 
+	@Transactional
 	public void changeStatusAuto() {
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
