@@ -130,4 +130,8 @@ public class QuestionPost extends TimeBaseEntity {
 	public void updateMember(Member anonymous) {
 		this.member = anonymous;
 	}
+
+	public void updateStatus(QuestionPostStatus status) {
+		this.questionPostStatus = status;
+	}
 }
