@@ -39,6 +39,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
 import com.dnd.gongmuin.notification.service.NotificationService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -70,22 +71,47 @@ class AnswerServiceTest {
 	@Test
 	void registerAnswer() {
 		//given
-		Long questionPostId = 1L;
-		Answer answer = AnswerFixture.answer(1L, questionPostId);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
+		Answer answer = AnswerFixture.answer(1L, questionPost.getId());
 		RegisterAnswerRequest request =
 			new RegisterAnswerRequest("답변 내용");
 
-		given(questionPostRepository.findById(questionPostId))
-			.willReturn(Optional.of(QuestionPostFixture.questionPost(questionPostId)));
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
 		given(answerRepository.save(any(Answer.class)))
 			.willReturn(answer);
 
 		//when
 		AnswerDetailResponse response
-			= answerService.registerAnswer(questionPostId, request, MemberFixture.member(1L));
+			= answerService.registerAnswer(questionPost.getId(), request, MemberFixture.member(1L));
 
 		//then
 		Assertions.assertThat(response.content()).isEqualTo(request.content());
+		Assertions.assertThat(questionPost.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.CHOSEN_WAITING);
+	}
+
+	@DisplayName("[답변대기 상태가 아닌 질문글에 답변을 등록할 때 질문글 상태가 변하지 않는다.]")
+	@Test
+	void notChangeQuestionPostStatusWhenRegisterAnswerAndQuestionPostStatusIsNotAnswerWaiting() {
+		//given
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
+		ReflectionTestUtils.setField(questionPost, "questionPostStatus", QuestionPostStatus.CHOSEN_COMPLETE);
+		Answer answer = AnswerFixture.answer(1L, questionPost.getId());
+		RegisterAnswerRequest request =
+			new RegisterAnswerRequest("답변 내용");
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(answerRepository.save(any(Answer.class)))
+			.willReturn(answer);
+
+		//when
+		AnswerDetailResponse response
+			= answerService.registerAnswer(questionPost.getId(), request, MemberFixture.member(1L));
+
+		//then
+		Assertions.assertThat(response.content()).isEqualTo(request.content());
+		Assertions.assertThat(questionPost.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.CHOSEN_COMPLETE);
 	}
 
 	@DisplayName("[질문글 아이디로 답변을 모두 조회할 수 있다.]")
