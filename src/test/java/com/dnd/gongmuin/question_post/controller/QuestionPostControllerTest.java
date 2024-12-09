@@ -20,6 +20,7 @@ import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.ApiTestSupport;
+import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.exception.MemberErrorCode;
@@ -47,10 +48,14 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	private InteractionCountRepository interactionCountRepository;
 
 	@Autowired
+	private CreditHistoryRepository creditHistoryRepository;
+
+	@Autowired
 	private InteractionService interactionService;
 
 	@AfterEach
 	void teardown() {
+		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
 		interactionRepository.deleteAll();
