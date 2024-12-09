@@ -11,6 +11,7 @@ public record QuestionPostDetailResponse(
 	List<String> imageUrls,
 	int reward,
 	String targetJobGroup,
+	String status,
 	MemberInfo memberInfo,
 	boolean isSaved,
 	boolean isRecommended,
