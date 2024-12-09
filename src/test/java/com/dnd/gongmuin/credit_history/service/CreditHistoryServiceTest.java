@@ -43,11 +43,7 @@ class CreditHistoryServiceTest {
 		QuestionPost questionPost = QuestionPostFixture.questionPost(MemberFixture.member(1L));
 		Answer answer = AnswerFixture.answer(questionPost.getId(), MemberFixture.member(2L));
 
-		List<CreditHistory> creditHistories = List.of(
-			CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost.getReward(), questionPost.getMember()),
-			CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost.getReward(), answer.getMember())
-		);
-		given(creditHistoryRepository.saveAll(anyList())).willReturn(creditHistories);
+		given(creditHistoryRepository.save(any(CreditHistory.class))).willReturn(any(CreditHistory.class));
 
 		creditHistoryService.saveChosenCreditHistory(questionPost, answer);
 	}
