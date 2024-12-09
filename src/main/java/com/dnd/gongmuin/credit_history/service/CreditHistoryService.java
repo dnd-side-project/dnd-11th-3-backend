@@ -51,4 +51,10 @@ public class CreditHistoryService {
 			CreditHistoryMapper.toCreditHistory(CreditType.WRITE_QUESTION_POST, reward, member)
 		);
 	}
+
+	public void saveRefundQuestionPostCreditHistory(int reward, Member member) {
+		creditHistoryRepository.save(
+			CreditHistoryMapper.toCreditHistory(CreditType.REFUND_QUESTION_POST, reward, member)
+		);
+	}
 }
