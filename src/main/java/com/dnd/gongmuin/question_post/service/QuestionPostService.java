@@ -10,10 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
-import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.exception.MemberErrorCode;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
@@ -42,6 +41,7 @@ public class QuestionPostService {
 	private final InteractionRepository interactionRepository;
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
+	private final MemberRepository memberRepository;
 
 	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
 		questionPost.updateQuestionPost(
@@ -57,9 +57,9 @@ public class QuestionPostService {
 		RegisterQuestionPostRequest request,
 		Member member
 	) {
-		if (member.getCredit() < request.reward()) {
-			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
-		}
+		member.decreaseCredit(request.reward());
+		memberRepository.save(member);
+
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
 			questionPostRepository.save(questionPost)
