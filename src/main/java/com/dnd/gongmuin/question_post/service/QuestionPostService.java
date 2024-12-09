@@ -146,6 +146,11 @@ public class QuestionPostService {
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
 			memberRepository.save(refundQuestionPostDto.member());
+
+			creditHistoryService.saveRefundQuestionPostCreditHistory(
+				refundQuestionPostDto.reward(),
+				refundQuestionPostDto.member()
+			);
 		});
 
 		questionPostRepository.getAutoChangeStatus();
