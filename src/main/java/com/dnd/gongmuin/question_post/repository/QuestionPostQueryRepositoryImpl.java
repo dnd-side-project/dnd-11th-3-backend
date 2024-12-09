@@ -107,30 +107,26 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 
 	@Override
 	public List<RefundQuestionPostDto> getRefundQuestionPostDtos() {
-		LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
-
 		return queryFactory
 			.select(new QRefundQuestionPostDto(
 				questionPost
 			))
 			.from(questionPost)
 			.where(
-				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING),
-				questionPost.createdAt.before(fourteenDaysAgo)
+				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
+				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING)
 			)
 			.fetch();
 	}
 
 	@Override
 	public void getAutoChangeStatus() {
-		LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
-
 		queryFactory
 			.update(questionPost)
 			.set(questionPost.questionPostStatus, QuestionPostStatus.ANSWER_CLOSE)
 			.where(
-				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING),
-				questionPost.createdAt.before(fourteenDaysAgo)
+				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
+				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING)
 			)
 			.execute();
 	}
