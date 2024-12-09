@@ -49,7 +49,9 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = getQuestionPostById(questionPostId);
-		questionPost.updateStatus(QuestionPostStatus.CHOSEN_WAITING);
+		if (isAnswerWaitingStatus(questionPost)) {
+			questionPost.updateStatus(QuestionPostStatus.CHOSEN_WAITING);
+		}
 
 		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
 			member);
@@ -60,6 +62,10 @@ public class AnswerService {
 		));
 
 		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
+	}
+
+	private boolean isAnswerWaitingStatus(QuestionPost questionPost) {
+		return QuestionPostStatus.ANSWER_WAITING.equals(questionPost.getQuestionPostStatus());
 	}
 
 	@Transactional(readOnly = true)
