@@ -56,6 +56,9 @@ public class QuestionPost extends TimeBaseEntity {
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
 
+	@Column(name = "status", nullable = false)
+	private QuestionPostStatus questionPostStatus;
+
 	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
 	private List<QuestionPostImage> images = new ArrayList<>();
 
@@ -68,6 +71,7 @@ public class QuestionPost extends TimeBaseEntity {
 	private QuestionPost(String title, String content, int reward, JobGroup jobGroup,
 		List<QuestionPostImage> images, Member member) {
 		this.isChosen = false;
+		this.questionPostStatus = QuestionPostStatus.ANSWER_WAITING;
 		this.title = title;
 		this.content = content;
 		this.reward = reward;
