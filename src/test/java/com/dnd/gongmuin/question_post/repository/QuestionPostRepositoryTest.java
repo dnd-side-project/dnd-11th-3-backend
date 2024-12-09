@@ -257,13 +257,12 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 	@Test
 	void getRefundQuestionPostDtos() {
 		// given
-		QuestionPost questionPost1 = QuestionPostFixture.questionPost(1L, member);
-		QuestionPost questionPost2 = QuestionPostFixture.questionPost(2L, member);
-		QuestionPost questionPost3 = QuestionPostFixture.questionPost(3L, member);
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
 		ReflectionTestUtils.setField(questionPost1, "createdAt", LocalDateTime.now().minusWeeks(2));
 		ReflectionTestUtils.setField(questionPost2, "createdAt", LocalDateTime.now().minusWeeks(2));
 		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(2));
-		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
 
 		// when
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
@@ -273,9 +272,9 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(refundQuestionPostDtos).hasSize(3),
 			() -> assertThat(refundQuestionPostDtos).extracting(RefundQuestionPostDto::questionPostId)
 				.containsExactly(
-					1L,
-					2L,
-					3L
+					questionPost1.getId(),
+					questionPost2.getId(),
+					questionPost3.getId()
 				)
 		);
 	}
@@ -284,13 +283,12 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 	@Test
 	void getAutoChangeStatus() {
 		// given
-		QuestionPost questionPost1 = QuestionPostFixture.questionPost(1L, member);
-		QuestionPost questionPost2 = QuestionPostFixture.questionPost(2L, member);
-		QuestionPost questionPost3 = QuestionPostFixture.questionPost(3L, member);
-		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
-		ReflectionTestUtils.setField(questionPost1, "createdAt", LocalDateTime.now().minusWeeks(1));
-		ReflectionTestUtils.setField(questionPost2, "createdAt", LocalDateTime.now().minusWeeks(1));
-		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(1));
+		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost2 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		QuestionPost questionPost3 = questionPostRepository.save(QuestionPostFixture.questionPost(member));
+		ReflectionTestUtils.setField(questionPost1, "createdAt", LocalDateTime.now().minusWeeks(2));
+		ReflectionTestUtils.setField(questionPost2, "createdAt", LocalDateTime.now().minusWeeks(2));
+		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(2));
 
 		// when
 		questionPostRepository.getAutoChangeStatus();
@@ -299,9 +297,9 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		em.clear();
 
 		// then
-		QuestionPost findQuestionPost1 = questionPostRepository.findById(1L).orElseThrow();
-		QuestionPost findQuestionPost2 = questionPostRepository.findById(2L).orElseThrow();
-		QuestionPost findQuestionPost3 = questionPostRepository.findById(3L).orElseThrow();
+		QuestionPost findQuestionPost1 = questionPostRepository.findById(questionPost1.getId()).orElseThrow();
+		QuestionPost findQuestionPost2 = questionPostRepository.findById(questionPost2.getId()).orElseThrow();
+		QuestionPost findQuestionPost3 = questionPostRepository.findById(questionPost3.getId()).orElseThrow();
 		assertAll(
 			() -> assertThat(findQuestionPost1.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
 			() -> assertThat(findQuestionPost2.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
