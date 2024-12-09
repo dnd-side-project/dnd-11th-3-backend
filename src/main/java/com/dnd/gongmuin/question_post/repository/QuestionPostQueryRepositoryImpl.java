@@ -2,6 +2,7 @@ package com.dnd.gongmuin.question_post.repository;
 
 import static com.dnd.gongmuin.question_post.domain.QQuestionPost.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,9 @@ import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
+import com.dnd.gongmuin.question_post.dto.QRefundQuestionPostDto;
+import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.response.QQuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.QRecQuestionPostResponse;
@@ -99,6 +103,36 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 			.fetch();
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
 		return new SliceImpl<>(content, pageable, hasNext);
+	}
+
+	@Override
+	public List<RefundQuestionPostDto> getRefundQuestionPostDtos() {
+		LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
+
+		return queryFactory
+			.select(new QRefundQuestionPostDto(
+				questionPost
+			))
+			.from(questionPost)
+			.where(
+				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING),
+				questionPost.createdAt.before(fourteenDaysAgo)
+			)
+			.fetch();
+	}
+
+	@Override
+	public void getAutoChangeStatus() {
+		LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
+
+		queryFactory
+			.update(questionPost)
+			.set(questionPost.questionPostStatus, QuestionPostStatus.ANSWER_CLOSE)
+			.where(
+				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING),
+				questionPost.createdAt.before(fourteenDaysAgo)
+			)
+			.execute();
 	}
 
 	private BooleanExpression isChosenEq(Boolean isChosen) {
