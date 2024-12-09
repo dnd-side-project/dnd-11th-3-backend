@@ -11,6 +11,7 @@ public record RegisterQuestionPostResponse(
 	List<String> imageUrls,
 	int reward,
 	String targetJobGroup,
+	String status,
 	MemberInfo memberInfo,
 	String createdAt
 ) {
