@@ -161,7 +161,8 @@ class AuthControllerTest extends ApiTestSupport {
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
 		answerRepository.saveAll(List.of(answer1, answer2));
 
-		CreditHistory creditHistory = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, 1000, loginMember);
+		CreditHistory creditHistory = CreditHistoryFixture
+			.creditHistory(CreditType.WRITE_QUESTION_POST, 1000, loginMember);
 		creditHistoryRepository.save(creditHistory);
 
 		Interaction interaction1 = InteractionFixture.interaction(InteractionType.RECOMMEND, loginMember.getId(),
