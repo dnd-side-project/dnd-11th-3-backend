@@ -20,6 +20,7 @@ import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.QuestionPostMapper;
+import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
@@ -138,5 +139,15 @@ public class QuestionPostService {
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.map(InteractionCount::getCount)
 			.orElse(0);
+	}
+
+	public void changeStatusAuto() {
+		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
+		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
+			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
+			memberRepository.save(refundQuestionPostDto.member());
+		});
+
+		questionPostRepository.getAutoChangeStatus();
 	}
 }
