@@ -28,8 +28,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.dto.AnswerDetailResponse;
 import com.dnd.gongmuin.answer.dto.RegisterAnswerRequest;
+import com.dnd.gongmuin.answer.exception.AnswerErrorCode;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.dto.PageResponse;
+import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -112,6 +114,24 @@ class AnswerServiceTest {
 		//then
 		Assertions.assertThat(response.content()).isEqualTo(request.content());
 		Assertions.assertThat(questionPost.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.CHOSEN_COMPLETE);
+	}
+
+	@DisplayName("[답변마감 상태인 질문글에 답변을 등록할 때 예외가 발생한다.]")
+	@Test
+	void throwExceptionWhenQuestionPostStatusIsAnswerClose() {
+		//given
+		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
+		ReflectionTestUtils.setField(questionPost, "questionPostStatus", QuestionPostStatus.ANSWER_CLOSE);
+		RegisterAnswerRequest request = new RegisterAnswerRequest("답변 내용");
+
+		given(questionPostRepository.findById(questionPost.getId())).willReturn(Optional.of(questionPost));
+
+		//when  //then
+		assertThatThrownBy(
+			() -> answerService.registerAnswer(questionPost.getId(), request, MemberFixture.member(1L))
+		)
+			.isInstanceOf(NotFoundException.class)
+			.hasMessage(AnswerErrorCode.NOT_REGISTER_ANSWER.getMessage());
 	}
 
 	@DisplayName("[질문글 아이디로 답변을 모두 조회할 수 있다.]")
