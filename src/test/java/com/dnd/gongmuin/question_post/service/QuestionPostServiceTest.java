@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
@@ -56,6 +57,9 @@ class QuestionPostServiceTest {
 	@Mock
 	private MemberRepository memberRepository;
 
+	@Mock
+	private CreditHistoryService creditHistoryService;
+
 	@InjectMocks
 	private QuestionPostService questionPostService;
 
@@ -76,6 +80,7 @@ class QuestionPostServiceTest {
 
 		given(questionPostRepository.save(any(QuestionPost.class))).willReturn(questionPost);
 		given(memberRepository.save(any(Member.class))).willReturn(member);
+		doNothing().when(creditHistoryService).saveQuestionPostCreditHistory(anyInt(), any(Member.class));
 
 		//when
 		RegisterQuestionPostResponse response = questionPostService.registerQuestionPost(request, member);
