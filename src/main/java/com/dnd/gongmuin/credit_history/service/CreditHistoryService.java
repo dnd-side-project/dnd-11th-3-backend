@@ -45,4 +45,10 @@ public class CreditHistoryService {
 			.toList();
 		creditHistoryRepository.saveAll(histories);
 	}
+
+	public void saveQuestionPostCreditHistory(int reward, Member member) {
+		creditHistoryRepository.save(
+			CreditHistoryMapper.toCreditHistory(CreditType.WRITE_QUESTION_POST, reward, member)
+		);
+	}
 }
