@@ -49,6 +49,11 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = getQuestionPostById(questionPostId);
+
+		if (questionPost.isAnswerClose()) {
+			throw new NotFoundException(AnswerErrorCode.NOT_REGISTER_ANSWER);
+		}
+
 		if (isAnswerWaitingStatus(questionPost)) {
 			questionPost.updateStatus(QuestionPostStatus.CHOSEN_WAITING);
 		}
