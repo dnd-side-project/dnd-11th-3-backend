@@ -1,10 +1,11 @@
 package com.dnd.gongmuin.question_post.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
+import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -76,7 +79,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(2),
 			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
 			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
@@ -105,7 +108,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(2),
 			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
 			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
@@ -134,7 +137,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(1),
 			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId())
 		);
@@ -162,7 +165,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 		System.out.println(responses);
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(1),
 			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost.getId()),
 			() -> assertThat(responses.get(0).savedCount()).isEqualTo(1),
@@ -186,7 +189,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(1),
 
 			() -> assertThat(responses.get(0).questionPostId())
@@ -210,7 +213,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(2),
 
 			() -> assertThat(responses.get(0).questionPostId())
@@ -238,7 +241,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			.getContent();
 
 		//then
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(responses).hasSize(3),
 
 			() -> assertThat(responses.get(0).questionPostId())
@@ -248,6 +251,63 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(responses.get(2).questionPostId())
 				.isEqualTo(questionPost1.getId())
 		);
+	}
+
+	@DisplayName("답변대기 상태로 14일이 지난 질문글을 찾는다.")
+	@Test
+	void getRefundQuestionPostDtos() {
+		// given
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(1L, member);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(2L, member);
+		QuestionPost questionPost3 = QuestionPostFixture.questionPost(3L, member);
+		ReflectionTestUtils.setField(questionPost1, "createdAt", LocalDateTime.now().minusWeeks(2));
+		ReflectionTestUtils.setField(questionPost2, "createdAt", LocalDateTime.now().minusWeeks(2));
+		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(2));
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+
+		// when
+		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
+
+		// then
+		assertAll(
+			() -> assertThat(refundQuestionPostDtos).hasSize(3),
+			() -> assertThat(refundQuestionPostDtos).extracting(RefundQuestionPostDto::questionPostId)
+				.containsExactly(
+					1L,
+					2L,
+					3L
+				)
+		);
+	}
+
+	@DisplayName("답변대기 상태로 14일이 지난 질문글의 상태를 답변마감 상태로 변경한다.")
+	@Test
+	void getAutoChangeStatus() {
+		// given
+		QuestionPost questionPost1 = QuestionPostFixture.questionPost(1L, member);
+		QuestionPost questionPost2 = QuestionPostFixture.questionPost(2L, member);
+		QuestionPost questionPost3 = QuestionPostFixture.questionPost(3L, member);
+		questionPostRepository.saveAll(List.of(questionPost1, questionPost2, questionPost3));
+		ReflectionTestUtils.setField(questionPost1, "createdAt", LocalDateTime.now().minusWeeks(1));
+		ReflectionTestUtils.setField(questionPost2, "createdAt", LocalDateTime.now().minusWeeks(1));
+		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(1));
+
+		// when
+		questionPostRepository.getAutoChangeStatus();
+
+		em.flush();
+		em.clear();
+
+		// then
+		QuestionPost findQuestionPost1 = questionPostRepository.findById(1L).orElseThrow();
+		QuestionPost findQuestionPost2 = questionPostRepository.findById(2L).orElseThrow();
+		QuestionPost findQuestionPost3 = questionPostRepository.findById(3L).orElseThrow();
+		assertAll(
+			() -> assertThat(findQuestionPost1.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
+			() -> assertThat(findQuestionPost2.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
+			() -> assertThat(findQuestionPost3.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE)
+		);
+
 	}
 
 	private void interactPost(Long questionPostId, InteractionType type) {
