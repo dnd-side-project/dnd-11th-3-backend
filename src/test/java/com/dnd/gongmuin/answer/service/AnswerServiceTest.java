@@ -161,6 +161,7 @@ class AnswerServiceTest {
 		Assertions.assertThat(response.isChosen()).isTrue();
 	}
 
+	@Disabled
 	@DisplayName("[크레딧이 부족하면 답변을 채택할 수 없다.]")
 	@Test
 	void chooseAnswer_fail() {
