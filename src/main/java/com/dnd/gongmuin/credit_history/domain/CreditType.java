@@ -1,6 +1,8 @@
 package com.dnd.gongmuin.credit_history.domain;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +27,10 @@ public enum CreditType {
 			.orElseThrow(IllegalArgumentException::new);
 	}
 
-	public static CreditType fromDetail(String detail) {
+	public static List<CreditType> fromDetail(String detail) {
 		return Arrays.stream(values())
 			.filter(type -> type.isDetailEqual(detail))
-			.findAny()
-			.orElseThrow(IllegalArgumentException::new);
+			.collect(Collectors.toList());
 	}
 
 	private boolean isEqual(String input) {
