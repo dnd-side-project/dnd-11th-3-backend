@@ -51,7 +51,7 @@ public class AnswerService {
 		QuestionPost questionPost = getQuestionPostById(questionPostId);
 
 		if (questionPost.isAnswerClose()) {
-			throw new NotFoundException(AnswerErrorCode.NOT_REGISTER_ANSWER);
+			throw new NotFoundException(AnswerErrorCode.CANNOT_REGISTER_ANSWER);
 		}
 
 		if (isAnswerWaitingStatus(questionPost)) {

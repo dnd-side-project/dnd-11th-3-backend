@@ -131,7 +131,7 @@ class AnswerServiceTest {
 			() -> answerService.registerAnswer(questionPost.getId(), request, MemberFixture.member(1L))
 		)
 			.isInstanceOf(NotFoundException.class)
-			.hasMessage(AnswerErrorCode.NOT_REGISTER_ANSWER.getMessage());
+			.hasMessage(AnswerErrorCode.CANNOT_REGISTER_ANSWER.getMessage());
 	}
 
 	@DisplayName("[질문글 아이디로 답변을 모두 조회할 수 있다.]")
