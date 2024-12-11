@@ -50,27 +50,28 @@ public class AnswerService {
 	) {
 		QuestionPost questionPost = getQuestionPostById(questionPostId);
 
-		if (questionPost.isAnswerClose()) {
+		if (questionPost.isAnswerClosed()) {
 			throw new NotFoundException(AnswerErrorCode.CANNOT_REGISTER_ANSWER);
 		}
 
-		if (isAnswerWaitingStatus(questionPost)) {
+		if (questionPost.isAnswerWaiting()) {
 			questionPost.updateStatus(QuestionPostStatus.CHOSEN_WAITING);
 		}
 
-		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
-			member);
-		Answer savedAnswer = answerRepository.save(answer);
+		Answer savedAnswer = answerRepository.save(
+			AnswerMapper.toAnswer(
+				questionPostId,
+				questionPost.isQuestioner(member.getId()),
+				request,
+				member
+			)
+		);
 
 		eventPublisher.publishEvent(new NotificationEvent(
 			ANSWER, questionPost.getId(), member.getId(), questionPost.getMember()
 		));
 
 		return AnswerMapper.toAnswerDetailResponse(savedAnswer);
-	}
-
-	private boolean isAnswerWaitingStatus(QuestionPost questionPost) {
-		return QuestionPostStatus.ANSWER_WAITING.equals(questionPost.getQuestionPostStatus());
 	}
 
 	@Transactional(readOnly = true)
