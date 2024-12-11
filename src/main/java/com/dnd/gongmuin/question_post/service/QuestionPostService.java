@@ -60,14 +60,18 @@ public class QuestionPostService {
 		RegisterQuestionPostRequest request,
 		Member member
 	) {
-		member.decreaseCredit(request.reward());
-		memberRepository.save(member);
+		decreaseMemberCredit(request, member);
 		creditHistoryService.saveQuestionPostCreditHistory(request.reward(), member);
 
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
 			questionPostRepository.save(questionPost)
 		);
+	}
+
+	private void decreaseMemberCredit(RegisterQuestionPostRequest request, Member member) {
+		member.decreaseCredit(request.reward());
+		memberRepository.save(member);
 	}
 
 	@Transactional(readOnly = true)
@@ -142,7 +146,12 @@ public class QuestionPostService {
 	}
 
 	@Transactional
-	public void changeStatusAuto() {
+	public void changeQuestionPostStatusAnswerClosed() {
+		refundQuestionPostCredit();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+	}
+
+	private void refundQuestionPostCredit() {
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
@@ -153,7 +162,5 @@ public class QuestionPostService {
 				refundQuestionPostDto.member()
 			);
 		});
-
-		questionPostRepository.getAutoChangeStatus();
 	}
 }
