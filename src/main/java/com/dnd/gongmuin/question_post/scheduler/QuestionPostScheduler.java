@@ -16,7 +16,7 @@ public class QuestionPostScheduler {
 
 	@Transactional
 	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-	public void changeToAnswerCloseStatusFromAnswerWaiting() {
+	public void closeQuestionPost() {
 		questionPostService.changeStatusAuto();
 	}
 }
