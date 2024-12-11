@@ -138,4 +138,8 @@ public class QuestionPost extends TimeBaseEntity {
 	public boolean isAnswerClosed() {
 		return QuestionPostStatus.ANSWER_CLOSE.equals(this.questionPostStatus);
 	}
+
+	public boolean isAnswerWaiting() {
+		return QuestionPostStatus.ANSWER_WAITING.equals(this.questionPostStatus);
+	}
 }
