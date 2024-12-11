@@ -2,7 +2,6 @@ package com.dnd.gongmuin.credit_history.domain;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public enum CreditType {
 	public static List<CreditType> fromDetail(String detail) {
 		return Arrays.stream(values())
 			.filter(type -> type.isDetailEqual(detail))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private boolean isEqual(String input) {
