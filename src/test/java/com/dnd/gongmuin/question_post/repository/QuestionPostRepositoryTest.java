@@ -291,7 +291,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(2));
 
 		// when
-		questionPostRepository.getAutoChangeStatus();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed();
 
 		em.flush();
 		em.clear();

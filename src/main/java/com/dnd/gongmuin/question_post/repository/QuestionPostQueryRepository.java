@@ -23,5 +23,5 @@ public interface QuestionPostQueryRepository {
 
 	List<RefundQuestionPostDto> getRefundQuestionPostDtos();
 
-	void getAutoChangeStatus();
+	void updateQuestionPostStatusAnswerClosed();
 }

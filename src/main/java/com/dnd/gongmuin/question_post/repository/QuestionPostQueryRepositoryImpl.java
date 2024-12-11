@@ -120,7 +120,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	}
 
 	@Override
-	public void getAutoChangeStatus() {
+	public void updateQuestionPostStatusAnswerClosed() {
 		queryFactory
 			.update(questionPost)
 			.set(questionPost.questionPostStatus, QuestionPostStatus.ANSWER_CLOSE)
