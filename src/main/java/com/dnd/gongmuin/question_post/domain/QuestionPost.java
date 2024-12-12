@@ -56,6 +56,7 @@ public class QuestionPost extends TimeBaseEntity {
 	@Column(name = "is_chosen", nullable = false)
 	private Boolean isChosen;
 
+	@Enumerated(STRING)
 	@Column(name = "status", nullable = false)
 	private QuestionPostStatus questionPostStatus;
 
