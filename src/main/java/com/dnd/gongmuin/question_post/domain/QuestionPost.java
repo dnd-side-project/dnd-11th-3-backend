@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.question_post.domain;
 
 import static jakarta.persistence.ConstraintMode.*;
+import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.*;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class QuestionPost extends TimeBaseEntity {
 
 	@Enumerated(STRING)
 	@Column(name = "status", nullable = false)
-	private QuestionPostStatus questionPostStatus;
+	private QuestionPostStatus status;
 
 	@OneToMany(mappedBy = "questionPost", cascade = CascadeType.ALL)
 	private List<QuestionPostImage> images = new ArrayList<>();
@@ -72,7 +73,7 @@ public class QuestionPost extends TimeBaseEntity {
 	private QuestionPost(String title, String content, int reward, JobGroup jobGroup,
 		List<QuestionPostImage> images, Member member) {
 		this.isChosen = false;
-		this.questionPostStatus = QuestionPostStatus.ANSWER_WAITING;
+		this.status = QuestionPostStatus.ANSWER_WAITING;
 		this.title = title;
 		this.content = content;
 		this.reward = reward;
@@ -133,14 +134,14 @@ public class QuestionPost extends TimeBaseEntity {
 	}
 
 	public void updateStatus(QuestionPostStatus status) {
-		this.questionPostStatus = status;
+		this.status = status;
 	}
 
 	public boolean isAnswerClosed() {
-		return QuestionPostStatus.ANSWER_CLOSE.equals(this.questionPostStatus);
+		return QuestionPostStatus.ANSWER_CLOSED.equals(this.status);
 	}
 
 	public boolean isAnswerWaiting() {
-		return QuestionPostStatus.ANSWER_WAITING.equals(this.questionPostStatus);
+		return QuestionPostStatus.ANSWER_WAITING.equals(this.status);
 	}
 }
