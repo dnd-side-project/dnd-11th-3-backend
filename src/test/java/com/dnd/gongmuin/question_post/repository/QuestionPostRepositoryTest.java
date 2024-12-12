@@ -301,9 +301,9 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		QuestionPost findQuestionPost2 = questionPostRepository.findById(questionPost2.getId()).orElseThrow();
 		QuestionPost findQuestionPost3 = questionPostRepository.findById(questionPost3.getId()).orElseThrow();
 		assertAll(
-			() -> assertThat(findQuestionPost1.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
-			() -> assertThat(findQuestionPost2.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE),
-			() -> assertThat(findQuestionPost3.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSE)
+			() -> assertThat(findQuestionPost1.getStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSED),
+			() -> assertThat(findQuestionPost2.getStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSED),
+			() -> assertThat(findQuestionPost3.getStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSED)
 		);
 
 	}

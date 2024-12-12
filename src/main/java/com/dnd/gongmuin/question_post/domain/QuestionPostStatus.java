@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 public enum QuestionPostStatus {
 
 	ANSWER_WAITING("답변대기"),
-	ANSWER_CLOSE("답변마감"),
+	ANSWER_CLOSED("답변마감"),
 	CHOSEN_WAITING("채택대기"),
-	CHOSEN_COMPLETE("채택완료");
+	CHOSEN_COMPLETED("채택완료");
 
 	private final String status;
 
