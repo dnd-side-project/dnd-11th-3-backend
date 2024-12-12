@@ -21,6 +21,7 @@ import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.dto.NotificationEvent;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
+import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -48,9 +49,23 @@ public class AnswerService {
 		Member member
 	) {
 		QuestionPost questionPost = getQuestionPostById(questionPostId);
-		Answer answer = AnswerMapper.toAnswer(questionPostId, questionPost.isQuestioner(member.getId()), request,
-			member);
-		Answer savedAnswer = answerRepository.save(answer);
+
+		if (questionPost.isAnswerClosed()) {
+			throw new NotFoundException(AnswerErrorCode.CANNOT_REGISTER_ANSWER);
+		}
+
+		if (questionPost.isAnswerWaiting()) {
+			questionPost.updateStatus(QuestionPostStatus.CHOSEN_WAITING);
+		}
+
+		Answer savedAnswer = answerRepository.save(
+			AnswerMapper.toAnswer(
+				questionPostId,
+				questionPost.isQuestioner(member.getId()),
+				request,
+				member
+			)
+		);
 
 		eventPublisher.publishEvent(new NotificationEvent(
 			ANSWER, questionPost.getId(), member.getId(), questionPost.getMember()
@@ -87,8 +102,8 @@ public class AnswerService {
 
 	private void chooseAnswer(QuestionPost questionPost, Answer answer) {
 		questionPost.updateIsChosen(answer);
+		questionPost.updateStatus(QuestionPostStatus.CHOSEN_COMPLETE);
 		answer.getMember().increaseCredit(questionPost.getReward());
-		questionPost.getMember().decreaseCredit(questionPost.getReward());
 		creditHistoryService.saveChosenCreditHistory(questionPost, answer);
 	}
 

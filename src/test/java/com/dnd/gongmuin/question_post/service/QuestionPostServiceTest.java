@@ -18,13 +18,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
+import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
@@ -51,6 +54,12 @@ class QuestionPostServiceTest {
 	@Mock
 	private InteractionCountRepository interactionCountRepository;
 
+	@Mock
+	private MemberRepository memberRepository;
+
+	@Mock
+	private CreditHistoryService creditHistoryService;
+
 	@InjectMocks
 	private QuestionPostService questionPostService;
 
@@ -59,6 +68,7 @@ class QuestionPostServiceTest {
 	void registerQuestionPost() {
 		//given
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
+
 		RegisterQuestionPostRequest request =
 			new RegisterQuestionPostRequest(
 				"제목",
@@ -68,8 +78,9 @@ class QuestionPostServiceTest {
 				"공업"
 			);
 
-		given(questionPostRepository.save(any(QuestionPost.class)))
-			.willReturn(questionPost);
+		given(questionPostRepository.save(any(QuestionPost.class))).willReturn(questionPost);
+		given(memberRepository.save(any(Member.class))).willReturn(member);
+		doNothing().when(creditHistoryService).saveQuestionPostCreditHistory(anyInt(), any(Member.class));
 
 		//when
 		RegisterQuestionPostResponse response = questionPostService.registerQuestionPost(request, member);
@@ -79,7 +90,8 @@ class QuestionPostServiceTest {
 			() -> assertThat(response.title()).isEqualTo(request.title()),
 			() -> assertThat(response.content()).isEqualTo(request.content()),
 			() -> assertThat(response.reward()).isEqualTo(request.reward()),
-			() -> assertThat(response.targetJobGroup()).isEqualTo(request.targetJobGroup())
+			() -> assertThat(response.targetJobGroup()).isEqualTo(request.targetJobGroup()),
+			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus())
 		);
 	}
 
@@ -110,7 +122,8 @@ class QuestionPostServiceTest {
 		assertAll(
 			() -> assertThat(response.questionPostId()).isEqualTo(questionPost.getId()),
 			() -> assertThat(response.recommendCount()).isZero(),
-			() -> assertThat(response.savedCount()).isZero()
+			() -> assertThat(response.savedCount()).isZero(),
+			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus())
 		);
 	}
 
@@ -143,12 +156,10 @@ class QuestionPostServiceTest {
 			= questionPostService.getQuestionPostById(questionPost.getId(), member);
 		//then
 		assertAll(
-			() -> assertThat(response.questionPostId())
-				.isEqualTo(questionPost.getId()),
-			() -> assertThat(response.recommendCount())
-				.isEqualTo(recommendCount.getCount()).isEqualTo(1),
-			() -> assertThat(response.savedCount())
-				.isEqualTo(savedCount.getCount()).isEqualTo(1)
+			() -> assertThat(response.questionPostId()).isEqualTo(questionPost.getId()),
+			() -> assertThat(response.recommendCount()).isEqualTo(recommendCount.getCount()).isEqualTo(1),
+			() -> assertThat(response.savedCount()).isEqualTo(savedCount.getCount()).isEqualTo(1),
+			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus())
 		);
 	}
 
@@ -199,7 +210,8 @@ class QuestionPostServiceTest {
 				.isEqualTo(questionPost.getId()),
 			() -> assertThat(response.savedCount()).isZero(),
 			() -> assertThat(response.recommendCount())
-				.isEqualTo(recommendCount.getCount()).isEqualTo(1)
+				.isEqualTo(recommendCount.getCount()).isEqualTo(1),
+			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus())
 		);
 	}
 

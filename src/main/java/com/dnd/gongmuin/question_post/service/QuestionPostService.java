@@ -10,16 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
-import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
-import com.dnd.gongmuin.member.exception.MemberErrorCode;
+import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.post_interaction.domain.InteractionCount;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.repository.InteractionCountRepository;
 import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.QuestionPostMapper;
+import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
@@ -42,6 +43,8 @@ public class QuestionPostService {
 	private final InteractionRepository interactionRepository;
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
+	private final MemberRepository memberRepository;
+	private final CreditHistoryService creditHistoryService;
 
 	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
 		questionPost.updateQuestionPost(
@@ -57,13 +60,18 @@ public class QuestionPostService {
 		RegisterQuestionPostRequest request,
 		Member member
 	) {
-		if (member.getCredit() < request.reward()) {
-			throw new ValidationException(MemberErrorCode.NOT_ENOUGH_CREDIT);
-		}
+		decreaseMemberCredit(request, member);
+		creditHistoryService.saveQuestionPostCreditHistory(request.reward(), member);
+
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
 			questionPostRepository.save(questionPost)
 		);
+	}
+
+	private void decreaseMemberCredit(RegisterQuestionPostRequest request, Member member) {
+		member.decreaseCredit(request.reward());
+		memberRepository.save(member);
 	}
 
 	@Transactional(readOnly = true)
@@ -135,5 +143,24 @@ public class QuestionPostService {
 			.findByQuestionPostIdAndType(questionPostId, type)
 			.map(InteractionCount::getCount)
 			.orElse(0);
+	}
+
+	@Transactional
+	public void changeQuestionPostStatusAnswerClosed() {
+		refundQuestionPostCredit();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+	}
+
+	private void refundQuestionPostCredit() {
+		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
+		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
+			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
+			memberRepository.save(refundQuestionPostDto.member());
+
+			creditHistoryService.saveRefundQuestionPostCreditHistory(
+				refundQuestionPostDto.reward(),
+				refundQuestionPostDto.member()
+			);
+		});
 	}
 }

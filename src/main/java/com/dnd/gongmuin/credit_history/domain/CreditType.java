@@ -2,7 +2,6 @@ package com.dnd.gongmuin.credit_history.domain;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,9 @@ public enum CreditType {
 	CHOSEN("채택받기", "입금"),
 	CHAT_REQUEST("채팅 요청", "출금"),
 	CHAT_ACCEPT("채팅 수락", "입금"),
-	CHAT_REFUND("채팅 환급", "입금");
+	CHAT_REFUND("채팅 환급", "입금"),
+	WRITE_QUESTION_POST("질문글 작성", "출금"),
+	REFUND_QUESTION_POST("질문글 환급", "입금");
 
 	private final String label;
 	private final String detail;
@@ -30,7 +31,7 @@ public enum CreditType {
 	public static List<CreditType> fromDetail(String detail) {
 		return Arrays.stream(values())
 			.filter(type -> type.isDetailEqual(detail))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private boolean isEqual(String input) {

@@ -227,11 +227,13 @@ class MemberControllerTest extends ApiTestSupport {
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
 		answerRepository.saveAll(List.of(answer1, answer2));
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost1.getMember());
 		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost2.getMember());
 		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
@@ -270,11 +272,13 @@ class MemberControllerTest extends ApiTestSupport {
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
 		answerRepository.saveAll(List.of(answer1, answer2));
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost1.getMember());
 		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost2.getMember());
 		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
@@ -309,11 +313,13 @@ class MemberControllerTest extends ApiTestSupport {
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), loginMember);
 		answerRepository.saveAll(List.of(answer1, answer2));
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost1.getMember());
 		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.WRITE_QUESTION_POST,
+			questionPost1.getReward(),
 			questionPost2.getMember());
 		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
 			answer2.getMember());

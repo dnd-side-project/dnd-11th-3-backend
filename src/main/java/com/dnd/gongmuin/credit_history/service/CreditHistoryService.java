@@ -25,10 +25,9 @@ public class CreditHistoryService {
 
 	@Transactional
 	public void saveChosenCreditHistory(QuestionPost questionPost, Answer answer) {
-		creditHistoryRepository.saveAll(List.of(
-			CreditHistoryMapper.toCreditHistory(CreditType.CHOSEN, questionPost.getReward(), answer.getMember()),
-			CreditHistoryMapper.toCreditHistory(CreditType.CHOOSE, questionPost.getReward(), questionPost.getMember())
-		));
+		creditHistoryRepository.save(
+			CreditHistoryMapper.toCreditHistory(CreditType.CHOSEN, questionPost.getReward(), answer.getMember())
+		);
 	}
 
 	@Transactional
@@ -45,5 +44,17 @@ public class CreditHistoryService {
 			.map(inquirer -> CreditHistory.of(type, credit, inquirer))
 			.toList();
 		creditHistoryRepository.saveAll(histories);
+	}
+
+	public void saveQuestionPostCreditHistory(int reward, Member member) {
+		creditHistoryRepository.save(
+			CreditHistoryMapper.toCreditHistory(CreditType.WRITE_QUESTION_POST, reward, member)
+		);
+	}
+
+	public void saveRefundQuestionPostCreditHistory(int reward, Member member) {
+		creditHistoryRepository.save(
+			CreditHistoryMapper.toCreditHistory(CreditType.REFUND_QUESTION_POST, reward, member)
+		);
 	}
 }

@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.member.repository;
 
+import static com.dnd.gongmuin.credit_history.domain.CreditType.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +25,6 @@ import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
 import com.dnd.gongmuin.common.support.DataJpaTestSupport;
 import com.dnd.gongmuin.credit_history.domain.CreditHistory;
-import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.repository.CreditHistoryRepository;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.dto.response.AnsweredQuestionPostsResponse;
@@ -417,13 +417,13 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost1.getMember());
-		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost2.getMember());
-		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
@@ -476,19 +476,15 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost1.getMember());
-		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost2.getMember());
-		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
-		List<CreditHistory> creditHistories = creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
-		for (CreditHistory ch : creditHistories) {
-			System.out.println("ch.getId() = " + ch.getId());
-			System.out.println("ch.getType().getDetail() = " + ch.getType().getDetail());
-		}
+		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
 		// when
 		Slice<CreditHistoryResponse> creditHistoryByMember = memberRepository.getCreditHistoryByMember(
@@ -528,13 +524,13 @@ class MemberRepositoryTest extends DataJpaTestSupport {
 		QuestionPost questionPost2 = QuestionPostFixture.questionPost(member2);
 		Answer answer2 = AnswerFixture.answer(questionPost2.getId(), member1);
 
-		CreditHistory ch1 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch1 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost1.getMember());
-		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch2 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer1.getMember());
-		CreditHistory ch3 = CreditHistoryFixture.creditHistory(CreditType.CHOOSE, questionPost1.getReward(),
+		CreditHistory ch3 = CreditHistoryFixture.creditHistory(WRITE_QUESTION_POST, questionPost1.getReward(),
 			questionPost2.getMember());
-		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CreditType.CHOSEN, questionPost1.getReward(),
+		CreditHistory ch4 = CreditHistoryFixture.creditHistory(CHOSEN, questionPost1.getReward(),
 			answer2.getMember());
 		creditHistoryRepository.saveAll(List.of(ch1, ch2, ch3, ch4));
 
