@@ -89,7 +89,7 @@ class AnswerServiceTest {
 
 		//then
 		Assertions.assertThat(response.content()).isEqualTo(request.content());
-		Assertions.assertThat(questionPost.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.CHOSEN_WAITING);
+		Assertions.assertThat(questionPost.getStatus()).isEqualTo(QuestionPostStatus.CHOSEN_WAITING);
 	}
 
 	@DisplayName("[답변대기 상태가 아닌 질문글에 답변을 등록할 때 질문글 상태가 변하지 않는다.]")
@@ -97,7 +97,7 @@ class AnswerServiceTest {
 	void notChangeQuestionPostStatusWhenRegisterAnswerAndQuestionPostStatusIsNotAnswerWaiting() {
 		//given
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
-		ReflectionTestUtils.setField(questionPost, "questionPostStatus", QuestionPostStatus.CHOSEN_COMPLETE);
+		ReflectionTestUtils.setField(questionPost, "status", QuestionPostStatus.CHOSEN_COMPLETED);
 		Answer answer = AnswerFixture.answer(1L, questionPost.getId());
 		RegisterAnswerRequest request =
 			new RegisterAnswerRequest("답변 내용");
@@ -113,7 +113,7 @@ class AnswerServiceTest {
 
 		//then
 		Assertions.assertThat(response.content()).isEqualTo(request.content());
-		Assertions.assertThat(questionPost.getQuestionPostStatus()).isEqualTo(QuestionPostStatus.CHOSEN_COMPLETE);
+		Assertions.assertThat(questionPost.getStatus()).isEqualTo(QuestionPostStatus.CHOSEN_COMPLETED);
 	}
 
 	@DisplayName("[답변마감 상태인 질문글에 답변을 등록할 때 예외가 발생한다.]")
@@ -121,7 +121,7 @@ class AnswerServiceTest {
 	void throwExceptionWhenQuestionPostStatusIsAnswerClose() {
 		//given
 		QuestionPost questionPost = QuestionPostFixture.questionPost(1L);
-		ReflectionTestUtils.setField(questionPost, "questionPostStatus", QuestionPostStatus.ANSWER_CLOSE);
+		ReflectionTestUtils.setField(questionPost, "status", QuestionPostStatus.ANSWER_CLOSED);
 		RegisterAnswerRequest request = new RegisterAnswerRequest("답변 내용");
 
 		given(questionPostRepository.findById(questionPost.getId())).willReturn(Optional.of(questionPost));

@@ -41,7 +41,7 @@ public class QuestionPostMapper {
 			imagesToUrls(questionPost.getImages()),
 			questionPost.getReward(),
 			questionPost.getJobGroup().getLabel(),
-			questionPost.getQuestionPostStatus().getStatus(),
+			questionPost.getStatus().getStatus(),
 			new MemberInfo(
 				member.getId(),
 				member.getNickname(),
@@ -67,7 +67,7 @@ public class QuestionPostMapper {
 			imagesToUrls(questionPost.getImages()),
 			questionPost.getReward(),
 			questionPost.getJobGroup().getLabel(),
-			questionPost.getQuestionPostStatus().getStatus(),
+			questionPost.getStatus().getStatus(),
 			new MemberInfo(
 				member.getId(),
 				member.getNickname(),

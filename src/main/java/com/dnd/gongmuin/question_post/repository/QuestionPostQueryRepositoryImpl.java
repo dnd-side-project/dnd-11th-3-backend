@@ -114,7 +114,7 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 			.from(questionPost)
 			.where(
 				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
-				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING)
+				questionPost.status.eq(QuestionPostStatus.ANSWER_WAITING)
 			)
 			.fetch();
 	}
@@ -123,10 +123,10 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	public void updateQuestionPostStatusAnswerClosed() {
 		queryFactory
 			.update(questionPost)
-			.set(questionPost.questionPostStatus, QuestionPostStatus.ANSWER_CLOSE)
+			.set(questionPost.status, QuestionPostStatus.ANSWER_CLOSED)
 			.where(
 				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
-				questionPost.questionPostStatus.eq(QuestionPostStatus.ANSWER_WAITING)
+				questionPost.status.eq(QuestionPostStatus.ANSWER_WAITING)
 			)
 			.execute();
 	}

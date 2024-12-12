@@ -102,7 +102,7 @@ public class AnswerService {
 
 	private void chooseAnswer(QuestionPost questionPost, Answer answer) {
 		questionPost.updateIsChosen(answer);
-		questionPost.updateStatus(QuestionPostStatus.CHOSEN_COMPLETE);
+		questionPost.updateStatus(QuestionPostStatus.CHOSEN_COMPLETED);
 		answer.getMember().increaseCredit(questionPost.getReward());
 		creditHistoryService.saveChosenCreditHistory(questionPost, answer);
 	}
