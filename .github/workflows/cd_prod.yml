@@ -3,6 +3,8 @@ name: 운영 서버 자동 배포
 on:
   push:
     branches: ["prod"]
+  pull_request:
+    branches: ["dev"]
 
 permissions:
   contents: read
