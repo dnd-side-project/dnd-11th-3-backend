@@ -91,7 +91,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app",
-			"https://gongmuin.site/", "http://localhost:8080", "/ws/**"));
+			"https://gongmuin.site", "https://gongmuin.shop", "http://localhost:8080", "/ws/**"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));

@@ -14,7 +14,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 		description = "공무인 API 명세서",
 		version = "v.1.0"),
 	servers = {
-		@Server(url = "https://gongmuin.site", description = "Deploy Server URL"),
+		@Server(url = "https://gongmuin.site", description = "개발 서버"),
+		@Server(url = "https://gongmuin.shop", description = "운영 서버"),
 		@Server(url = "http://localhost:8080", description = "Local Host URL")
 	}
 )
