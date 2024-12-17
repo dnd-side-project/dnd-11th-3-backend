@@ -3,6 +3,8 @@ name: 개발 서버 자동 배포
 on:
   push:
     branches: ["dev"]
+  pull_request:
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
