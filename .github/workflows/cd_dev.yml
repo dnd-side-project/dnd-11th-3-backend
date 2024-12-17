@@ -3,6 +3,8 @@ name: 개발 서버 자동 배포
 on:
   push:
     branches: ["dev"]
+  pull_request:
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
@@ -45,13 +47,13 @@ jobs:
       - name: 도커 허브 로그인
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME_DEV }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_DEV }}
 
       - name: 도커 이미지 빌드 및 푸시
         run: |
-          docker build -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME_DEV }}/${{ secrets.DOCKERHUB_APP_NAME }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME_DEV }}/${{ secrets.DOCKERHUB_APP_NAME }}
 
   deploy:
     needs: build-and-push-image
@@ -60,13 +62,13 @@ jobs:
       - name: 이미지 pull 받아서 백그라운드 실행
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_DEV }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_KEY_DEV }}
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
             docker rm -f $(docker ps -qa)
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }} 
+            docker pull ${{ secrets.DOCKERHUB_USERNAME_DEV }}/${{ secrets.DOCKERHUB_APP_NAME }} 
             docker-compose up -d
             docker system prune -f
