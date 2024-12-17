@@ -3,8 +3,6 @@ name: Dev Server Deploy
 on:
   push:
     branches: ["dev"]
-  pull_request:
-    branches: [ "main", "dev" ]
 
 permissions:
   contents: read

@@ -3,8 +3,6 @@ name: Prod Server Deploy
 on:
   push:
     branches: ["prod"]
-  pull_request:
-    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
