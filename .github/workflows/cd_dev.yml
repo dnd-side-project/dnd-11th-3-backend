@@ -1,4 +1,4 @@
-name: 개발 서버 자동 배포
+name: Dev Server Deploy
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       - name: main 경로 application.yml 파일 생성
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.MAIN_APPLICATION_YML }}" | base64 -d > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML_DEV }}" | base64 -d > ./src/main/resources/application.yml
 
       - name: gradle 권한 부여
         run: chmod +x ./gradlew
