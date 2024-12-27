@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.JobGroup;
 import com.dnd.gongmuin.member.domain.Member;
@@ -61,7 +62,7 @@ public class QuestionPostService {
 		Member member
 	) {
 		decreaseMemberCredit(request, member);
-		creditHistoryService.saveQuestionPostCreditHistory(request.reward(), member);
+		creditHistoryService.saveCreditHistory(CreditType.WRITE_QUESTION_POST, request.reward(), member);
 
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
@@ -157,7 +158,8 @@ public class QuestionPostService {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
 			memberRepository.save(refundQuestionPostDto.member());
 
-			creditHistoryService.saveRefundQuestionPostCreditHistory(
+			creditHistoryService.saveCreditHistory(
+				CreditType.REFUND_QUESTION_POST,
 				refundQuestionPostDto.reward(),
 				refundQuestionPostDto.member()
 			);

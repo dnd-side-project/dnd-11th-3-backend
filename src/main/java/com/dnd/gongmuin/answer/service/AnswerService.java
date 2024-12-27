@@ -17,6 +17,7 @@ import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
+import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.notification.dto.NotificationEvent;
@@ -104,7 +105,11 @@ public class AnswerService {
 		questionPost.updateIsChosen(answer);
 		questionPost.updateStatus(QuestionPostStatus.CHOSEN_COMPLETED);
 		answer.getMember().increaseCredit(questionPost.getReward());
-		creditHistoryService.saveChosenCreditHistory(questionPost, answer);
+		creditHistoryService.saveCreditHistory(
+			CreditType.CHOSEN,
+			questionPost.getReward(),
+			questionPost.getMember()
+		);
 	}
 
 	private void validateIfQuestionPostExists(Long questionPostId) {

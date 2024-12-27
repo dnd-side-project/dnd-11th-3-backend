@@ -63,7 +63,7 @@ public class ChatInquiryService {
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
 		memberRepository.save(inquirer);
-		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REQUEST, inquirer);
+		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_REQUEST, chatInquiry.getId(), inquirer.getId(), answerer)
 		);
@@ -96,7 +96,7 @@ public class ChatInquiryService {
 		ChatInquiry chatInquiry = getChatInquiryById(chatInquiryId);
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusAccepted();
-		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_ACCEPT, answerer);
+		creditHistoryService.saveCreditHistory(CreditType.CHAT_ACCEPT, CHAT_REWARD, answerer);
 
 		ChatRoom chatRoom = chatRoomRepository.save(
 			ChatRoomMapper.toChatRoom(chatInquiry.getQuestionPost(), chatInquiry.getInquirer(), answerer)
@@ -118,7 +118,7 @@ public class ChatInquiryService {
 
 		validateIfAnswerer(answerer, chatInquiry);
 		chatInquiry.updateStatusRejected();
-		creditHistoryService.saveChatCreditHistory(CreditType.CHAT_REFUND, chatInquiry.getInquirer());
+		creditHistoryService.saveCreditHistory(CreditType.CHAT_REFUND, CHAT_REWARD, chatInquiry.getInquirer());
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_REJECT, chatInquiry.getId(), answerer.getId(),
 				chatInquiry.getInquirer())
