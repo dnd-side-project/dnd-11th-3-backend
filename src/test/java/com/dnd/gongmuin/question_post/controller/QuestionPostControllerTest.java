@@ -65,11 +65,13 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[질문글을 등록할 수 있다.]")
 	@Test
 	void registerQuestionPost() throws Exception {
+		final int reward = 2_000;
+
 		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
-			2000,
+			reward,
 			"공업"
 		);
 
@@ -86,7 +88,8 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.targetJobGroup").value(request.targetJobGroup()))
 			.andExpect(jsonPath("$.memberInfo.memberId").value(loginMember.getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(loginMember.getNickname()))
-			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel()));
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.remainingCredit").value(loginMember.getCredit() - reward));
 	}
 
 	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
