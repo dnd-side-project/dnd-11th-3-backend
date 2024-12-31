@@ -13,6 +13,7 @@ public record RegisterQuestionPostResponse(
 	String targetJobGroup,
 	String status,
 	MemberInfo memberInfo,
+	int remainingCredit,
 	String createdAt
 ) {
 }
