@@ -66,7 +66,8 @@ public class QuestionPostService {
 
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
-			questionPostRepository.save(questionPost)
+			questionPostRepository.save(questionPost),
+			member
 		);
 	}
 

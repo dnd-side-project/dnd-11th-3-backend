@@ -96,7 +96,8 @@ class QuestionPostServiceTest {
 			() -> assertThat(response.content()).isEqualTo(request.content()),
 			() -> assertThat(response.reward()).isEqualTo(request.reward()),
 			() -> assertThat(response.targetJobGroup()).isEqualTo(request.targetJobGroup()),
-			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus())
+			() -> assertThat(response.status()).isEqualTo(QuestionPostStatus.ANSWER_WAITING.getStatus()),
+			() -> assertThat(response.remainingCredit()).isEqualTo(member.getCredit())
 		);
 	}
 
