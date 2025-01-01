@@ -90,8 +90,11 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://gongmuin.netlify.app",
-			"https://gongmuin.site", "https://gongmuin.shop", "http://localhost:8080", "/ws/**"));
+		configuration.setAllowedOrigins(
+			Arrays.asList(
+				"http://localhost:3000", "https://dnd-11th-3-frontend-client.vercel.app",
+				"https://gongmuin.site", "https://gongmuin.shop", "http://localhost:8080", "/ws/**"
+			));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
