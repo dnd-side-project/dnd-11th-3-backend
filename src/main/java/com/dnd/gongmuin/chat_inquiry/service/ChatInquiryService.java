@@ -9,6 +9,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
@@ -54,16 +55,19 @@ public class ChatInquiryService {
 	private final CreditHistoryService creditHistoryService;
 	private final ApplicationEventPublisher eventPublisher;
 	private final ChatMessageRepository chatMessageRepository;
+	private final AnswerRepository answerRepository;
 
 	@Transactional
 	public CreateChatInquiryResponse createChatInquiry(CreateChatInquiryRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
+		validateChatAnswerer(request.questionPostId(), answerer);
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
-		memberRepository.save(inquirer);
-		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
+
+		saveInquirerCreditHistory(inquirer);
+
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_REQUEST, chatInquiry.getId(), inquirer.getId(), answerer)
 		);
@@ -138,6 +142,17 @@ public class ChatInquiryService {
 		);
 
 		autoRejectedChatInquiryNotification(rejectedChatInquiryDtos);
+	}
+
+	private void validateChatAnswerer(Long questionPostId, Member answerer) {
+		if (!answerRepository.existsByQuestionPostIdAndMember(questionPostId, answerer)) {
+			throw new ValidationException(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER);
+		}
+	}
+
+	private void saveInquirerCreditHistory(Member inquirer) {
+		memberRepository.save(inquirer);
+		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
 	}
 
 	private List<Long> getRejectedInquirerIds(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
