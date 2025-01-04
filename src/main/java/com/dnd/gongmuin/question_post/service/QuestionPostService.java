@@ -7,9 +7,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.JobGroup;
@@ -46,6 +48,7 @@ public class QuestionPostService {
 	private final QuestionPostImageRepository questionPostImageRepository;
 	private final MemberRepository memberRepository;
 	private final CreditHistoryService creditHistoryService;
+	private final AnswerRepository answerRepository;
 
 	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
 		questionPost.updateQuestionPost(
@@ -149,7 +152,7 @@ public class QuestionPostService {
 
 	@Transactional
 	public void changeQuestionPostStatusAnswerClosed() {
-		refundQuestionPostCredit();
+		refundClosedQuestionPosts();
 		questionPostRepository.updateQuestionPostStatusAnswerClosed();
 	}
 
@@ -157,13 +160,17 @@ public class QuestionPostService {
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
-			memberRepository.save(refundQuestionPostDto.member());
-
-			creditHistoryService.saveCreditHistory(
-				CreditType.REFUND_QUESTION_POST,
-				refundQuestionPostDto.reward(),
-				refundQuestionPostDto.member()
-			);
+			saveRefundCreditHistory(refundQuestionPostDto.member(), refundQuestionPostDto.reward());
 		});
+	}
+
+	private void saveRefundCreditHistory(Member member, int reward){
+		memberRepository.save(member);
+
+		creditHistoryService.saveCreditHistory(
+			CreditType.REFUND_QUESTION_POST,
+			reward,
+			member
+		);
 	}
 }
