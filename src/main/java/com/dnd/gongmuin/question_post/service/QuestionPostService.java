@@ -156,7 +156,12 @@ public class QuestionPostService {
 		questionPostRepository.updateQuestionPostStatusAnswerClosed();
 	}
 
-	private void refundQuestionPostCredit() {
+	private void refundDeletedQuestionPosts(QuestionPost questionPost) {
+		questionPost.getMember().increaseCredit(questionPost.getReward());
+		saveRefundCreditHistory(questionPost.getMember(), questionPost.getReward());
+	}
+
+	private void refundClosedQuestionPosts() {
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
