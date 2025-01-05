@@ -134,7 +134,7 @@ public class QuestionPostService {
 		if (answerRepository.existsByQuestionPostId(questionPostId)) {
 			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
 		}
-		refundDeletedQuestionPosts(questionPost);
+		refundDeletedQuestionPost(questionPost);
 		questionPostRepository.deleteById(questionPostId);
 
 		return new DeleteQuestionPostResponse(questionPost.getMember().getCredit());
@@ -172,7 +172,7 @@ public class QuestionPostService {
 		questionPostRepository.updateQuestionPostStatusAnswerClosed();
 	}
 
-	private void refundDeletedQuestionPosts(QuestionPost questionPost) {
+	private void refundDeletedQuestionPost(QuestionPost questionPost) {
 		Member member = questionPost.getMember();
 		int reward = questionPost.getReward();
 		member.increaseCredit(reward);
