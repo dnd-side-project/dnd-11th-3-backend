@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
@@ -31,6 +33,7 @@ import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
@@ -57,6 +60,9 @@ class QuestionPostServiceTest {
 
 	@Mock
 	private MemberRepository memberRepository;
+
+	@Mock
+	private AnswerRepository answerRepository;
 
 	@Mock
 	private CreditHistoryService creditHistoryService;
@@ -255,5 +261,40 @@ class QuestionPostServiceTest {
 				.isEqualTo(questionPost.getImages().stream()
 					.map(QuestionPostImage::getImageUrl).toList())
 		);
+	}
+
+	@DisplayName("[질문글을 삭제할 수 있다.]")
+	@Test
+	void deleteQuestionPost() {
+		//given
+		Long questionPostId = 1L;
+		int previousCredit = member.getCredit();
+		QuestionPost questionPost = QuestionPostFixture.questionPost(member);
+
+		given(questionPostRepository.findById(questionPostId))
+			.willReturn(Optional.of(questionPost));
+		given(answerRepository.existsByQuestionPostId(questionPostId)).willReturn(false);
+
+		//when
+		DeleteQuestionPostResponse response = questionPostService.deleteQuestionPost(questionPostId);
+
+		//then
+		assertThat(response.remainingCredit())
+			.isEqualTo(previousCredit + questionPost.getReward());
+	}
+
+	@DisplayName("[답변이 존재하는 질문글은 삭제할 수 없다.]")
+	@Test
+	void deleteQuestionPostFails() {
+		//given
+		Long questionPostId = 1L;
+		QuestionPost questionPost = QuestionPostFixture.questionPost(member);
+		given(questionPostRepository.findById(questionPostId))
+			.willReturn(Optional.of(questionPost));
+		given(answerRepository.existsByQuestionPostId(questionPostId)).willReturn(true);
+
+		//when & then
+		assertThrows(ValidationException.class,
+			() -> questionPostService.deleteQuestionPost(questionPostId));
 	}
 }
