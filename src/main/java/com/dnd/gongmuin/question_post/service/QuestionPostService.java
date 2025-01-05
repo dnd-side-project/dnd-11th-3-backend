@@ -27,6 +27,7 @@ import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -124,6 +125,21 @@ public class QuestionPostService {
 		return QuestionPostMapper.toUpdateQuestionPostResponse(questionPost);
 	}
 
+	@Transactional
+	public DeleteQuestionPostResponse deleteQuestionPost(
+		Long questionPostId
+	){
+		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+		if (answerRepository.existsByQuestionPostId(questionPostId)) {
+			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
+		}
+		refundDeletedQuestionPosts(questionPost);
+		questionPostRepository.deleteById(questionPostId);
+
+		return new DeleteQuestionPostResponse(questionPost.getMember().getCredit());
+	}
+
 	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
 		if (imageUrls != null) { // 수정 사항 존재
 			deleteImages(questionPost); // 기존 이미지 객체 삭제 (새로 비우기 || 수정할 값 존재)
@@ -157,8 +173,11 @@ public class QuestionPostService {
 	}
 
 	private void refundDeletedQuestionPosts(QuestionPost questionPost) {
-		questionPost.getMember().increaseCredit(questionPost.getReward());
-		saveRefundCreditHistory(questionPost.getMember(), questionPost.getReward());
+		Member member = questionPost.getMember();
+		int reward = questionPost.getReward();
+		member.increaseCredit(reward);
+
+		saveRefundCreditHistory(member, reward);
 	}
 
 	private void refundClosedQuestionPosts() {
