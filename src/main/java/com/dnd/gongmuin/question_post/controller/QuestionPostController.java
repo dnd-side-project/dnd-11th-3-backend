@@ -3,6 +3,7 @@ package com.dnd.gongmuin.question_post.controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,6 +17,7 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -92,6 +94,17 @@ public class QuestionPostController {
 	) {
 		UpdateQuestionPostResponse response
 			= questionPostService.updateQuestionPost(questionPostId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "질문글 삭제 API", description = "답변이 없을 시 질문자가 질문글을 삭제할 수 있다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@DeleteMapping("/api/question-posts/{questionPostId}")
+	public ResponseEntity<DeleteQuestionPostResponse> updateQuestionPosts(
+		@PathVariable("questionPostId") Long questionPostId
+	) {
+		DeleteQuestionPostResponse response
+			= questionPostService.deleteQuestionPost(questionPostId);
 		return ResponseEntity.ok(response);
 	}
 }
