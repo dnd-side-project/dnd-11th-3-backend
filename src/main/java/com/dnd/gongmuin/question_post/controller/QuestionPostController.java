@@ -101,10 +101,11 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@DeleteMapping("/api/question-posts/{questionPostId}")
 	public ResponseEntity<DeleteQuestionPostResponse> updateQuestionPosts(
-		@PathVariable("questionPostId") Long questionPostId
+		@PathVariable("questionPostId") Long questionPostId,
+		@AuthenticationPrincipal Member member
 	) {
 		DeleteQuestionPostResponse response
-			= questionPostService.deleteQuestionPost(questionPostId);
+			= questionPostService.deleteQuestionPost(questionPostId, member);
 		return ResponseEntity.ok(response);
 	}
 }

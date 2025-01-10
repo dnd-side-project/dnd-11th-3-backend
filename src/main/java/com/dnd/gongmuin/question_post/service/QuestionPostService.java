@@ -1,6 +1,7 @@
 package com.dnd.gongmuin.question_post.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -127,11 +128,12 @@ public class QuestionPostService {
 
 	@Transactional
 	public DeleteQuestionPostResponse deleteQuestionPost(
-		Long questionPostId
+		Long questionPostId, Member member
 	) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
 		validateIfQuestionPostExists(questionPostId);
+		validateIfQuestioner(member, questionPost);
 		refundDeletedQuestionPost(questionPost);
 		questionPostRepository.deleteById(questionPostId);
 
@@ -150,6 +152,12 @@ public class QuestionPostService {
 	private void validateIfQuestionPostExists(Long questionPostId) {
 		if (answerRepository.existsByQuestionPostId(questionPostId)) {
 			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
+		}
+	}
+
+	private void validateIfQuestioner(Member member, QuestionPost questionPost){
+		if (!Objects.equals(member.getId(), questionPost.getMember().getId())){
+			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
 		}
 	}
 
