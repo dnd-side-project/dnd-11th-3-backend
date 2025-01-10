@@ -37,6 +37,7 @@ import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostImageRepository;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
@@ -294,7 +295,10 @@ class QuestionPostServiceTest {
 		given(answerRepository.existsByQuestionPostId(questionPostId)).willReturn(true);
 
 		//when & then
-		assertThrows(ValidationException.class,
+		ValidationException exception = assertThrows(ValidationException.class,
 			() -> questionPostService.deleteQuestionPost(questionPostId));
+
+		assertThat(exception.getCode())
+			.isEqualTo(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST.getCode());
 	}
 }
