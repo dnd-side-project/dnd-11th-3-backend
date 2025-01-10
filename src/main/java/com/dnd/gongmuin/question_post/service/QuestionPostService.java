@@ -128,12 +128,10 @@ public class QuestionPostService {
 	@Transactional
 	public DeleteQuestionPostResponse deleteQuestionPost(
 		Long questionPostId
-	){
+	) {
 		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
 			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
-		if (answerRepository.existsByQuestionPostId(questionPostId)) {
-			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
-		}
+		validateIfQuestionPostExists(questionPostId);
 		refundDeletedQuestionPost(questionPost);
 		questionPostRepository.deleteById(questionPostId);
 
@@ -146,6 +144,12 @@ public class QuestionPostService {
 			if (!imageUrls.isEmpty()) { //수정할 값 담아보냄
 				questionPost.updatePostImages(imageUrls);
 			}
+		}
+	}
+
+	private void validateIfQuestionPostExists(Long questionPostId) {
+		if (answerRepository.existsByQuestionPostId(questionPostId)) {
+			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
 		}
 	}
 
@@ -188,7 +192,7 @@ public class QuestionPostService {
 		});
 	}
 
-	private void saveRefundCreditHistory(Member member, int reward){
+	private void saveRefundCreditHistory(Member member, int reward) {
 		memberRepository.save(member);
 
 		creditHistoryService.saveCreditHistory(
