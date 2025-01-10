@@ -277,7 +277,8 @@ class QuestionPostServiceTest {
 		given(answerRepository.existsByQuestionPostId(questionPostId)).willReturn(false);
 
 		//when
-		DeleteQuestionPostResponse response = questionPostService.deleteQuestionPost(questionPostId);
+		DeleteQuestionPostResponse response
+			= questionPostService.deleteQuestionPost(questionPostId, member);
 
 		//then
 		assertThat(response.remainingCredit())
@@ -296,9 +297,28 @@ class QuestionPostServiceTest {
 
 		//when & then
 		ValidationException exception = assertThrows(ValidationException.class,
-			() -> questionPostService.deleteQuestionPost(questionPostId));
+			() -> questionPostService.deleteQuestionPost(questionPostId, member));
 
-		assertThat(exception.getCode())
-			.isEqualTo(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST.getCode());
+		assertThat(exception.getMessage())
+			.isEqualTo(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST.getMessage());
+	}
+
+	@DisplayName("[질문글 작성자가 아닌 경우 질문글을 삭제할 수 없다.]")
+	@Test
+	void deleteQuestionPostFails2() {
+		//given
+		Long questionPostId = 1L;
+		Member unauthorizedMember = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(unauthorizedMember);
+		given(questionPostRepository.findById(questionPostId))
+			.willReturn(Optional.of(questionPost));
+		given(answerRepository.existsByQuestionPostId(questionPostId)).willReturn(false);
+
+		//when & then
+		ValidationException exception = assertThrows(ValidationException.class,
+			() -> questionPostService.deleteQuestionPost(questionPostId, member));
+
+		assertThat(exception.getMessage())
+			.isEqualTo(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
 	}
 }
