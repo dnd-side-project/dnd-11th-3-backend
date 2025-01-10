@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
@@ -27,6 +28,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
@@ -66,6 +68,9 @@ class ChatInquiryServiceTest {
 	private QuestionPostRepository questionPostRepository;
 
 	@Mock
+	private AnswerRepository answerRepository;
+
+	@Mock
 	private ApplicationEventPublisher eventPublisher;
 
 	@Mock
@@ -98,6 +103,8 @@ class ChatInquiryServiceTest {
 			.willReturn(Optional.of(questionPost));
 		given(memberRepository.findById(answerer.getId()))
 			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
 		given(chatInquiryRepository.save(any(ChatInquiry.class))).willReturn(chatInquiry);
 
 		CreateChatInquiryResponse response = chatInquiryService.createChatInquiry(request, inquirer);
@@ -129,11 +136,40 @@ class ChatInquiryServiceTest {
 			.willReturn(Optional.of(questionPost));
 		given(memberRepository.findById(answerer.getId()))
 			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
 
 		//when & then
 		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[질문 게시글에 답변을 하지 않은 회원에게 채팅 신청할 수 없다.]")
+	@Test
+	void createChatInquiry_fails2() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		ReflectionTestUtils.setField(inquirer, "credit", CHAT_REWARD);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(false);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER.getMessage());
 	}
 
 	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")

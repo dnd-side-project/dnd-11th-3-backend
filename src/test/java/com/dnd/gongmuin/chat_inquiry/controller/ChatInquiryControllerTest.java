@@ -12,12 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
 import com.dnd.gongmuin.chatroom.repository.ChatRoomRepository;
+import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.ChatInquiryFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.common.fixture.QuestionPostFixture;
@@ -44,6 +46,9 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 	private QuestionPostRepository questionPostRepository;
 
 	@Autowired
+	private AnswerRepository answerRepository;
+
+	@Autowired
 	private ChatRoomRepository chatRoomRepository;
 
 	@Autowired
@@ -57,6 +62,7 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
 		questionPostRepository.deleteAll();
+		answerRepository.deleteAll();
 		chatInquiryRepository.deleteAll();
 		chatRoomRepository.deleteAll();
 		chatMessageRepository.deleteAll();
@@ -69,11 +75,14 @@ class ChatInquiryControllerTest extends ApiTestSupport {
 		int previousCredit = loginMember.getCredit();
 		Member answerer = memberRepository.save(MemberFixture.member5());
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+		answerRepository.save(AnswerFixture.answer(questionPost.getId(), answerer));
+
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
 			questionPost.getId(),
 			answerer.getId(),
 			INQUIRY_MESSAGE
 		);
+
 		//when & then
 		mockMvc.perform(post("/api/chat/inquiries")
 				.cookie(accessToken)
