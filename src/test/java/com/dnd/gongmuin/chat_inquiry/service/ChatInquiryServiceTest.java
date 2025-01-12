@@ -324,6 +324,8 @@ class ChatInquiryServiceTest {
 	@Test
 	void rejectChatAuto() {
 		// given
+		final LocalDateTime now = LocalDateTime.now();
+
 		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = List.of(
 			new RejectedChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
 			new RejectedChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
@@ -335,11 +337,11 @@ class ChatInquiryServiceTest {
 		given(chatInquiryRepository.getAutoRejectedChatInquiries()).willReturn(rejectedChatInquiryDtos);
 
 		// when
-		chatInquiryService.rejectChatAuto();
+		chatInquiryService.rejectChatAuto(now);
 
 		// then
 		verify(chatInquiryRepository).getAutoRejectedChatInquiries();
-		verify(chatInquiryRepository).updateChatInquiryStatusRejected(LocalDateTime.now());
+		verify(chatInquiryRepository).updateChatInquiryStatusRejected(now);
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
