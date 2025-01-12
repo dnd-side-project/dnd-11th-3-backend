@@ -180,9 +180,9 @@ public class QuestionPostService {
 	}
 
 	@Transactional
-	public void changeQuestionPostStatusAnswerClosed() {
+	public void changeQuestionPostStatusAnswerClosed(LocalDateTime now) {
 		refundClosedQuestionPosts();
-		questionPostRepository.updateQuestionPostStatusAnswerClosed(LocalDateTime.now());
+		questionPostRepository.updateQuestionPostStatusAnswerClosed(now);
 	}
 
 	private void refundDeletedQuestionPost(QuestionPost questionPost) {
