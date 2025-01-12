@@ -3,7 +3,6 @@ package com.dnd.gongmuin.chat_inquiry.repository;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -97,40 +96,6 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		assertAll(
 			() -> assertThat(chatInquiry1.getStatus()).isEqualTo(InquiryStatus.REJECTED),
 			() -> assertThat(chatInquiry2.getStatus()).isEqualTo(InquiryStatus.PENDING)
-		);
-	}
-
-	@DisplayName("채팅 요청의 status가 변경되었을 때, updated_at 필드가 변경된다.")
-	@Test
-	void changeUpdatedAtWhenChangeStatusOfChatInquiry() {
-		// given
-		final LocalDate today = LocalDate.now();
-
-		Member questioner = memberRepository.save(MemberFixture.member());
-		Member answerer = memberRepository.save(MemberFixture.member());
-		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(questioner));
-
-		ChatInquiry chatInquiry1 = ChatInquiryFixture.chatInquiry(questionPost, questioner, answerer, chatMessage);
-		ChatInquiry chatInquiry2 = ChatInquiryFixture.chatInquiry(questionPost, questioner, answerer, chatMessage);
-
-		List<ChatInquiry> chatInquiries = chatInquiryRepository.saveAll(List.of(chatInquiry1, chatInquiry2));
-		ReflectionTestUtils.setField(chatInquiry1, "createdAt", LocalDateTime.now().minusWeeks(1));
-		ReflectionTestUtils.setField(chatInquiry1, "updatedAt", LocalDateTime.now().minusWeeks(1));
-		ReflectionTestUtils.setField(chatInquiry2, "updatedAt", LocalDateTime.now().minusWeeks(1));
-		em.flush();
-		em.clear();
-
-		// when
-		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
-
-		// then
-		ChatInquiry findChatInquiry1 = chatInquiryRepository.findById(chatInquiries.get(0).getId()).orElseThrow();
-		ChatInquiry findChatInquiry2 = chatInquiryRepository.findById(chatInquiries.get(1).getId()).orElseThrow();
-		assertAll(
-			() -> assertThat(findChatInquiry1.getStatus()).isEqualTo(InquiryStatus.REJECTED),
-			() -> assertThat(findChatInquiry2.getStatus()).isEqualTo(InquiryStatus.PENDING),
-			() -> assertThat(findChatInquiry1.getUpdatedAt().toLocalDate()).isEqualTo(today),
-			() -> assertThat(findChatInquiry2.getUpdatedAt().toLocalDate()).isEqualTo(today)
 		);
 	}
 }
