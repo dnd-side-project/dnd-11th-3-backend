@@ -11,7 +11,8 @@ public enum QuestionPostErrorCode implements ErrorCode {
 
 	NOT_FOUND_QUESTION_POST("해당 아이디의 질문 포스트가 존재하지 않습니다.", "QP_001"),
 	NOT_AUTHORIZED("질문글에서 해당 작업 권한이 없습니다.", "QP_002"),
-	NOT_FOUND_QUESTION_POST_STATUS("해당 질문글의 상태를 찾을 수 없습니다.", "QP_003");
+	NOT_FOUND_QUESTION_POST_STATUS("해당 질문글의 상태를 찾을 수 없습니다.", "QP_003"),
+	CAN_NOT_DELETE_QUESTION_POST("답변이 존재하는 질문글은 삭제할 수 없습니다.", "QP_004");
 
 	private final String message;
 	private final String code;
