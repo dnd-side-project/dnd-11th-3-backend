@@ -156,8 +156,8 @@ public class QuestionPostService {
 		}
 	}
 
-	private void validateIfQuestioner(Member member, QuestionPost questionPost){
-		if (!Objects.equals(member.getId(), questionPost.getMember().getId())){
+	private void validateIfQuestioner(Member member, QuestionPost questionPost) {
+		if (!Objects.equals(member.getId(), questionPost.getMember().getId())) {
 			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
 		}
 	}
@@ -181,7 +181,7 @@ public class QuestionPostService {
 
 	@Transactional
 	public void changeQuestionPostStatusAnswerClosed() {
-		refundQuestionPostCredit();
+		refundClosedQuestionPosts();
 		questionPostRepository.updateQuestionPostStatusAnswerClosed(LocalDateTime.now());
 	}
 
