@@ -133,10 +133,10 @@ public class ChatInquiryService {
 	}
 
 	@Transactional
-	public void rejectChatAuto() {
+	public void rejectChatAuto(LocalDateTime now) {
 		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiries();
 		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectedChatInquiryDtos);
-		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
+		chatInquiryRepository.updateChatInquiryStatusRejected(now);
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		creditHistoryService.saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
