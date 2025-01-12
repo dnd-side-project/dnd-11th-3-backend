@@ -51,7 +51,7 @@ public class AnswerController {
 	@Operation(summary = "답변 채택 API", description = "질문자가 답변을 채택한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/question-posts/answers/{answerId}")
-	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostId(
+	public ResponseEntity<AnswerDetailResponse> chooseAnswer(
 		@PathVariable("answerId") Long answerId,
 		@AuthenticationPrincipal Member member
 	) {
