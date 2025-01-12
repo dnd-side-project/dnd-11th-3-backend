@@ -86,7 +86,7 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		ReflectionTestUtils.setField(chatInquiries.get(0), "createdAt", LocalDateTime.now().minusWeeks(1));
 
 		//when
-		chatInquiryRepository.updateChatInquiryStatusRejected();
+		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
 
 		em.flush();
 		em.clear();
@@ -115,13 +115,13 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 
 		List<ChatInquiry> chatInquiries = chatInquiryRepository.saveAll(List.of(chatInquiry1, chatInquiry2));
 		ReflectionTestUtils.setField(chatInquiry1, "createdAt", LocalDateTime.now().minusWeeks(1));
-
-		// when
 		ReflectionTestUtils.setField(chatInquiry1, "updatedAt", LocalDateTime.now().minusWeeks(1));
-		chatInquiryRepository.updateChatInquiryStatusRejected();
-
+		ReflectionTestUtils.setField(chatInquiry2, "updatedAt", LocalDateTime.now().minusWeeks(1));
 		em.flush();
 		em.clear();
+
+		// when
+		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
 
 		// then
 		ChatInquiry findChatInquiry1 = chatInquiryRepository.findById(chatInquiries.get(0).getId()).orElseThrow();
