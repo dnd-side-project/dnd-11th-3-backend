@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.question_post.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -150,7 +151,7 @@ public class QuestionPostService {
 	@Transactional
 	public void changeQuestionPostStatusAnswerClosed() {
 		refundQuestionPostCredit();
-		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed(LocalDateTime.now());
 	}
 
 	private void refundQuestionPostCredit() {

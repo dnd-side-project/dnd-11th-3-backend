@@ -120,10 +120,11 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	}
 
 	@Override
-	public void updateQuestionPostStatusAnswerClosed() {
+	public void updateQuestionPostStatusAnswerClosed(LocalDateTime now) {
 		queryFactory
 			.update(questionPost)
 			.set(questionPost.status, QuestionPostStatus.ANSWER_CLOSED)
+			.set(questionPost.updatedAt, now)
 			.where(
 				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
 				questionPost.status.eq(QuestionPostStatus.ANSWER_WAITING)
