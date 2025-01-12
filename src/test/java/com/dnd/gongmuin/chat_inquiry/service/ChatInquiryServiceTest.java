@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -338,7 +339,7 @@ class ChatInquiryServiceTest {
 
 		// then
 		verify(chatInquiryRepository).getAutoRejectedChatInquiries();
-		verify(chatInquiryRepository).updateChatInquiryStatusRejected();
+		verify(chatInquiryRepository).updateChatInquiryStatusRejected(LocalDateTime.now());
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
