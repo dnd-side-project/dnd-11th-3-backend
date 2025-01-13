@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.chat_inquiry.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ public interface ChatInquiryQueryRepository {
 
 	List<Long> getAutoRejectedInquirerIds();
 
-	void updateChatInquiryStatusRejected();
+	void updateChatInquiryStatusRejected(LocalDateTime now);
 
 	List<RejectedChatInquiryDto> getAutoRejectedChatInquiries();
 }

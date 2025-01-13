@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.question_post.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -155,8 +156,8 @@ public class QuestionPostService {
 		}
 	}
 
-	private void validateIfQuestioner(Member member, QuestionPost questionPost){
-		if (!Objects.equals(member.getId(), questionPost.getMember().getId())){
+	private void validateIfQuestioner(Member member, QuestionPost questionPost) {
+		if (!Objects.equals(member.getId(), questionPost.getMember().getId())) {
 			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
 		}
 	}
@@ -179,9 +180,9 @@ public class QuestionPostService {
 	}
 
 	@Transactional
-	public void changeQuestionPostStatusAnswerClosed() {
+	public void changeQuestionPostStatusAnswerClosed(LocalDateTime now) {
 		refundClosedQuestionPosts();
-		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed(now);
 	}
 
 	private void refundDeletedQuestionPost(QuestionPost questionPost) {

@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.chat_inquiry.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -132,10 +133,10 @@ public class ChatInquiryService {
 	}
 
 	@Transactional
-	public void rejectChatAuto() {
+	public void rejectChatAuto(LocalDateTime now) {
 		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiries();
 		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectedChatInquiryDtos);
-		chatInquiryRepository.updateChatInquiryStatusRejected();
+		chatInquiryRepository.updateChatInquiryStatusRejected(now);
 		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		creditHistoryService.saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD

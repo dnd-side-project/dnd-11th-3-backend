@@ -69,9 +69,10 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 			.fetch();
 	}
 
-	public void updateChatInquiryStatusRejected() {
+	public void updateChatInquiryStatusRejected(LocalDateTime now) {
 		queryFactory.update(chatInquiry)
 			.set(chatInquiry.status, InquiryStatus.REJECTED)
+			.set(chatInquiry.updatedAt, now)
 			.where(
 				chatInquiry.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
 				chatInquiry.status.eq(InquiryStatus.PENDING)

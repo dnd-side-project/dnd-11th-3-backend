@@ -85,7 +85,7 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		ReflectionTestUtils.setField(chatInquiries.get(0), "createdAt", LocalDateTime.now().minusWeeks(1));
 
 		//when
-		chatInquiryRepository.updateChatInquiryStatusRejected();
+		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
 
 		em.flush();
 		em.clear();
