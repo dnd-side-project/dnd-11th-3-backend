@@ -1,7 +1,6 @@
 package com.dnd.gongmuin.security.handler;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -21,7 +20,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		AuthenticationException authException) throws IOException {
 
 		log.error("비인가 사용자 요청 -> 예외 발생 : {}", authException.getMessage());
-		log.error(Arrays.toString(authException.getStackTrace()));
 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 Unauthorized
 		response.setContentType("application/json");
