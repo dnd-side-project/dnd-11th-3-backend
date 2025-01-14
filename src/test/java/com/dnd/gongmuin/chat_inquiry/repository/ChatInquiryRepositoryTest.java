@@ -70,7 +70,7 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		);
 	}
 
-	@DisplayName("요청중인 채팅방이 일주일이 지나면, 채팅방 상태를 거절함으로 바꾼다.")
+	@DisplayName("만료된 채팅 요청에 대해, 채팅 요청 상태를 거절함으로 바꾼다.")
 	@Test
 	void updateChatInquiryStatusRejected() {
 		//given
@@ -85,7 +85,10 @@ class ChatInquiryRepositoryTest extends DataJpaTestSupport {
 		ReflectionTestUtils.setField(chatInquiries.get(0), "createdAt", LocalDateTime.now().minusWeeks(1));
 
 		//when
-		chatInquiryRepository.updateChatInquiryStatusRejected(LocalDateTime.now());
+		chatInquiryRepository.updateChatInquiryStatusRejected(
+			List.of(chatInquiries.get(0).getId()),
+			LocalDateTime.now()
+		);
 
 		em.flush();
 		em.clear();

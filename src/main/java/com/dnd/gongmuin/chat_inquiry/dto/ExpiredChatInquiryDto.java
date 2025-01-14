@@ -4,13 +4,13 @@ import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.member.domain.Member;
 import com.querydsl.core.annotations.QueryProjection;
 
-public record RejectedChatInquiryDto(
+public record ExpiredChatInquiryDto(
 	Long chatInquiryId,
 	Member inquirer,
 	Member answer
 ) {
 	@QueryProjection
-	public RejectedChatInquiryDto(
+	public ExpiredChatInquiryDto(
 		ChatInquiry chatInquiry
 	) {
 		this(
