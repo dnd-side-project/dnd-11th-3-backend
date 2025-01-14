@@ -11,9 +11,9 @@ import org.springframework.data.domain.SliceImpl;
 
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.dto.QChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.QRejectedChatInquiryDto;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.QExpiredChatInquiryDto;
 import com.dnd.gongmuin.member.domain.Member;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -56,9 +56,9 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 			.fetch();
 	}
 
-	public List<RejectedChatInquiryDto> getAutoRejectedChatInquiries() {
+	public List<ExpiredChatInquiryDto> getExpiredChatInquires() {
 		return queryFactory
-			.select(new QRejectedChatInquiryDto(
+			.select(new QExpiredChatInquiryDto(
 				chatInquiry
 			))
 			.from(chatInquiry)
@@ -69,13 +69,12 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 			.fetch();
 	}
 
-	public void updateChatInquiryStatusRejected(LocalDateTime now) {
+	public void updateChatInquiryStatusRejected(List<Long> expiredChatInquiryIds, LocalDateTime now) {
 		queryFactory.update(chatInquiry)
 			.set(chatInquiry.status, InquiryStatus.REJECTED)
 			.set(chatInquiry.updatedAt, now)
 			.where(
-				chatInquiry.createdAt.loe(LocalDateTime.now().minusWeeks(1)),
-				chatInquiry.status.eq(InquiryStatus.PENDING)
+				chatInquiry.id.in(expiredChatInquiryIds)
 			)
 			.execute();
 	}
