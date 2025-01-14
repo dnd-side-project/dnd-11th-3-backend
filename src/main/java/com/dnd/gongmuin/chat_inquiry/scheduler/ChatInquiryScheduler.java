@@ -19,6 +19,6 @@ public class ChatInquiryScheduler {
 	@Transactional
 	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
 	public void rejectChatInquiry() {
-		chatInquiryService.rejectChatAuto(LocalDateTime.now());
+		chatInquiryService.autoRejectChatInquiry(LocalDateTime.now());
 	}
 }
