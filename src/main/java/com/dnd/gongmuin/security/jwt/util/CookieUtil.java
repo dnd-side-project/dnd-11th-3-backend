@@ -21,7 +21,7 @@ public class CookieUtil {
 		cookie.setMaxAge(60 * 60);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
-		cookie.setAttribute("SameSite", "Lax");
+		cookie.setAttribute("SameSite", "None");
 		return cookie;
 	}
 
