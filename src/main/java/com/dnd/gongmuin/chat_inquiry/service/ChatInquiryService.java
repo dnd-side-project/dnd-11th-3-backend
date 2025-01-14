@@ -62,7 +62,7 @@ public class ChatInquiryService {
 	public CreateChatInquiryResponse createChatInquiry(CreateChatInquiryRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
-		validateChatAnswerer(request.questionPostId(), answerer);
+		validateChatAnswerer(request.questionPostId(), inquirer.getId(), answerer);
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
@@ -145,9 +145,12 @@ public class ChatInquiryService {
 		autoRejectedChatInquiryNotification(rejectedChatInquiryDtos);
 	}
 
-	private void validateChatAnswerer(Long questionPostId, Member answerer) {
+	private void validateChatAnswerer(Long questionPostId, Long inquirerId, Member answerer) {
 		if (!answerRepository.existsByQuestionPostIdAndMember(questionPostId, answerer)) {
 			throw new ValidationException(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER);
+		}
+		if (Objects.equals(answerer.getId(), inquirerId)) {
+			throw new ValidationException(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED);
 		}
 	}
 
