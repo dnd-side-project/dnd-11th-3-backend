@@ -146,9 +146,17 @@ public class ChatInquiryService {
 	}
 
 	private void validateChatAnswerer(Long questionPostId, Long inquirerId, Member answerer) {
+		validateIfAnswererExists(questionPostId, answerer);
+		validateIfNotSelfInquiry(inquirerId, answerer);
+	}
+
+	private void validateIfAnswererExists(Long questionPostId, Member answerer) {
 		if (!answerRepository.existsByQuestionPostIdAndMember(questionPostId, answerer)) {
 			throw new ValidationException(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER);
 		}
+	}
+
+	private void validateIfNotSelfInquiry(Long inquirerId, Member answerer) {
 		if (Objects.equals(answerer.getId(), inquirerId)) {
 			throw new ValidationException(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED);
 		}
