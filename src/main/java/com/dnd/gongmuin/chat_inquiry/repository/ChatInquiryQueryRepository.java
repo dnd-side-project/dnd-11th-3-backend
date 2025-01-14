@@ -13,8 +13,6 @@ import com.dnd.gongmuin.member.domain.Member;
 public interface ChatInquiryQueryRepository {
 	Slice<ChatInquiryResponse> getChatInquiresByMember(Member member, Pageable pageable);
 
-	List<Long> getAutoRejectedInquirerIds();
-
 	void updateChatInquiryStatusRejected(List<Long> expiredChatInquiryIds, LocalDateTime now);
 
 	List<ExpiredChatInquiryDto> getExpiredChatInquires();
