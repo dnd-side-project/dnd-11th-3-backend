@@ -152,7 +152,6 @@ class ChatInquiryServiceTest {
 		//given
 		Member inquirer = MemberFixture.member(1L);
 		Member answerer = MemberFixture.member(2L);
-		ReflectionTestUtils.setField(inquirer, "credit", CHAT_REWARD);
 		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
 		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
 			questionPost.getId(),
@@ -171,6 +170,32 @@ class ChatInquiryServiceTest {
 		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER.getMessage());
+	}
+
+	@DisplayName("[답변자는 스스로에게 채팅 요청을 할 수 없다.]")
+	@Test
+	void createChatInquiry_fails3() {
+		//given
+		Member questioner = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questioner);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, answerer))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED.getMessage());
 	}
 
 	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")
