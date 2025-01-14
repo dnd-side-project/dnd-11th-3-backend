@@ -19,7 +19,7 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -133,16 +133,13 @@ public class ChatInquiryService {
 	}
 
 	@Transactional
-	public void rejectChatAuto(LocalDateTime now) {
-		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiries();
-		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectedChatInquiryDtos);
-		chatInquiryRepository.updateChatInquiryStatusRejected(now);
-		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
-		creditHistoryService.saveCreditHistoryInMemberIds(
-			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
-		);
+	public void autoRejectChatInquiry(LocalDateTime now) {
+		List<ExpiredChatInquiryDto> expiredChatInquiryDtos = chatInquiryRepository.getExpiredChatInquires();
+		List<Long> expiredChatInquiryIds = getExpiredChatInquiryIds(expiredChatInquiryDtos);
 
-		autoRejectedChatInquiryNotification(rejectedChatInquiryDtos);
+		chatInquiryRepository.updateChatInquiryStatusRejected(expiredChatInquiryIds, now);
+		refundAutoRejectedInquiry(expiredChatInquiryDtos);
+		notifyAutoRejectedInquiry(expiredChatInquiryDtos);
 	}
 
 	private void validateChatAnswerer(Long questionPostId, Member answerer) {
@@ -156,14 +153,28 @@ public class ChatInquiryService {
 		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
 	}
 
-	private List<Long> getRejectedInquirerIds(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
-		return rejectedChatInquiryDtos.stream()
+	private List<Long> getExpiredChatInquiryIds(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		return expiredChatInquiryDtos.stream()
+			.map(ExpiredChatInquiryDto::chatInquiryId)
+			.toList();
+	}
+
+	private List<Long> getRejectedInquirerIds(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		return expiredChatInquiryDtos.stream()
 			.map(dto -> dto.inquirer().getId())
 			.toList();
 	}
 
-	private void autoRejectedChatInquiryNotification(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
-		for (RejectedChatInquiryDto rejectChatInquiry : rejectedChatInquiryDtos) {
+	private void refundAutoRejectedInquiry(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		List<Long> rejectedInquirerIds = getRejectedInquirerIds(expiredChatInquiryDtos);
+		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
+		creditHistoryService.saveCreditHistoryInMemberIds(
+			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
+		);
+	}
+
+	private void notifyAutoRejectedInquiry(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		for (ExpiredChatInquiryDto rejectChatInquiry : expiredChatInquiryDtos) {
 			eventPublisher.publishEvent(    // 채팅 요청자 알림
 				new NotificationEvent(
 					NotificationType.AUTO_CHAT_REJECT,

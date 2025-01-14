@@ -7,15 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.member.domain.Member;
 
 public interface ChatInquiryQueryRepository {
 	Slice<ChatInquiryResponse> getChatInquiresByMember(Member member, Pageable pageable);
 
-	List<Long> getAutoRejectedInquirerIds();
+	void updateChatInquiryStatusRejected(List<Long> expiredChatInquiryIds, LocalDateTime now);
 
-	void updateChatInquiryStatusRejected(LocalDateTime now);
-
-	List<RejectedChatInquiryDto> getAutoRejectedChatInquiries();
+	List<ExpiredChatInquiryDto> getExpiredChatInquires();
 }
