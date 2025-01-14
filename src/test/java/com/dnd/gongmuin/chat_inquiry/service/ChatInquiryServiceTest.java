@@ -27,8 +27,8 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -326,22 +326,25 @@ class ChatInquiryServiceTest {
 		// given
 		final LocalDateTime now = LocalDateTime.now();
 
-		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = List.of(
-			new RejectedChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
-			new RejectedChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
+		List<ExpiredChatInquiryDto> expiredChatInquiryDtos = List.of(
+			new ExpiredChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
+			new ExpiredChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
 		);
-		List<Long> rejectedInquirerIds = rejectedChatInquiryDtos.stream()
+		List<Long> expiredChatInquiryIds = expiredChatInquiryDtos.stream()
+			.map(ExpiredChatInquiryDto::chatInquiryId)
+			.toList();
+		List<Long> rejectedInquirerIds = expiredChatInquiryDtos.stream()
 			.map(dto -> dto.inquirer().getId())
 			.toList();
 
-		given(chatInquiryRepository.getAutoRejectedChatInquiries()).willReturn(rejectedChatInquiryDtos);
+		given(chatInquiryRepository.getExpiredChatInquires()).willReturn(expiredChatInquiryDtos);
 
 		// when
-		chatInquiryService.rejectChatAuto(now);
+		chatInquiryService.autoRejectChatInquiry(now);
 
 		// then
-		verify(chatInquiryRepository).getAutoRejectedChatInquiries();
-		verify(chatInquiryRepository).updateChatInquiryStatusRejected(now);
+		verify(chatInquiryRepository).getExpiredChatInquires();
+		verify(chatInquiryRepository).updateChatInquiryStatusRejected(expiredChatInquiryIds,now);
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
