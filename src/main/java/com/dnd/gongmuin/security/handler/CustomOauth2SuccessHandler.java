@@ -19,9 +19,11 @@ import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler {
 
 	private final MemberRepository memberRepository;
@@ -37,15 +39,20 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		Authentication authentication) throws IOException {
 
 		CustomOauth2User customOauth2User = (CustomOauth2User)authentication.getPrincipal();
+		log.error("CustomOauth2User = ", customOauth2User.getEmail());
 
 		String socialEmail = customOauth2User.getEmail();
 		Member findmember = memberRepository.findBySocialEmail(socialEmail)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
+		log.error("findmember = ", findmember.toString());
+
 		String token = tokenProvider.generateAccessToken(findmember, customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(findmember, customOauth2User, new Date());
 
+		log.error("token = ", token);
 		response.addCookie(cookieUtil.createCookie(token));
+		log.error("response = ", response.getHeader("Set-Cookie"));
 
 		if (isRoleGuest(findmember.getRole())) {
 			response.sendRedirect(REDIRECTION_SIGNUP);
