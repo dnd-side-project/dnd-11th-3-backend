@@ -39,20 +39,20 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
 		Authentication authentication) throws IOException {
 
 		CustomOauth2User customOauth2User = (CustomOauth2User)authentication.getPrincipal();
-		log.error("CustomOauth2User = ", customOauth2User.getEmail());
+		log.error("CustomOauth2User = {}", customOauth2User.getEmail());
 
 		String socialEmail = customOauth2User.getEmail();
 		Member findmember = memberRepository.findBySocialEmail(socialEmail)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-		log.error("findmember = ", findmember.toString());
+		log.error("findmember = {}", findmember.toString());
 
 		String token = tokenProvider.generateAccessToken(findmember, customOauth2User, new Date());
 		tokenProvider.generateRefreshToken(findmember, customOauth2User, new Date());
 
-		log.error("token = ", token);
+		log.error("token = {}", token);
 		response.addCookie(cookieUtil.createCookie(token));
-		log.error("response = ", response.getHeader("Set-Cookie"));
+		log.error("response = {}", response.getHeader("Set-Cookie"));
 
 		if (isRoleGuest(findmember.getRole())) {
 			response.sendRedirect(REDIRECTION_SIGNUP);
