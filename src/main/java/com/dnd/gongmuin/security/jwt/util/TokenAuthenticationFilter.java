@@ -16,11 +16,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String TOKEN_PREFIX = "Bearer ";
@@ -32,7 +30,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 
 		String accessToken = cookieUtil.getCookieValue(request);
-		log.error("accessToken = {}", accessToken);
 
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
