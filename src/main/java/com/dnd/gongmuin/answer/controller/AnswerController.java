@@ -30,7 +30,7 @@ public class AnswerController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/question-posts/{questionPostId}/answers")
 	public ResponseEntity<AnswerDetailResponse> registerAnswer(
-		@PathVariable Long questionPostId,
+		@PathVariable("questionPostId") Long questionPostId,
 		@Valid @RequestBody RegisterAnswerRequest request,
 		@AuthenticationPrincipal Member member
 	) {
@@ -42,7 +42,7 @@ public class AnswerController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/{questionPostId}/answers")
 	public ResponseEntity<PageResponse<AnswerDetailResponse>> getAnswersByQuestionPostId(
-		@PathVariable Long questionPostId
+		@PathVariable("questionPostId") Long questionPostId
 	) {
 		PageResponse<AnswerDetailResponse> response = answerService.getAnswersByQuestionPostId(questionPostId);
 		return ResponseEntity.ok(response);
