@@ -21,7 +21,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 		description = "공무인 API 명세서",
 		version = "v.1.0"),
 	servers = {
-		@Server(url = "https://gongmuin.site", description = "Deploy Server URL"),
+		@Server(url = "https://www.dev.gongmuin.site", description = "Deploy Server URL"),
 		@Server(url = "http://localhost:8080", description = "Local Host URL")}
 )
 @Configuration
