@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -18,7 +19,10 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 	info = @Info(
 		title = "GongmuIn API",
 		description = "공무인 API 명세서",
-		version = "v.1.0")
+		version = "v.1.0"),
+	servers = {
+		@Server(url = "https://gongmuin.site", description = "Deploy Server URL"),
+		@Server(url = "http://localhost:8080", description = "Local Host URL")}
 )
 @Configuration
 public class SwaggerConfig {
