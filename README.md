@@ -43,6 +43,12 @@
 
 <br>
 
+##  ERD
+<a href="https://www.erdcloud.com/d/rWmcJqj8KJshkowt9">
+    <img alt="ERD" width="900" height="500" src="https://github.com/user-attachments/assets/f7c0fe97-d738-4eb8-8563-d5284ff3226e" />
+</a>
+
+
 ## 💻 Backend Developers
 
 <div>
