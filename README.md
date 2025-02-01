@@ -1,6 +1,6 @@
 # 공무인 <img src="https://github.com/user-attachments/assets/c0c3926a-e88d-47b1-af6f-997b624d84f5" align=left width=100>
 > 공무원 업무 습득을 위한 Q&A 서비스, 공무인
->
+
 <br>
 새로운 업무를 익혀야 하는데 인수인계를 잘 못했다면?<br>
 <b>공무인</b>에서 필요한 정보를 쉽게 얻고, 업무 스트레스를 덜어보세요!
@@ -34,12 +34,12 @@
 <br>
 
 ## 🖼️ System Architecture
-<img width="650" height = "330" src="https://github.com/user-attachments/assets/35aee183-1b87-4da4-8e39-6befab454da1"/>
+<img width="650" height = "330" alt="시스템 아키텍쳐 이미지" src="https://github.com/user-attachments/assets/35aee183-1b87-4da4-8e39-6befab454da1"/>
 
 <br>
 
 ## ⚙️ Deployment Pipeline
-<img width="650" height = "300" src="https://github.com/user-attachments/assets/12ea503b-8456-484e-8766-2956a9a21cce"/>
+<img width="650" height = "300" alt="배포 파이프라인 이미지" src="https://github.com/user-attachments/assets/12ea503b-8456-484e-8766-2956a9a21cce"/>
 
 <br>
 
@@ -58,12 +58,12 @@
     <tr>
       <td>
         <a href="https://github.com/hyun2371">
-          <img width="100px" src="https://github.com/hyun2371.png" />
+          <img width="100px" alt="image" src="https://github.com/hyun2371.png" />
         </a>
       </td>
       <td>
         <a href="https://github.com/dudxo">
-          <img width="100px" src="https://github.com/dudxo.png" />
+          <img width="100px" alt="image" src="https://github.com/dudxo.png" />
         </a>
       </td>
     </tr>
