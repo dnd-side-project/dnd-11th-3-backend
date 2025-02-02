@@ -8,12 +8,14 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.exception.runtime.ValidationException;
@@ -33,6 +35,7 @@ import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
 import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
@@ -320,5 +323,40 @@ class QuestionPostServiceTest {
 
 		assertThat(exception.getMessage())
 			.isEqualTo(QuestionPostErrorCode.NOT_AUTHORIZED.getMessage());
+	}
+
+	@DisplayName("질문글을 작성하기 전 충분한 크레딧을 가지고 있는지 검증한다.")
+	@Test
+	void validateCreditBeforeRegisteringQuestionPost() {
+		// given
+		final int NOT_ENOUGH_CREDIT = 1_000;
+		final int NOT_ENOUGH_CREDIT2 = 1_999;
+		final int ENOUGH_CREDIT = 2_000;
+		final int ENOUGH_CREDIT2 = 2_001;
+
+		Member member1 = MemberFixture.member(1L);
+		Member member2 = MemberFixture.member(2L);
+		Member member3 = MemberFixture.member(3L);
+		Member member4 = MemberFixture.member(4L);
+
+		ReflectionTestUtils.setField(member1, "credit", NOT_ENOUGH_CREDIT);
+		ReflectionTestUtils.setField(member2, "credit", NOT_ENOUGH_CREDIT2);
+		ReflectionTestUtils.setField(member3, "credit", ENOUGH_CREDIT);
+		ReflectionTestUtils.setField(member4, "credit", ENOUGH_CREDIT2);
+
+		// when
+		CheckQuestionPostCreditResponse response1 = questionPostService.checkQuestionPostCredit(member1);
+		CheckQuestionPostCreditResponse response2 = questionPostService.checkQuestionPostCredit(member2);
+		CheckQuestionPostCreditResponse response3 = questionPostService.checkQuestionPostCredit(member3);
+		CheckQuestionPostCreditResponse response4 = questionPostService.checkQuestionPostCredit(member4);
+
+		// then
+		Assertions.assertAll(
+			() -> assertFalse(response1.hasEnoughCredit()),
+			() -> assertFalse(response2.hasEnoughCredit()),
+			() -> assertTrue(response3.hasEnoughCredit()),
+			() -> assertTrue(response4.hasEnoughCredit())
+		);
+
 	}
 }

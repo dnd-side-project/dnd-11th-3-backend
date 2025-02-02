@@ -155,4 +155,8 @@ public class Member extends TimeBaseEntity {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	public boolean hasMinimumCredit(int credit) {
+		return this.credit >= credit;
+	}
 }

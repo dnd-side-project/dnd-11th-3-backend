@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.dnd.gongmuin.answer.domain.Answer;
 import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
@@ -374,6 +373,17 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.message")
 				.value(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST.getMessage()))
 			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글 작성 전 충분한 크레딧을 가지고 있는지 검증한다.]")
+	@Test
+	void checkQuestionPostCredit() throws Exception {
+		// when  // then
+		mockMvc.perform(get("/api/question-posts/credit")
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("hasEnoughCredit").value(Boolean.TRUE));
+
 	}
 
 	private void interactPost(Long questionPostId, InteractionType type) {
