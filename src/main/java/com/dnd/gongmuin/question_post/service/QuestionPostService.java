@@ -30,6 +30,7 @@ import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
+import com.dnd.gongmuin.question_post.dto.response.QuestionPostCreditCheckResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -44,6 +45,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class QuestionPostService {
+
+	private static final int BASIC_CREDIT = 2_000;
 
 	private final QuestionPostRepository questionPostRepository;
 	private final InteractionRepository interactionRepository;
@@ -209,5 +212,10 @@ public class QuestionPostService {
 			reward,
 			member
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public QuestionPostCreditCheckResponse checkQuestionPostCredit(Member member) {
+		return new QuestionPostCreditCheckResponse(member.hasEnoughCredit(BASIC_CREDIT));
 	}
 }
