@@ -35,8 +35,8 @@ import com.dnd.gongmuin.question_post.domain.QuestionPostImage;
 import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
 import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
-import com.dnd.gongmuin.question_post.dto.response.QuestionPostCreditCheckResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.RegisterQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.UpdateQuestionPostResponse;
@@ -345,10 +345,10 @@ class QuestionPostServiceTest {
 		ReflectionTestUtils.setField(member4, "credit", ENOUGH_CREDIT2);
 
 		// when
-		QuestionPostCreditCheckResponse response1 = questionPostService.checkQuestionPostCredit(member1);
-		QuestionPostCreditCheckResponse response2 = questionPostService.checkQuestionPostCredit(member2);
-		QuestionPostCreditCheckResponse response3 = questionPostService.checkQuestionPostCredit(member3);
-		QuestionPostCreditCheckResponse response4 = questionPostService.checkQuestionPostCredit(member4);
+		CheckQuestionPostCreditResponse response1 = questionPostService.checkQuestionPostCredit(member1);
+		CheckQuestionPostCreditResponse response2 = questionPostService.checkQuestionPostCredit(member2);
+		CheckQuestionPostCreditResponse response3 = questionPostService.checkQuestionPostCredit(member3);
+		CheckQuestionPostCreditResponse response4 = questionPostService.checkQuestionPostCredit(member4);
 
 		// then
 		Assertions.assertAll(
