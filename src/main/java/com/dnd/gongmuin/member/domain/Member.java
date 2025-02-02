@@ -156,7 +156,7 @@ public class Member extends TimeBaseEntity {
 		return Objects.hash(id);
 	}
 
-	public boolean hasEnoughCredit(int credit) {
+	public boolean hasMinimumCredit(int credit) {
 		return this.credit >= credit;
 	}
 }

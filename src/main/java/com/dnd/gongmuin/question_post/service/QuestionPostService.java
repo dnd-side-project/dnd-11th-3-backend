@@ -216,6 +216,6 @@ public class QuestionPostService {
 
 	@Transactional(readOnly = true)
 	public CheckQuestionPostCreditResponse checkQuestionPostCredit(Member member) {
-		return new CheckQuestionPostCreditResponse(member.hasEnoughCredit(BASIC_CREDIT));
+		return new CheckQuestionPostCreditResponse(member.hasMinimumCredit(BASIC_CREDIT));
 	}
 }
