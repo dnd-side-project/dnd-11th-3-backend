@@ -29,8 +29,8 @@ import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
 import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
-import com.dnd.gongmuin.question_post.dto.response.QuestionPostCreditCheckResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -215,7 +215,7 @@ public class QuestionPostService {
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionPostCreditCheckResponse checkQuestionPostCredit(Member member) {
-		return new QuestionPostCreditCheckResponse(member.hasEnoughCredit(BASIC_CREDIT));
+	public CheckQuestionPostCreditResponse checkQuestionPostCredit(Member member) {
+		return new CheckQuestionPostCreditResponse(member.hasEnoughCredit(BASIC_CREDIT));
 	}
 }

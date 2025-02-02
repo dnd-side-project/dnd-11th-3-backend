@@ -17,8 +17,8 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
 import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
-import com.dnd.gongmuin.question_post.dto.response.QuestionPostCreditCheckResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -113,10 +113,10 @@ public class QuestionPostController {
 	@Operation(summary = "질문글 작성 크레딧 검증 API", description = "질문글을 작성하기 전 최소한의 크레딧을 보유하고 있는지 검증한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/credit")
-	public ResponseEntity<QuestionPostCreditCheckResponse> checkQuestionPostCredit(
+	public ResponseEntity<CheckQuestionPostCreditResponse> checkQuestionPostCredit(
 		@AuthenticationPrincipal Member member
 	) {
-		QuestionPostCreditCheckResponse response = questionPostService.checkQuestionPostCredit(member);
+		CheckQuestionPostCreditResponse response = questionPostService.checkQuestionPostCredit(member);
 		return ResponseEntity.ok(response);
 	}
 }
