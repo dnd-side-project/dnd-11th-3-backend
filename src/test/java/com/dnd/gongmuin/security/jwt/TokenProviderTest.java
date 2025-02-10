@@ -18,10 +18,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.gongmuin.common.exception.runtime.CustomJwtException;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
 import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.member.repository.MemberRepository;
 import com.dnd.gongmuin.redis.util.RedisUtil;
+import com.dnd.gongmuin.security.exception.JwtErrorCode;
 import com.dnd.gongmuin.security.jwt.util.TokenProvider;
 import com.dnd.gongmuin.security.oauth2.AuthInfo;
 import com.dnd.gongmuin.security.oauth2.CustomOauth2User;
@@ -123,10 +125,9 @@ class TokenProviderTest {
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
 		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), customOauth2User, past);
 
-		// when
-		boolean result = tokenProvider.validateToken(accessToken, new Date());
-
-		// then
-		assertThat(result).isFalse();
+		// when  // then
+		assertThatThrownBy(() -> tokenProvider.validateToken(accessToken, new Date()))
+			.isInstanceOf(CustomJwtException.class)
+			.hasMessage(JwtErrorCode.EXPIRED_TOKEN.getMessage());
 	}
 }

@@ -115,7 +115,7 @@ public class TokenProvider {
 			return Jwts.parser().verifyWith(secretKey).build()
 				.parseSignedClaims(token).getPayload();
 		} catch (ExpiredJwtException e) {
-			return e.getClaims();
+			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
 		} catch (MalformedJwtException e) {
 			throw new CustomJwtException(JwtErrorCode.MALFORMED_TOKEN);
 		} catch (JwtException e) {
