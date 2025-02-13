@@ -41,7 +41,7 @@ public class TokenProvider {
 
 	private static final String ROLE_KEY = "ROLE";
 	private static final String[] BLACKLIST = new String[] {"false", "delete"};
-	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 90L;
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 20;/* * 90L;*/
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final MemberRepository memberRepository;
 	private final RedisUtil redisUtil;
@@ -58,13 +58,12 @@ public class TokenProvider {
 		return generateToken(findMember, authentication, ACCESS_TOKEN_EXPIRE_TIME, now);
 	}
 
-	public String generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
+	public void generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
 		String refreshToken = generateToken(findMember, authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
 
 		// redis Refresh 저장
 		redisUtil.setValues("RT:" + authentication.getEmail(), refreshToken,
 			Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
-		return refreshToken;
 	}
 
 	private String generateToken(Member findMember, CustomOauth2User authentication, long tokenExpireTime, Date now) {
