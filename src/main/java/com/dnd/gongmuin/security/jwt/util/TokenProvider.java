@@ -41,7 +41,7 @@ public class TokenProvider {
 
 	private static final String ROLE_KEY = "ROLE";
 	private static final String[] BLACKLIST = new String[] {"false", "delete"};
-	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 20;/* * 90L;*/
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 90L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final MemberRepository memberRepository;
 	private final RedisUtil redisUtil;
