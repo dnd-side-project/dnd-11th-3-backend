@@ -87,7 +87,7 @@ class TokenProviderTest {
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
 		// when
-		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), authentication, now);
+		String accessToken = tokenProvider.generateAccessToken(MemberFixture.member(1L), authentication, now);
 		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
 		Date expiration = claims.getExpiration();
 
@@ -123,7 +123,7 @@ class TokenProviderTest {
 		Date past = new Date(124, 6, 30, 16, 0, 0);
 
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
-		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), customOauth2User, past);
+		String accessToken = tokenProvider.generateAccessToken(MemberFixture.member(1L), customOauth2User, past);
 
 		// when  // then
 		assertThatThrownBy(() -> tokenProvider.validateToken(accessToken, new Date()))
