@@ -73,9 +73,10 @@ public class AuthController {
 		@RequestBody @Valid AdditionalInfoRequest request,
 		@AuthenticationPrincipal Member loginMember,
 		HttpServletResponse response) {
-		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
+		throw new RuntimeException("Controller에서 강제 예외 발생");
+		// SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
 
-		return ResponseEntity.ok(signUpResponse);
+		// return ResponseEntity.ok(signUpResponse);
 	}
 
 	@Operation(summary = "로그아웃 API", description = "로그아웃한다.")
