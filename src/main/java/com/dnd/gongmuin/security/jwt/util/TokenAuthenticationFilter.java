@@ -34,7 +34,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken = cookieUtil.getCookieValue(request);
 
 		log.info("===================================================");
-		log.info("추가정보 API 시작");
 		log.info("tokenFilter 입장");
 		log.info("accessToken = " + accessToken);
 		log.info("===================================================");

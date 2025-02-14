@@ -79,7 +79,9 @@ public class AuthController {
 		log.info("추가정보 API 시작");
 		log.info("===================================================");
 		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
-
+		log.info("===================================================");
+		log.info("추가정보 API 종료");
+		log.info("===================================================");
 		return ResponseEntity.ok(signUpResponse);
 	}
 
