@@ -17,8 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	private static final String ROLE_GUEST = "ROLE_GUEST";
@@ -56,20 +58,34 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		AccessDeniedException accessDeniedException) throws IOException {
 		// 현재 인증된 사용자 정보 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+		log.info("===================================================");
+		log.error(authentication.getName());
+		log.info("===================================================");
 		// 사용자 권한에 따라 다른 응답 제공
 		if (!Objects.isNull(accessDeniedException)) {
 			if (!matchAuthenticationFromRole(authentication, ROLE_USER)) {
 				// ROLE_USER 권한이 없는 경우
+				log.info("===================================================");
+				log.info(SecurityErrorCode.FORBIDDEN_USER.getMessage());
+				log.info("===================================================");
 				setUpResponse(response, SecurityErrorCode.FORBIDDEN_USER);
 			} else if (!matchAuthenticationFromRole(authentication, ROLE_GUEST)) {
 				// ROLE_GUEST 권한이 없는 경우
+				log.info("===================================================");
+				log.info(SecurityErrorCode.FORBIDDEN_GUEST.getMessage());
+				log.info("===================================================");
 				setUpResponse(response, SecurityErrorCode.FORBIDDEN_GUEST);
 			} else {
 				// 기타 권한이 없는 경우
+				log.info("===================================================");
+				log.info(SecurityErrorCode.FORBIDDEN_MISMATCH.getMessage());
+				log.info("===================================================");
 				setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
 			}
 		} else {
+			log.info("===================================================");
+			log.info(SecurityErrorCode.FORBIDDEN_MISMATCH.getMessage());
+			log.info("===================================================");
 			setUpResponse(response, SecurityErrorCode.FORBIDDEN_MISMATCH);
 		}
 	}
