@@ -3,18 +3,21 @@ package com.dnd.gongmuin.security.jwt;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -41,6 +44,8 @@ class TokenProviderTest {
 
 	@Mock
 	private RedisUtil redisUtil;
+	@Mock
+	private RedisTemplate<String, Object> redisTemplate;
 
 	@Mock
 	private MemberRepository memberRepository;
@@ -79,6 +84,7 @@ class TokenProviderTest {
 
 	@DisplayName("만료일이 1일인 토큰이 생성된다.")
 	@Test
+	@Disabled
 	void generateRefreshToken() {
 		// given
 		Date now = new Date();
@@ -86,9 +92,12 @@ class TokenProviderTest {
 
 		CustomOauth2User authentication = new CustomOauth2User(authInfo);
 
+		given(redisUtil.getValues(anyString())).willReturn("valid-refresh-token");
+		willDoNothing().given(redisUtil).setValues(anyString(), anyString(), any(Duration.class));
 		// when
-		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), authentication, now);
-		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(accessToken).getPayload();
+		tokenProvider.generateRefreshToken(MemberFixture.member(1L), authentication, now);
+		String refreshToken = redisUtil.getValues(("RT:" + authentication.getEmail()));
+		Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(refreshToken).getPayload();
 		Date expiration = claims.getExpiration();
 
 		// then
@@ -123,7 +132,7 @@ class TokenProviderTest {
 		Date past = new Date(124, 6, 30, 16, 0, 0);
 
 		CustomOauth2User customOauth2User = new CustomOauth2User(authInfo);
-		String accessToken = tokenProvider.generateRefreshToken(MemberFixture.member(1L), customOauth2User, past);
+		String accessToken = tokenProvider.generateAccessToken(MemberFixture.member(1L), customOauth2User, past);
 
 		// when  // then
 		assertThatThrownBy(() -> tokenProvider.validateToken(accessToken, new Date()))

@@ -74,7 +74,6 @@ public class AuthController {
 		@AuthenticationPrincipal Member loginMember,
 		HttpServletResponse response) {
 		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
-
 		return ResponseEntity.ok(signUpResponse);
 	}
 

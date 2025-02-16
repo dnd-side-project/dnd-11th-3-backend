@@ -14,8 +14,8 @@ public class LocalCookie implements CookieConfig {
 		Cookie cookie = new Cookie("Authorization", token);
 		cookie.setPath("/");
 		cookie.setMaxAge(60 * 60);
-		cookie.setHttpOnly(false);
-		cookie.setSecure(false);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
 		cookie.setAttribute("SameSite", "None");
 		return cookie;
 	}

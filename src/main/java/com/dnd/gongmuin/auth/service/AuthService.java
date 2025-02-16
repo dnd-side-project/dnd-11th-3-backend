@@ -126,6 +126,7 @@ public class AuthService {
 		checkNickname(request.nickname());
 
 		updateAdditionalInfo(request, foundMember);
+
 		cookieUtil.deleteCookie(response);
 
 		return new SignUpResponse(foundMember.getNickname());

@@ -237,11 +237,8 @@ class AuthServiceTest {
 			any(CustomOauth2User.class),
 			any(Date.class)))
 			.willReturn("reissueToken");
-		given(tokenProvider.generateRefreshToken(
-			any(Member.class),
-			any(CustomOauth2User.class),
-			any(Date.class)))
-			.willReturn("reissueToken");
+		doNothing().when(tokenProvider)
+			.generateRefreshToken(any(Member.class), any(CustomOauth2User.class), any(Date.class));
 
 		// when
 		ReissueResponse response = authService.reissue(mockRequest, mockResponse);

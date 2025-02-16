@@ -58,13 +58,12 @@ public class TokenProvider {
 		return generateToken(findMember, authentication, ACCESS_TOKEN_EXPIRE_TIME, now);
 	}
 
-	public String generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
+	public void generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
 		String refreshToken = generateToken(findMember, authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
 
 		// redis Refresh 저장
 		redisUtil.setValues("RT:" + authentication.getEmail(), refreshToken,
 			Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
-		return refreshToken;
 	}
 
 	private String generateToken(Member findMember, CustomOauth2User authentication, long tokenExpireTime, Date now) {
