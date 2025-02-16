@@ -178,20 +178,31 @@ public class AuthService {
 			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
 		}
 
-		Authentication authentication = tokenProvider.getAuthentication(accessToken);
-		Member member = (Member)authentication.getPrincipal();
+		Member findMember = tokenProvider.getMemberAllowExpired(accessToken);
 
-		String refreshToken = redisUtil.getValues("RT:" + member.getSocialEmail());
+		// RT 만료 여부 확인
+		try {
+			redisUtil.validateExpiredFromKey("RT:" + findMember.getSocialEmail());
 
-		// 로그아웃 또는 토큰 만료 경우 처리
-		if ("false".equals(refreshToken)) {
-			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+			String refreshToken = redisUtil.getValues("RT:" + findMember.getSocialEmail());
+
+			// 로그아웃 또는 토큰 만료 경우 처리
+			if ("false".equals(refreshToken)) {
+				throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
+			}
+		} catch (Exception e) {
+			// 재로그인 요청 처리
+			throw new ValidationException(AuthErrorCode.FAIL_REISSUE_TOKEN);
 		}
 
+		// 기존 RT 만료(제거)
+		redisUtil.deleteValues("RT:" + findMember.getSocialEmail());
+
 		CustomOauth2User customUser = new CustomOauth2User(
-			AuthInfo.of(member.getSocialName(), member.getSocialEmail(), member.getRole()));
-		String reissuedAccessToken = tokenProvider.generateAccessToken(member, customUser, new Date());
-		tokenProvider.generateRefreshToken(member, customUser, new Date());
+			AuthInfo.of(findMember.getSocialName(), findMember.getSocialEmail(), findMember.getRole()));
+
+		String reissuedAccessToken = tokenProvider.generateAccessToken(findMember, customUser, new Date());
+		tokenProvider.generateRefreshToken(findMember, customUser, new Date());
 
 		response.addCookie(cookieUtil.createCookie(reissuedAccessToken));
 

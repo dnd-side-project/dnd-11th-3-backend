@@ -141,4 +141,21 @@ public class TokenProvider {
 		return Arrays.asList(BLACKLIST).contains(value);
 	}
 
+	public Member getMemberAllowExpired(String token) {
+		Claims claims;
+
+		try {
+			claims = Jwts.parser().verifyWith(secretKey).build()
+				.parseSignedClaims(token).getPayload();
+		} catch (ExpiredJwtException e) {
+			claims = e.getClaims();
+		} catch (Exception e) {
+			throw new CustomJwtException(JwtErrorCode.INVALID_TOKEN);
+		}
+
+		String subject = claims.getSubject();
+		return memberRepository.findById(Long.valueOf(subject))
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+	}
+
 }
