@@ -42,9 +42,11 @@ import com.dnd.gongmuin.security.service.OAuth2UnlinkService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
 	private static final String LOGOUT = "logout";
@@ -116,17 +118,28 @@ public class AuthService {
 
 	@Transactional
 	public SignUpResponse signUp(AdditionalInfoRequest request, String email, HttpServletResponse response) {
+		log.info("==============Member 찾기 시작=====================");
 		Member foundMember = memberRepository.findBySocialEmail(email)
 			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
+		log.info("==============Member 찾기 종료=====================");
 
+		log.info("==============중복 공무원 이메일 검증 시작=====================");
 		if (!isOfficialEmail(foundMember)) {
 			throw new NotFoundException(MemberErrorCode.NOT_FOUND_NEW_MEMBER);
 		}
+		log.info("==============중복 공무원 이메일 검증 종료=====================");
 
+		log.info("==============중복 닉네임 검증 시작=====================");
 		checkNickname(request.nickname());
+		log.info("==============중복 닉네임 검증 종료=====================");
 
+		log.info("==============회원 정보 업데이트 시작=====================");
 		updateAdditionalInfo(request, foundMember);
+		log.info("==============회원 정보 업데이트 종료=====================");
+
+		log.info("==============기존 쿠키 삭제 시작=====================");
 		cookieUtil.deleteCookie(response);
+		log.info("==============기존 쿠키 삭제 종료=====================");
 
 		return new SignUpResponse(foundMember.getNickname());
 	}
