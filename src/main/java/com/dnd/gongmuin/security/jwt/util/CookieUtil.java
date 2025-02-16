@@ -13,21 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CookieUtil {
 
-	// private final CookieConfig cookieConfig;
-	//
-	// public Cookie createCookie(String token) {
-	// 	return cookieConfig.createCookie(token);
-	// }
+	private final CookieConfig cookieConfig;
 
 	public Cookie createCookie(String token) {
-		Cookie cookie = new Cookie("Authorization", token);
-		cookie.setPath("/");
-		cookie.setDomain("gongmuin.site");
-		cookie.setMaxAge(60 * 60);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setAttribute("SameSite", "Strict");
-		return cookie;
+		return cookieConfig.createCookie(token);
 	}
 
 	public String getCookieValue(HttpServletRequest request) {
