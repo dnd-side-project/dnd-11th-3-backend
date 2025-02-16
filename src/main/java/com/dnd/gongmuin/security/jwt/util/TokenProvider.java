@@ -41,7 +41,7 @@ public class TokenProvider {
 
 	private static final String ROLE_KEY = "ROLE";
 	private static final String[] BLACKLIST = new String[] {"false", "delete"};
-	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 90L;
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = /*30L;*/1000 * 60 * 90L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 	private final MemberRepository memberRepository;
 	private final RedisUtil redisUtil;
@@ -106,7 +106,11 @@ public class TokenProvider {
 		}
 
 		Claims claims = parseToken(token);
-		return claims.getExpiration().after(date);
+		if (!claims.getExpiration().after(date)) {
+			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
+		}
+
+		return true;
 	}
 
 	private Claims parseToken(String token) {
@@ -114,7 +118,7 @@ public class TokenProvider {
 			return Jwts.parser().verifyWith(secretKey).build()
 				.parseSignedClaims(token).getPayload();
 		} catch (ExpiredJwtException e) {
-			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
+			return e.getClaims();
 		} catch (MalformedJwtException e) {
 			throw new CustomJwtException(JwtErrorCode.MALFORMED_TOKEN);
 		} catch (JwtException e) {
@@ -142,16 +146,7 @@ public class TokenProvider {
 	}
 
 	public Member getMemberAllowExpired(String token) {
-		Claims claims;
-
-		try {
-			claims = Jwts.parser().verifyWith(secretKey).build()
-				.parseSignedClaims(token).getPayload();
-		} catch (ExpiredJwtException e) {
-			claims = e.getClaims();
-		} catch (Exception e) {
-			throw new CustomJwtException(JwtErrorCode.INVALID_TOKEN);
-		}
+		Claims claims = parseToken(token);
 
 		String subject = claims.getSubject();
 		return memberRepository.findById(Long.valueOf(subject))
