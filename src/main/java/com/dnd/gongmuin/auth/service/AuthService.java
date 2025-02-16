@@ -208,6 +208,7 @@ public class AuthService {
 		String reissuedAccessToken = tokenProvider.generateAccessToken(findMember, customUser, new Date());
 		tokenProvider.generateRefreshToken(findMember, customUser, new Date());
 
+		cookieUtil.deleteCookie(response);
 		response.addCookie(cookieUtil.createCookie(reissuedAccessToken));
 
 		return new ReissueResponse(true);
