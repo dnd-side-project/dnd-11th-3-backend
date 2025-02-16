@@ -27,13 +27,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Tag(name = "Social Login API", description = "소셜 로그인 요청 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-@Slf4j
 public class AuthController {
 
 	private final AuthService authService;
@@ -75,13 +73,7 @@ public class AuthController {
 		@RequestBody @Valid AdditionalInfoRequest request,
 		@AuthenticationPrincipal Member loginMember,
 		HttpServletResponse response) {
-		log.info("===================================================");
-		log.info("추가정보 API 시작");
-		log.info("===================================================");
 		SignUpResponse signUpResponse = authService.signUp(request, loginMember.getSocialEmail(), response);
-		log.info("===================================================");
-		log.info("추가정보 API 종료");
-		log.info("===================================================");
 		return ResponseEntity.ok(signUpResponse);
 	}
 

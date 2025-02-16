@@ -21,11 +21,9 @@ public class CookieUtil {
 
 	public String getCookieValue(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		log.info("=============cookies 탐색===================");
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if ("Authorization".equals(cookie.getName())) {
-					log.info("===============cookie.getValue() : {} =====================", cookie.getValue());
 					return cookie.getValue();
 				}
 			}

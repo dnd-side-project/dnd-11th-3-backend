@@ -33,21 +33,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 		String accessToken = cookieUtil.getCookieValue(request);
 
-		log.info("===================================================");
-		log.info("tokenFilter 입장");
-		log.info("accessToken = " + accessToken);
-		log.info("===================================================");
-
 		if (tokenProvider.validateToken(accessToken, new Date())) {
 			// accessToken logout 여부 확인
 			if (tokenProvider.verifyBlackList(accessToken)) {
 				saveAuthentication(accessToken);
 			}
 		}
-
-		System.out.println("====================================");
-		System.out.println("tokenFilter 정상 종료");
-		System.out.println("====================================");
 
 		filterChain.doFilter(request, response);
 	}
