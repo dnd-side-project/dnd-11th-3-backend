@@ -94,7 +94,7 @@ public class SecurityConfig {
 			Arrays.asList(
 				"http://localhost:3000", "https://dnd-11th-3-frontend-client.vercel.app",
 				"https://www.gongmuin.site", "https://gongmuin.shop", "http://localhost:8080", "/ws/**",
-				"https://www.dev.gongmuin.site"
+				"https://dev.gongmuin.site"
 			));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
