@@ -14,7 +14,7 @@ public class DevCookie implements CookieConfig {
 		Cookie cookie = new Cookie("Authorization", token);
 		cookie.setPath("/");
 		cookie.setDomain("gongmuin.site");
-		cookie.setMaxAge(60 * 60);
+		cookie.setMaxAge(60 * 180);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
 		cookie.setAttribute("SameSite", "Strict");
