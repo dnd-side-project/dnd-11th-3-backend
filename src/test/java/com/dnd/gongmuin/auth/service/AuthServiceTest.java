@@ -226,11 +226,10 @@ class AuthServiceTest {
 		mockRequest.setCookies(new Cookie("Authorization", "testtesttesttest"));
 
 		Member principal = MemberFixture.member();
-		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
 
 		given(cookieUtil.getCookieValue(mockRequest)).willReturn("testtesttesttest");
 		given(cookieUtil.createCookie(anyString())).willReturn(new Cookie("Authorization", "reissueToken"));
-		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
+		given(tokenProvider.getMemberAllowExpired(anyString())).willReturn(principal);
 		given(redisUtil.getValues(anyString())).willReturn("refreshToken");
 		given(tokenProvider.generateAccessToken(
 			any(Member.class),

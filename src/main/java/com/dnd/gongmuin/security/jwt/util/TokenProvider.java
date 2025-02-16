@@ -106,7 +106,11 @@ public class TokenProvider {
 		}
 
 		Claims claims = parseToken(token);
-		return claims.getExpiration().after(date);
+		if (!claims.getExpiration().after(date)) {
+			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
+		}
+
+		return true;
 	}
 
 	private Claims parseToken(String token) {
@@ -114,7 +118,7 @@ public class TokenProvider {
 			return Jwts.parser().verifyWith(secretKey).build()
 				.parseSignedClaims(token).getPayload();
 		} catch (ExpiredJwtException e) {
-			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
+			return e.getClaims();
 		} catch (MalformedJwtException e) {
 			throw new CustomJwtException(JwtErrorCode.MALFORMED_TOKEN);
 		} catch (JwtException e) {
@@ -139,6 +143,14 @@ public class TokenProvider {
 	public boolean verifyBlackList(String accessToken) {
 		String value = redisUtil.getValues(accessToken);
 		return Arrays.asList(BLACKLIST).contains(value);
+	}
+
+	public Member getMemberAllowExpired(String token) {
+		Claims claims = parseToken(token);
+
+		String subject = claims.getSubject();
+		return memberRepository.findById(Long.valueOf(subject))
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 	}
 
 }
