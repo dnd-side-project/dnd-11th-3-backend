@@ -173,6 +173,10 @@ public class AuthService {
 	public ReissueResponse reissue(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = cookieUtil.getCookieValue(request);
 
+		if (Objects.isNull(accessToken)) {
+			throw new NotFoundException(AuthErrorCode.MISSING_ACCESS_TOKEN);
+		}
+
 		// 로그아웃 토큰 처리
 		if ("logout".equals(redisUtil.getValues(accessToken))) {
 			throw new ValidationException(AuthErrorCode.UNAUTHORIZED_TOKEN);
