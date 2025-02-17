@@ -19,6 +19,10 @@ public class CookieUtil {
 		return cookieConfig.createCookie(token);
 	}
 
+	public void deleteCookie(HttpServletResponse response) {
+		cookieConfig.deleteCookie(response);
+	}
+
 	public String getCookieValue(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -29,16 +33,5 @@ public class CookieUtil {
 			}
 		}
 		return null;
-	}
-
-	public void deleteCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie("Authorization", null);
-		cookie.setPath("/");
-		cookie.setMaxAge(0);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setAttribute("SameSite", "None");
-
-		response.addCookie(cookie);
 	}
 }
