@@ -75,7 +75,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<QuestionPostSimpleResponse> responses = questionPostRepository
-			.searchQuestionPosts(condition, pageRequest)
+			.searchQuestionPosts(member, condition, pageRequest)
 			.getContent();
 
 		//then
@@ -104,7 +104,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<QuestionPostSimpleResponse> responses = questionPostRepository
-			.searchQuestionPosts(condition, pageRequest)
+			.searchQuestionPosts(member, condition, pageRequest)
 			.getContent();
 
 		//then
@@ -133,7 +133,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<QuestionPostSimpleResponse> responses = questionPostRepository
-			.searchQuestionPosts(condition, pageRequest)
+			.searchQuestionPosts(member, condition, pageRequest)
 			.getContent();
 
 		//then
@@ -161,7 +161,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 		//when
 		List<QuestionPostSimpleResponse> responses = questionPostRepository
-			.searchQuestionPosts(condition, pageRequest)
+			.searchQuestionPosts(member, condition, pageRequest)
 			.getContent();
 		System.out.println(responses);
 		//then
