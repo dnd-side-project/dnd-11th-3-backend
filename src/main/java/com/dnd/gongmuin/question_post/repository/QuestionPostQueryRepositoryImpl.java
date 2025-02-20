@@ -15,7 +15,6 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
 import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
-import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.QRefundQuestionPostDto;
@@ -26,7 +25,6 @@ import com.dnd.gongmuin.question_post.dto.response.QRecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -38,15 +36,6 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final InteractionRepository interactionRepository;
-
-	/**
-	 private boolean getIsInteractedByType(Long questionPostId, Long memberId, InteractionType type) {
-	 return interactionRepository
-	 .existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, memberId, type);
-	 }
-	 */
-
 	@Override
 	public Slice<QuestionPostSimpleResponse> searchQuestionPosts(
 		Member member,
