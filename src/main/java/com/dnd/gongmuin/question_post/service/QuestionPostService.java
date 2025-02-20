@@ -1,9 +1,7 @@
 package com.dnd.gongmuin.question_post.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.data.domain.Pageable;
@@ -108,22 +106,7 @@ public class QuestionPostService {
 	) {
 		Slice<QuestionPostSimpleResponse> responsePage =
 			questionPostRepository.searchQuestionPosts(condition, pageable);
-
-
-		responsePage.getContent().forEach(dto -> {
-			Long postId = dto.questionPostId();
-			Long memberId = member.getId(); // memberId는 예시로 member 객체에서 가져오는 것으로 가정
-
-			// 각 상호작용 타입에 대해 존재 여부 확인
-			boolean isSaved = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
-				postId, memberId, InteractionType.SAVED);
-			boolean isRecommended = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
-				postId, memberId, InteractionType.RECOMMEND);
-			System.out.println(postId+" "+isSaved);
-
-			// DTO 설정
-			dto.setIsInteracted(isSaved, isRecommended);
-		});
+		setIsInteracted(member, responsePage);
 
 		return PageMapper.toPageResponse(responsePage);
 	}
@@ -162,6 +145,21 @@ public class QuestionPostService {
 		questionPostRepository.deleteById(questionPostId);
 
 		return new DeleteQuestionPostResponse(questionPost.getMember().getCredit());
+	}
+
+	private void setIsInteracted(Member member, Slice<QuestionPostSimpleResponse> responsePage) {
+		responsePage.getContent().forEach(dto -> {
+			Long questionPostId = dto.getQuestionPostId();
+			Long memberId = member.getId(); // memberId는 예시로 member 객체에서 가져오는 것으로 가정
+
+			// 각 상호작용 타입에 대해 존재 여부 확인
+			boolean isSaved = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.SAVED);
+			boolean isRecommended = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.RECOMMEND);
+
+			dto.setIsInteracted(isSaved, isRecommended);
+		});
 	}
 
 	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
