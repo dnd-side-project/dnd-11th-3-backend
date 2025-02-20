@@ -11,6 +11,8 @@ public record QuestionPostSimpleResponse(
 	int reward,
 	String createdAt,
 	boolean isChosen,
+	boolean isSaved,
+	boolean isRecommended,
 	int savedCount,
 	int recommendCount
 ) {
@@ -40,5 +42,11 @@ public record QuestionPostSimpleResponse(
 			"questionPostId=" + questionPostId +
 			", title='" + title + '\'' +
 			'}';
+	}
+
+	public QuestionPostSimpleResponse setIsInteracted(boolean isSaved, boolean isRecommended){
+		return new QuestionPostSimpleResponse(
+			questionPostId, title, content, jobGroup, reward, createdAt,
+			isChosen, isSaved, isRecommended, savedCount, recommendCount);
 	}
 }
