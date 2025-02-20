@@ -100,11 +100,12 @@ public class QuestionPostService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<QuestionPostSimpleResponse> searchQuestionPost(
+		Member member,
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		Slice<QuestionPostSimpleResponse> responsePage =
-			questionPostRepository.searchQuestionPosts(condition, pageable);
+			questionPostRepository.searchQuestionPosts(member, condition, pageable);
 		return PageMapper.toPageResponse(responsePage);
 	}
 

@@ -11,6 +11,8 @@ public record QuestionPostSimpleResponse(
 	int reward,
 	String createdAt,
 	boolean isChosen,
+	boolean isSaved,
+	boolean isRecommended,
 	int savedCount,
 	int recommendCount
 ) {
@@ -18,6 +20,8 @@ public record QuestionPostSimpleResponse(
 	@QueryProjection
 	public QuestionPostSimpleResponse(
 		QuestionPost questionPost,
+		boolean isSaved,
+		boolean isRecommended,
 		int savedCount,
 		int recommendCount
 	) {
@@ -29,6 +33,8 @@ public record QuestionPostSimpleResponse(
 			questionPost.getReward(),
 			questionPost.getCreatedAt().toString(),
 			questionPost.getIsChosen(),
+			isSaved,
+			isRecommended,
 			savedCount,
 			recommendCount
 		);

@@ -66,11 +66,12 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/search")
 	public ResponseEntity<PageResponse<QuestionPostSimpleResponse>> searchQuestionPost(
+		@AuthenticationPrincipal Member member,
 		@Valid @ModelAttribute QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
-			condition, pageable);
+			member, condition, pageable);
 		return ResponseEntity.ok(response);
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
@@ -14,7 +15,7 @@ import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 
 public interface QuestionPostQueryRepository {
 	Slice<QuestionPostSimpleResponse> searchQuestionPosts(
-		QuestionPostSearchCondition condition, Pageable pageable
+		Member member, QuestionPostSearchCondition condition, Pageable pageable
 	);
 
 	Slice<RecQuestionPostResponse> getRecommendQuestionPosts(

@@ -11,8 +11,11 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import com.dnd.gongmuin.member.domain.JobGroup;
+import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.post_interaction.domain.InteractionType;
+import com.dnd.gongmuin.post_interaction.domain.QInteraction;
 import com.dnd.gongmuin.post_interaction.domain.QInteractionCount;
+import com.dnd.gongmuin.post_interaction.repository.InteractionRepository;
 import com.dnd.gongmuin.question_post.domain.QQuestionPost;
 import com.dnd.gongmuin.question_post.domain.QuestionPostStatus;
 import com.dnd.gongmuin.question_post.dto.QRefundQuestionPostDto;
@@ -23,6 +26,9 @@ import com.dnd.gongmuin.question_post.dto.response.QRecQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -32,9 +38,18 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private final InteractionRepository interactionRepository;
+
+	/**
+	 private boolean getIsInteractedByType(Long questionPostId, Long memberId, InteractionType type) {
+	 return interactionRepository
+	 .existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(questionPostId, memberId, type);
+	 }
+	 */
 
 	@Override
 	public Slice<QuestionPostSimpleResponse> searchQuestionPosts(
+		Member member,
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
@@ -45,6 +60,8 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		List<QuestionPostSimpleResponse> content = queryFactory
 			.select(new QQuestionPostSimpleResponse(
 				questionPost,
+				getIsInteractedByType(questionPost.id, member.getId(), InteractionType.SAVED),
+				getIsInteractedByType(questionPost.id, member.getId(), InteractionType.RECOMMEND),
 				saved.count.coalesce(0),
 				recommend.count.coalesce(0)
 			))
@@ -141,6 +158,22 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		} else {
 			return questionPost.isChosen.eq(Boolean.FALSE);
 		}
+	}
+
+	private BooleanExpression getIsInteractedByType(
+		NumberPath<Long> questionPostId, Long memberId, InteractionType type) {
+		QInteraction interaction = QInteraction.interaction;
+
+		// 서브쿼리
+		// 존재 여부를 검사하는 서브쿼리 생성
+		return JPAExpressions
+			.selectOne()
+			.from(interaction)
+			.where(interaction.questionPostId.eq(questionPostId),
+				interaction.memberId.eq(memberId),
+				interaction.type.eq(type),
+				interaction.isInteracted.isTrue())
+			.exists();
 	}
 
 	private BooleanExpression jobGroupContains(List<String> jobGroups) {
