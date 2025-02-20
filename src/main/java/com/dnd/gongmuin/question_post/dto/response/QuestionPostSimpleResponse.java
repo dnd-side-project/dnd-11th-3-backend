@@ -40,6 +40,11 @@ public class QuestionPostSimpleResponse {
 		this.recommendCount = recommendCount;
 	}
 
+	public void setIsInteracted(boolean isSaved, boolean isRecommended) {
+		this.isSaved = isSaved;
+		this.isRecommended = isRecommended;
+	}
+
 	@Override
 	public String toString() {
 		return "QuestionPostSimpleResponse{" +
