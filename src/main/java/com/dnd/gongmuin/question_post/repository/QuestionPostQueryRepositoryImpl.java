@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.question_post.repository;
 
-import static com.dnd.gongmuin.question_post.domain.QQuestionPost.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,16 +34,15 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private static final QQuestionPost questionPost = QQuestionPost.questionPost;
+	private static final QInteractionCount saved = new QInteractionCount("saved");
+	private static final QInteractionCount recommend = new QInteractionCount("recommend");
 	@Override
 	public Slice<QuestionPostSimpleResponse> searchQuestionPosts(
 		Member member,
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
-		QQuestionPost questionPost = QQuestionPost.questionPost;
-		QInteractionCount saved = new QInteractionCount("saved");
-		QInteractionCount recommend = new QInteractionCount("recommend");
-
 		List<QuestionPostSimpleResponse> content = queryFactory
 			.select(new QQuestionPostSimpleResponse(
 				questionPost,
@@ -79,10 +76,6 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		JobGroup targetJobGroup,
 		Pageable pageable
 	) {
-		QQuestionPost questionPost = QQuestionPost.questionPost;
-		QInteractionCount saved = new QInteractionCount("saved");
-		QInteractionCount recommend = new QInteractionCount("recommend");
-
 		List<RecQuestionPostResponse> content = queryFactory
 			.select(new QRecQuestionPostResponse(
 				questionPost,
@@ -154,7 +147,6 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		QInteraction interaction = QInteraction.interaction;
 
 		// 서브쿼리
-		// 존재 여부를 검사하는 서브쿼리 생성
 		return JPAExpressions
 			.selectOne()
 			.from(interaction)
