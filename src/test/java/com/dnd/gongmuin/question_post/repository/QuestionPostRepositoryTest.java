@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.StopWatch;
 
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
@@ -40,6 +42,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 	private final PageRequest pageRequest = PageRequest.of(0, 10);
 	private Member member;
+	private final List<QuestionPost> questionPosts = new ArrayList<>();
 
 	@Autowired
 	private MemberRepository memberRepository;
@@ -52,6 +55,9 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 
 	@Autowired
 	private InteractionCountRepository interactionCountRepository;
+
+	@Autowired
+	private QuestionPostJdbcRepository questionPostJdbcRepository;
 
 	@BeforeEach
 	void setup() {
@@ -305,7 +311,6 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 			() -> assertThat(findQuestionPost2.getStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSED),
 			() -> assertThat(findQuestionPost3.getStatus()).isEqualTo(QuestionPostStatus.ANSWER_CLOSED)
 		);
-
 	}
 
 	private void interactPost(Long questionPostId, InteractionType type) {
@@ -315,5 +320,60 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		InteractionCount interactionCount =
 			InteractionCountFixture.interactionCount(type, questionPostId);
 		interactionCountRepository.save(interactionCount);
+	}
+
+	@Test
+	void batch로_데이터_삽입() {
+		//given
+		StopWatch stopWatch = new StopWatch("batch로 100,000개 데이터 삽입");
+		stopWatch.start();
+		insertPosts();
+		//when
+		questionPostJdbcRepository.saveQuestionPosts(questionPosts);
+		stopWatch.stop();
+		System.out.println(stopWatch.prettyPrint());
+	}
+
+	@Test
+	void saveAll로_데이터_삽입() {
+		//given
+		List<QuestionPost> questionPosts = new ArrayList<>();
+		StopWatch stopWatch = new StopWatch("saveAll로 100,000개 데이터 삽입");
+		stopWatch.start();
+		int threadCount = 100_000;
+
+		for (int i = 0; i < threadCount; i++) {
+			QuestionPost questionPost = QuestionPostFixture.questionPost(i + 1L, member);
+			questionPosts.add(questionPost);
+		}
+		//when
+		questionPostRepository.saveAll(questionPosts);
+		stopWatch.stop();
+		System.out.println(stopWatch.prettyPrint());
+	}
+
+	@Test
+	void save로_데이터_삽입() {
+		//given
+		StopWatch stopWatch = new StopWatch("save로 100,000개 데이터 삽입");
+		stopWatch.start();
+		int threadCount = 100_000;
+
+		for (int i = 0; i < threadCount; i++) {
+			QuestionPost questionPost = QuestionPostFixture.questionPost(i + 1L, member);
+			questionPostRepository.save(questionPost);
+		}
+
+		stopWatch.stop();
+		System.out.println(stopWatch.prettyPrint());
+	}
+
+	void insertPosts() {
+		int threadCount = 100_000;
+
+		for (int i = 0; i < threadCount; i++) {
+			QuestionPost questionPost = QuestionPostFixture.questionPost(i + 1L, member);
+			questionPosts.add(questionPost);
+		}
 	}
 }
