@@ -100,11 +100,14 @@ public class QuestionPostService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<QuestionPostSimpleResponse> searchQuestionPost(
+		Member member,
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		Slice<QuestionPostSimpleResponse> responsePage =
 			questionPostRepository.searchQuestionPosts(condition, pageable);
+		setIsInteracted(member, responsePage);
+
 		return PageMapper.toPageResponse(responsePage);
 	}
 
@@ -142,6 +145,21 @@ public class QuestionPostService {
 		questionPostRepository.deleteById(questionPostId);
 
 		return new DeleteQuestionPostResponse(questionPost.getMember().getCredit());
+	}
+
+	private void setIsInteracted(Member member, Slice<QuestionPostSimpleResponse> responsePage) {
+		responsePage.getContent().forEach(dto -> {
+			Long questionPostId = dto.getQuestionPostId();
+			Long memberId = member.getId(); // memberId는 예시로 member 객체에서 가져오는 것으로 가정
+
+			// 각 상호작용 타입에 대해 존재 여부 확인
+			boolean isSaved = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.SAVED);
+			boolean isRecommended = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.RECOMMEND);
+
+			dto.setIsInteracted(isSaved, isRecommended);
+		});
 	}
 
 	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
