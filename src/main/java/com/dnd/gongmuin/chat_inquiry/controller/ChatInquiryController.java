@@ -43,7 +43,7 @@ public class ChatInquiryController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅 요청 상세 조회 API", description = "채팅방 요청을 조회한다.")
+	@Operation(summary = "채팅 요청 상세 조회 API", description = "아이디로 채팅방 요청을 조회한다.")
 	@GetMapping("/api/chat/inquiries/{chatInquiryId}")
 	public ResponseEntity<ChatInquiryDetailResponse> getChatInquiryById(
 		@PathVariable("chatInquiryId") Long chatInquiryId,
@@ -53,7 +53,7 @@ public class ChatInquiryController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "채팅 요청 목록 조회 API", description = "회원의 채팅 목록을 조회한다.")
+	@Operation(summary = "채팅 요청 목록 조회 API", description = "회원의 채팅 요청 목록을 조회한다.")
 	@GetMapping("/api/chat/inquiries")
 	public ResponseEntity<PageResponse<ChatInquiryResponse>> getChatInquiresByMember(
 		@AuthenticationPrincipal Member member,
