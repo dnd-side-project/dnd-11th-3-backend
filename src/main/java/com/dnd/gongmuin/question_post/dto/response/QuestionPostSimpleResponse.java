@@ -1,7 +1,6 @@
 package com.dnd.gongmuin.question_post.dto.response;
 
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
@@ -16,11 +15,8 @@ public class QuestionPostSimpleResponse {
 	private String jobGroup;
 	private int reward;
 	private String createdAt;
-	@JsonProperty("isChosen")
 	private boolean isChosen;
-	@JsonProperty("isSaved")
 	private boolean isSaved;
-	@JsonProperty("isRecommended")
 	private boolean isRecommended;
 	private int savedCount;
 	private int recommendCount;
@@ -51,5 +47,17 @@ public class QuestionPostSimpleResponse {
 			"questionPostId=" + questionPostId +
 			", title='" + title + '\'' +
 			'}';
+	}
+
+	public boolean getIsChosen() {
+		return isChosen;
+	}
+
+	public boolean getIsSaved() {
+		return isSaved;
+	}
+
+	public boolean getIsRecommended() {
+		return isRecommended;
 	}
 }
