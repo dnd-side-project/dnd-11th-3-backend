@@ -49,7 +49,7 @@ public class ChatRoomController {
 
 	@Operation(summary = "채팅방 상세조회 API", description = "채팅방 아이디로 채팅방을 조회한다.")
 	@GetMapping("/api/chat-rooms/{chatRoomId}")
-	public ResponseEntity<ChatRoomDetailResponse> createChatRoom(
+	public ResponseEntity<ChatRoomDetailResponse> getChatRoomById(
 		@PathVariable("chatRoomId") Long chatRoomId,
 		@AuthenticationPrincipal Member member
 	) {
