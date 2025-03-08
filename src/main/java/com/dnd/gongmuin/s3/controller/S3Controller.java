@@ -35,7 +35,7 @@ public class S3Controller {
 
 	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
 	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
-	@PostMapping("/images")
+	@PostMapping("/api/files/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
 			@Valid @ModelAttribute ImagesUploadRequest request) {
 		List<MultipartFile> imageFiles = request.imageFiles();
