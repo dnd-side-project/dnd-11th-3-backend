@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import com.dnd.gongmuin.s3.dto.ImagesUploadResponse;
 import com.dnd.gongmuin.s3.dto.VideoUploadRequest;
 import com.dnd.gongmuin.s3.dto.VideoUploadResponse;
+import com.dnd.gongmuin.s3.dto.ImagesUploadRequest;
 import com.dnd.gongmuin.s3.service.S3Service;
 
 import io.swagger.v3.oas.annotations.Operation;
