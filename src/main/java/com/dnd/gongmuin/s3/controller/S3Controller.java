@@ -18,6 +18,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "S3 API")
 @RestController
@@ -27,12 +34,12 @@ public class S3Controller {
 	private final S3Service s3Service;
 
 	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
-	@ApiResponse(useReturnTypeSchema = true)
+	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
 	@PostMapping("/api/files/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
-		@ModelAttribute @Valid ImagesUploadRequest request
-	) {
-		List<String> imageUrls = s3Service.uploadImages(request.imageFiles());
+			@Valid @ModelAttribute ImagesUploadRequest request) {
+		List<MultipartFile> imageFiles = request.imageFiles();
+		List<String> imageUrls = s3Service.uploadImages(imageFiles);
 		return ResponseEntity.ok(ImagesUploadResponse.from(imageUrls));
 	}
 
