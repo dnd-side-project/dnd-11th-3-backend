@@ -14,6 +14,8 @@ import com.dnd.gongmuin.s3.service.S3Service;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Size;
@@ -28,12 +30,7 @@ public class S3Controller {
 
 	@Operation(
 		summary = "이미지 등록 API",
-		description = "1~10장의 이미지를 등록한다.",
-		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-			content = @Content(
-				mediaType = "multipart/form-data"
-			)
-		)
+		description = "1~10장의 이미지를 등록한다."
 	)
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/files/images")
