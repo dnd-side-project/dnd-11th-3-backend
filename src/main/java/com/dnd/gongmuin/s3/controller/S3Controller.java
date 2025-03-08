@@ -1,36 +1,29 @@
 package com.dnd.gongmuin.s3.controller;
 
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 import com.dnd.gongmuin.s3.dto.ImagesUploadResponse;
+import com.dnd.gongmuin.s3.dto.ImagesUploadRequest; // ✅ Import 추가
 import com.dnd.gongmuin.s3.dto.VideoUploadRequest;
 import com.dnd.gongmuin.s3.dto.VideoUploadResponse;
-import com.dnd.gongmuin.s3.dto.ImagesUploadRequest;
 import com.dnd.gongmuin.s3.service.S3Service;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestPart;
 
 @Tag(name = "S3 API")
 @RestController
@@ -44,15 +37,15 @@ public class S3Controller {
 	@Operation(
 			summary = "이미지 등록 API",
 			description = "1~10장의 이미지를 등록한다.",
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+			requestBody = @RequestBody(
 					content = @Content(
 							mediaType = "multipart/form-data",
-							schema = @Schema(implementation = ImagesUploadRequest.class)
+							schema = @Schema(implementation = ImagesUploadRequest.class) // ✅ 문제 발생한 부분
 					)
 			)
 	)
 	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
-	@PostMapping("/api/files/images")
+	@PostMapping("/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
 			@RequestPart("imageFiles") @Size(min = 1, max = 10) List<MultipartFile> imageFiles) {
 		List<String> imageUrls = s3Service.uploadImages(imageFiles);
@@ -63,10 +56,9 @@ public class S3Controller {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/videos")
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
-		@ModelAttribute @Valid VideoUploadRequest request
+			@ModelAttribute @Valid VideoUploadRequest request
 	) {
 		String videoUrl = s3Service.uploadVideo(request.videoFile());
 		return ResponseEntity.ok(VideoUploadResponse.from(videoUrl));
 	}
-
 }
