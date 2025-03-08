@@ -29,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "S3 API")
 @RestController
 @RequiredArgsConstructor
+@Validated
+@RequestMapping("/api/files")
 public class S3Controller {
 
 	private final S3Service s3Service;
@@ -45,7 +47,7 @@ public class S3Controller {
 
 	@Operation(summary = "동영상 등록 API", description = "최대 45MB의 동영상을 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/api/files/videos")
+	@PostMapping("/videos")
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
 		@ModelAttribute @Valid VideoUploadRequest request
 	) {
