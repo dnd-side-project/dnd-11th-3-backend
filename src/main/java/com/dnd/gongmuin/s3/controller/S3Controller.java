@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import jakarta.validation.Valid;
 
