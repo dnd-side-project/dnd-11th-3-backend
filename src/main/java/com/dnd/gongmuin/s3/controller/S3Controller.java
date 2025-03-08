@@ -6,6 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.Valid;
 
 import com.dnd.gongmuin.s3.dto.ImagesUploadResponse;
 import com.dnd.gongmuin.s3.dto.VideoUploadRequest;
