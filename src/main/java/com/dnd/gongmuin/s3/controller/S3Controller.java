@@ -3,11 +3,10 @@ package com.dnd.gongmuin.s3.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.gongmuin.s3.dto.ImagesUploadRequest;
 import com.dnd.gongmuin.s3.dto.ImagesUploadResponse;
 import com.dnd.gongmuin.s3.dto.VideoUploadRequest;
 import com.dnd.gongmuin.s3.dto.VideoUploadResponse;
@@ -17,14 +16,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.http.ResponseEntity;
 
 @Tag(name = "S3 API")
 @RestController
@@ -35,10 +29,10 @@ public class S3Controller {
 
 	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
 	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
-	@PostMapping("/api/files/images")
+	@PostMapping("/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
-			@Valid @ModelAttribute ImagesUploadRequest request) {
-		List<MultipartFile> imageFiles = request.imageFiles();
+			@RequestParam("imageFiles") @Size(min = 1, max = 10) List<MultipartFile> imageFiles) {
+
 		List<String> imageUrls = s3Service.uploadImages(imageFiles);
 		return ResponseEntity.ok(ImagesUploadResponse.from(imageUrls));
 	}
