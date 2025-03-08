@@ -26,6 +26,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Tag(name = "S3 API")
 @RestController
@@ -36,12 +39,20 @@ public class S3Controller {
 
 	private final S3Service s3Service;
 
-	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
+	@Operation(
+			summary = "이미지 등록 API",
+			description = "1~10장의 이미지를 등록한다.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					content = @Content(
+							mediaType = "multipart/form-data",
+							schema = @Schema(implementation = ImagesUploadRequest.class)
+					)
+			)
+	)
 	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
-	@PostMapping("/images")
+	@PostMapping("/api/files/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
-			@RequestParam("imageFiles") @Size(min = 1, max = 10) List<MultipartFile> imageFiles) {
-
+			@RequestPart("imageFiles") @Size(min = 1, max = 10) List<MultipartFile> imageFiles) {
 		List<String> imageUrls = s3Service.uploadImages(imageFiles);
 		return ResponseEntity.ok(ImagesUploadResponse.from(imageUrls));
 	}
