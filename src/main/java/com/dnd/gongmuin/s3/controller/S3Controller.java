@@ -37,7 +37,7 @@ public class S3Controller {
 	@ApiResponse(responseCode = "200", description = "Images uploaded successfully")
 	@PostMapping("/images")
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
-			@Validated @ModelAttribute ImagesUploadRequest request) {
+			@Valid @ModelAttribute ImagesUploadRequest request) {
 		List<MultipartFile> imageFiles = request.imageFiles();
 		List<String> imageUrls = s3Service.uploadImages(imageFiles);
 		return ResponseEntity.ok(ImagesUploadResponse.from(imageUrls));
