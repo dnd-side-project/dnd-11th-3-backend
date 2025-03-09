@@ -44,6 +44,7 @@ public class ChatInquiryQueryRepositoryImpl implements ChatInquiryQueryRepositor
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
 		return new SliceImpl<>(content, pageable, hasNext);
 	}
+
 	public List<ExpiredChatInquiryDto> getExpiredChatInquires() {
 		return queryFactory
 			.select(new QExpiredChatInquiryDto(
