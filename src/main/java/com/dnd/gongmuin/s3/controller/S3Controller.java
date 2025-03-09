@@ -4,21 +4,18 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dnd.gongmuin.s3.dto.ImagesUploadResponse;
-import com.dnd.gongmuin.s3.dto.VideoUploadRequest;
 import com.dnd.gongmuin.s3.dto.VideoUploadResponse;
 import com.dnd.gongmuin.s3.service.S3Service;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
@@ -41,11 +38,11 @@ public class S3Controller {
 
 	@Operation(summary = "동영상 등록 API", description = "최대 45MB의 동영상을 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping("/api/files/videos")
+	@PostMapping(value = "/api/files/videos")
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
-		@ModelAttribute @Valid VideoUploadRequest request
+		@RequestPart MultipartFile videoFile
 	) {
-		String videoUrl = s3Service.uploadVideo(request.videoFile());
+		String videoUrl = s3Service.uploadVideo(videoFile);
 		return ResponseEntity.ok(VideoUploadResponse.from(videoUrl));
 	}
 
