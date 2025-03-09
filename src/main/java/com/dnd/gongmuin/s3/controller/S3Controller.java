@@ -38,7 +38,7 @@ public class S3Controller {
 
 	@Operation(summary = "동영상 등록 API", description = "최대 45MB의 동영상을 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping(value = "/api/files/videos")
+	@PostMapping(value = "/api/files/videos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<VideoUploadResponse> uploadVideo(
 		@RequestPart MultipartFile videoFile
 	) {
