@@ -71,7 +71,7 @@ public class QuestionPostController {
 		Pageable pageable
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
-			member,condition, pageable);
+			member, condition, pageable);
 		return ResponseEntity.ok(response);
 	}
 
