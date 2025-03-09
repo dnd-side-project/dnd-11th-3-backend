@@ -2,6 +2,7 @@ package com.dnd.gongmuin.s3.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ public class S3Controller {
 
 	@Operation(summary = "이미지 등록 API", description = "1~10장의 이미지를 등록한다.")
 	@ApiResponse(useReturnTypeSchema = true)
-	@PostMapping(value = "/api/files/images")
+	@PostMapping(value = "/api/files/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<ImagesUploadResponse> uploadImages(
 		@RequestPart("imageFiles") @Size(min = 1, max = 10) List<MultipartFile> imageFiles
 	) {
