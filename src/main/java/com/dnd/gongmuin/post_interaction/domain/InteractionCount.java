@@ -43,6 +43,7 @@ public class InteractionCount extends TimeBaseEntity {
 		this.count = 1;
 		this.type = type;
 		this.questionPostId = questionPostId;
+		this.version = 0L;
 	}
 
 	public static InteractionCount of(InteractionType type, Long questionPostId) {
