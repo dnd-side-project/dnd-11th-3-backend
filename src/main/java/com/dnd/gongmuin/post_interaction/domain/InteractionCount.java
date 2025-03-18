@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,9 @@ public class InteractionCount extends TimeBaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type")
 	private InteractionType type;
+
+	@Version
+	private Long version;
 
 	private InteractionCount(InteractionType type, Long questionPostId) {
 		this.count = 1;
