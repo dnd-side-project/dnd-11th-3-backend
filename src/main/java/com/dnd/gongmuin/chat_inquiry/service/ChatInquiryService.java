@@ -63,6 +63,7 @@ public class ChatInquiryService {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
 		validateChatAnswerer(request.questionPostId(), inquirer.getId(), answerer);
+		validateIfInquiryExists(inquirer,answerer,questionPost);
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
@@ -74,6 +75,12 @@ public class ChatInquiryService {
 		);
 
 		return ChatInquiryMapper.toCreateChatInquiryResponse(chatInquiry);
+	}
+
+	private void validateIfInquiryExists(Member inquirer, Member answerer, QuestionPost questionPost) {
+		if (chatInquiryRepository.existsByInquirerAndAnswererAndQuestionPost(inquirer, answerer, questionPost)) {
+			throw new ValidationException(ChatInquiryErrorCode.ALREADY_REQUESTED);
+		}
 	}
 
 	@Transactional(readOnly = true)
