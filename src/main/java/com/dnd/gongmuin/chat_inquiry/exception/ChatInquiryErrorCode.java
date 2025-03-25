@@ -15,7 +15,7 @@ public enum ChatInquiryErrorCode implements ErrorCode {
 	NOT_FOUND_STATUS("채팅방 상태값을 올바르게 입력해주세요.", "CI_004"),
 	NOT_EXISTS_ANSWERER("해당 아이디의 답변자가 해당 게시글에 존재하지 않습니다.", "CI_005"),
 	SELF_INQUIRY_NOT_ALLOWED("자기 자신에게 채팅 요청을 보낼 수 없습니다.", "CI_006"),
-	ALREADY_REQUESTED("이미 채팅 요청을 신청했습니다.", "CI_007");
+	ALREADY_REQUESTED("동일한 질문글, 유저에 대한 채팅 요청 이력이 존재합니다.", "CI_007");
 
 	private final String message;
 	private final String code;
