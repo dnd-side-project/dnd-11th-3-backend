@@ -1,5 +1,9 @@
 package com.dnd.gongmuin.post_interaction.service;
 
+import org.hibernate.dialect.lock.OptimisticEntityLockException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +22,11 @@ import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InteractionService {
 
 	private final InteractionRepository interactionRepository;
@@ -28,6 +34,11 @@ public class InteractionService {
 	private final QuestionPostRepository questionPostRepository;
 
 	@Transactional
+	@Retryable(
+		retryFor = {ObjectOptimisticLockingFailureException.class, OptimisticEntityLockException.class},
+		maxAttempts = 10,
+		backoff = @Backoff(delay = 150)
+	)
 	public InteractionResponse activateInteraction(
 		Long questionPostId,
 		Long memberId,
@@ -46,7 +57,7 @@ public class InteractionService {
 
 		int count = interactionCountRepository
 			.findByQuestionPostIdAndType(questionPostId, type)
-			.map(InteractionCount::increaseCount)
+			.map(interactionCount -> interactionCount.increaseCount())
 			.orElseGet(() -> interactionCountRepository.save(
 				InteractionMapper.toInteractionCount(questionPostId, type)
 			).getCount());
