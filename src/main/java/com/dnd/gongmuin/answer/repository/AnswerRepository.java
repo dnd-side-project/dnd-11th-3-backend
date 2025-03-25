@@ -28,5 +28,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 	Optional<Answer> findByIdWithMember(Long answerId);
 
 	boolean existsByQuestionPostIdAndMember(Long questionPostId, Member member);
+
 	boolean existsByQuestionPostId(Long questionPostId);
 }

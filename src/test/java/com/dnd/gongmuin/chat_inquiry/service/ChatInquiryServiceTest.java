@@ -396,7 +396,7 @@ class ChatInquiryServiceTest {
 
 		// then
 		verify(chatInquiryRepository).getExpiredChatInquires();
-		verify(chatInquiryRepository).updateChatInquiryStatusRejected(expiredChatInquiryIds,now);
+		verify(chatInquiryRepository).updateChatInquiryStatusRejected(expiredChatInquiryIds, now);
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD

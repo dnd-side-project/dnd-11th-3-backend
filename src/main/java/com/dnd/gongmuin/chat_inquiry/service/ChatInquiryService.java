@@ -18,8 +18,8 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryMapper;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -63,7 +63,7 @@ public class ChatInquiryService {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
 		validateChatAnswerer(request.questionPostId(), inquirer.getId(), answerer);
-		validateIfInquiryExists(inquirer,answerer,questionPost);
+		validateIfInquiryExists(inquirer, answerer, questionPost);
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
