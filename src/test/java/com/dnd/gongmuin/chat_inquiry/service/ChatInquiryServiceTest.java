@@ -193,9 +193,36 @@ class ChatInquiryServiceTest {
 			.willReturn(true);
 
 		//when & then
-		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, answerer))
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, answerer)) //questioner가 아닌 anwerer 대입
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED.getMessage());
+	}
+
+	@DisplayName("[한 게시물에 대해 한 사용자에게 중복으로 채팅 요청을 할 수 없다.]")
+	@Test
+	void createChatInquiry_fails4() {
+		//given
+		Member questioner = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questioner);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
+		given(chatInquiryRepository.existsByInquirerAndAnswererAndQuestionPost(questioner, answerer, questionPost))
+			.willReturn(true);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, questioner))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.ALREADY_REQUESTED.getMessage());
 	}
 
 	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")
