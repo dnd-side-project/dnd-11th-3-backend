@@ -60,8 +60,8 @@ public class MemberService {
 	}
 
 	private void deleteOauthAccessTokenIfExists(Member m) {
-		if (redisUtil.getValues("AT(oauth2):" + m.getSocialEmail()) != null) {
-			redisUtil.deleteValues("AT(oauth2):" + m.getSocialEmail());
+		if (redisUtil.getValues("AT(oauth):" + m.getSocialEmail()) != null) {
+			redisUtil.deleteValues("AT(oauth):" + m.getSocialEmail());
 		}
 	}
 
