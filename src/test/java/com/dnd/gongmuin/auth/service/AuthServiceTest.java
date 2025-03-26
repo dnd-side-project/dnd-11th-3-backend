@@ -205,7 +205,7 @@ class AuthServiceTest {
 		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
 		given(tokenProvider.getExpiration(anyString(), any(Date.class))).willReturn(fiveMinutes);
 		given(redisUtil.getValues(anyString())).willReturn("refresh");
-		given(redisUtil.getValues(anyString())).willReturn("logout");
+		given(redisUtil.getValues(anyString())).willReturn("delete");
 
 		willDoNothing().given(redisUtil).setValues(anyString(), anyString(), any(Duration.class));
 
