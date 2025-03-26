@@ -47,7 +47,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-	private static final String LOGOUT = "logout";
 	private static final String DELETE = "delete";
 	private static final String ANONYMOUS = "ROLE_ANONYMOUS";
 	private static final Pattern nicknamePattern = Pattern.compile("^[a-zA-Z0-9가-힣]+$");
@@ -158,10 +157,10 @@ public class AuthService {
 		}
 
 		Long expiration = tokenProvider.getExpiration(accessToken, new Date());
-		redisUtil.setValues(accessToken, LOGOUT, Duration.ofMillis(expiration));
+		redisUtil.setValues(accessToken, DELETE, Duration.ofMillis(expiration));
 
 		String values = redisUtil.getValues(accessToken);
-		if (!Objects.equals(values, LOGOUT)) {
+		if (!Objects.equals(values, DELETE)) {
 			throw new NotFoundException(MemberErrorCode.LOGOUT_FAILED);
 		}
 
