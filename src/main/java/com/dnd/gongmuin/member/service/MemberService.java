@@ -42,6 +42,7 @@ public class MemberService {
 		Member member = memberRepository.findBySocialEmail(oauth2Response.createSocialEmail())
 			.map(m -> {
 				m.updateSocialEmail(oauth2Response.createSocialEmail());
+				deleteRefreshTokenIfExists(m);
 				deleteOauthAccessTokenIfExists(m);
 				saveOauth2AccessToken(oauth2Response, m);
 				return m;
@@ -51,18 +52,24 @@ public class MemberService {
 		return memberRepository.save(member);
 	}
 
-	private void saveOauth2AccessToken(Oauth2Response oauth2Response, Member m) {
-		redisUtil.setValues(
-			"AT(oauth):" + m.getSocialEmail(),
-			oauth2Response.getOauth2AccessToken(),
-			Duration.ofMillis(ACCESS_TOKEN_EXPIRATION)
-		);
+	private void deleteRefreshTokenIfExists(Member m) {
+		if (redisUtil.getValues("RT:" + m.getSocialEmail()) != null) {
+			redisUtil.deleteValues("RT:" + m.getSocialEmail());
+		}
 	}
 
 	private void deleteOauthAccessTokenIfExists(Member m) {
 		if (redisUtil.getValues("AT(oauth):" + m.getSocialEmail()) != null) {
 			redisUtil.deleteValues("AT(oauth):" + m.getSocialEmail());
 		}
+	}
+
+	private void saveOauth2AccessToken(Oauth2Response oauth2Response, Member m) {
+		redisUtil.setValues(
+			"AT(oauth):" + m.getSocialEmail(),
+			oauth2Response.getOauth2AccessToken(),
+			Duration.ofMillis(ACCESS_TOKEN_EXPIRATION)
+		);
 	}
 
 	public Provider parseProviderFromSocialEmail(Member member) {
