@@ -1,7 +1,5 @@
 package com.dnd.gongmuin.question_post.repository;
 
-import static com.dnd.gongmuin.question_post.domain.QQuestionPost.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,16 +30,15 @@ import lombok.RequiredArgsConstructor;
 public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
+	private static final QQuestionPost questionPost = QQuestionPost.questionPost;
+	private static final QInteractionCount saved = new QInteractionCount("saved");
+	private static final QInteractionCount recommend = new QInteractionCount("recommend");
 
 	@Override
 	public Slice<QuestionPostSimpleResponse> searchQuestionPosts(
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
-		QQuestionPost questionPost = QQuestionPost.questionPost;
-		QInteractionCount saved = new QInteractionCount("saved");
-		QInteractionCount recommend = new QInteractionCount("recommend");
-
 		List<QuestionPostSimpleResponse> content = queryFactory
 			.select(new QQuestionPostSimpleResponse(
 				questionPost,
@@ -73,10 +70,6 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 		JobGroup targetJobGroup,
 		Pageable pageable
 	) {
-		QQuestionPost questionPost = QQuestionPost.questionPost;
-		QInteractionCount saved = new QInteractionCount("saved");
-		QInteractionCount recommend = new QInteractionCount("recommend");
-
 		List<RecQuestionPostResponse> content = queryFactory
 			.select(new QRecQuestionPostResponse(
 				questionPost,
@@ -120,10 +113,11 @@ public class QuestionPostQueryRepositoryImpl implements QuestionPostQueryReposit
 	}
 
 	@Override
-	public void updateQuestionPostStatusAnswerClosed() {
+	public void updateQuestionPostStatusAnswerClosed(LocalDateTime now) {
 		queryFactory
 			.update(questionPost)
 			.set(questionPost.status, QuestionPostStatus.ANSWER_CLOSED)
+			.set(questionPost.updatedAt, now)
 			.where(
 				questionPost.createdAt.loe(LocalDateTime.now().minusWeeks(2)),
 				questionPost.status.eq(QuestionPostStatus.ANSWER_WAITING)

@@ -1,5 +1,7 @@
 package com.dnd.gongmuin.chat_inquiry.scheduler;
 
+import java.time.LocalDateTime;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,6 @@ public class ChatInquiryScheduler {
 	@Transactional
 	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
 	public void rejectChatInquiry() {
-		chatInquiryService.rejectChatAuto();
+		chatInquiryService.autoRejectChatInquiry(LocalDateTime.now());
 	}
 }

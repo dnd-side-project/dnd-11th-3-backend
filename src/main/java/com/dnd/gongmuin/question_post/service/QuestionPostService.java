@@ -1,15 +1,19 @@
 package com.dnd.gongmuin.question_post.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.common.dto.PageMapper;
 import com.dnd.gongmuin.common.dto.PageResponse;
 import com.dnd.gongmuin.common.exception.runtime.NotFoundException;
+import com.dnd.gongmuin.common.exception.runtime.ValidationException;
 import com.dnd.gongmuin.credit_history.domain.CreditType;
 import com.dnd.gongmuin.credit_history.service.CreditHistoryService;
 import com.dnd.gongmuin.member.domain.JobGroup;
@@ -25,6 +29,8 @@ import com.dnd.gongmuin.question_post.dto.RefundQuestionPostDto;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
+import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -40,12 +46,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionPostService {
 
+	private static final int BASIC_CREDIT = 2_000;
+
 	private final QuestionPostRepository questionPostRepository;
 	private final InteractionRepository interactionRepository;
 	private final InteractionCountRepository interactionCountRepository;
 	private final QuestionPostImageRepository questionPostImageRepository;
 	private final MemberRepository memberRepository;
 	private final CreditHistoryService creditHistoryService;
+	private final AnswerRepository answerRepository;
 
 	private static void updateQuestionPost(UpdateQuestionPostRequest request, QuestionPost questionPost) {
 		questionPost.updateQuestionPost(
@@ -66,7 +75,8 @@ public class QuestionPostService {
 
 		QuestionPost questionPost = QuestionPostMapper.toQuestionPost(request, member);
 		return QuestionPostMapper.toRegisterQuestionPostResponse(
-			questionPostRepository.save(questionPost)
+			questionPostRepository.save(questionPost),
+			member
 		);
 	}
 
@@ -90,11 +100,14 @@ public class QuestionPostService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<QuestionPostSimpleResponse> searchQuestionPost(
+		Member member,
 		QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		Slice<QuestionPostSimpleResponse> responsePage =
 			questionPostRepository.searchQuestionPosts(condition, pageable);
+		setIsInteracted(member, responsePage);
+
 		return PageMapper.toPageResponse(responsePage);
 	}
 
@@ -120,12 +133,53 @@ public class QuestionPostService {
 		return QuestionPostMapper.toUpdateQuestionPostResponse(questionPost);
 	}
 
+	@Transactional
+	public DeleteQuestionPostResponse deleteQuestionPost(
+		Long questionPostId, Member member
+	) {
+		QuestionPost questionPost = questionPostRepository.findById(questionPostId)
+			.orElseThrow(() -> new NotFoundException(QuestionPostErrorCode.NOT_FOUND_QUESTION_POST));
+		validateIfQuestionPostExists(questionPostId);
+		validateIfQuestioner(member, questionPost);
+		refundDeletedQuestionPost(questionPost);
+		questionPostRepository.deleteById(questionPostId);
+
+		return new DeleteQuestionPostResponse(questionPost.getMember().getCredit());
+	}
+
+	private void setIsInteracted(Member member, Slice<QuestionPostSimpleResponse> responsePage) {
+		responsePage.getContent().forEach(dto -> {
+			Long questionPostId = dto.getQuestionPostId();
+			Long memberId = member.getId(); // memberId는 예시로 member 객체에서 가져오는 것으로 가정
+
+			// 각 상호작용 타입에 대해 존재 여부 확인
+			boolean isSaved = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.SAVED);
+			boolean isRecommended = interactionRepository.existsByQuestionPostIdAndMemberIdAndTypeAndIsInteractedTrue(
+				questionPostId, memberId, InteractionType.RECOMMEND);
+
+			dto.setIsInteracted(isSaved, isRecommended);
+		});
+	}
+
 	private void updateQuestionPostImages(QuestionPost questionPost, List<String> imageUrls) {
 		if (imageUrls != null) { // 수정 사항 존재
 			deleteImages(questionPost); // 기존 이미지 객체 삭제 (새로 비우기 || 수정할 값 존재)
 			if (!imageUrls.isEmpty()) { //수정할 값 담아보냄
 				questionPost.updatePostImages(imageUrls);
 			}
+		}
+	}
+
+	private void validateIfQuestionPostExists(Long questionPostId) {
+		if (answerRepository.existsByQuestionPostId(questionPostId)) {
+			throw new ValidationException(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST);
+		}
+	}
+
+	private void validateIfQuestioner(Member member, QuestionPost questionPost) {
+		if (!Objects.equals(member.getId(), questionPost.getMember().getId())) {
+			throw new ValidationException(QuestionPostErrorCode.NOT_AUTHORIZED);
 		}
 	}
 
@@ -147,22 +201,39 @@ public class QuestionPostService {
 	}
 
 	@Transactional
-	public void changeQuestionPostStatusAnswerClosed() {
-		refundQuestionPostCredit();
-		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+	public void changeQuestionPostStatusAnswerClosed(LocalDateTime now) {
+		refundClosedQuestionPosts();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed(now);
 	}
 
-	private void refundQuestionPostCredit() {
+	private void refundDeletedQuestionPost(QuestionPost questionPost) {
+		Member member = questionPost.getMember();
+		int reward = questionPost.getReward();
+		member.increaseCredit(reward);
+
+		saveRefundCreditHistory(member, reward);
+	}
+
+	private void refundClosedQuestionPosts() {
 		List<RefundQuestionPostDto> refundQuestionPostDtos = questionPostRepository.getRefundQuestionPostDtos();
 		refundQuestionPostDtos.forEach(refundQuestionPostDto -> {
 			refundQuestionPostDto.member().increaseCredit(refundQuestionPostDto.reward());
-			memberRepository.save(refundQuestionPostDto.member());
-
-			creditHistoryService.saveCreditHistory(
-				CreditType.REFUND_QUESTION_POST,
-				refundQuestionPostDto.reward(),
-				refundQuestionPostDto.member()
-			);
+			saveRefundCreditHistory(refundQuestionPostDto.member(), refundQuestionPostDto.reward());
 		});
+	}
+
+	private void saveRefundCreditHistory(Member member, int reward) {
+		memberRepository.save(member);
+
+		creditHistoryService.saveCreditHistory(
+			CreditType.REFUND_QUESTION_POST,
+			reward,
+			member
+		);
+	}
+
+	@Transactional(readOnly = true)
+	public CheckQuestionPostCreditResponse checkQuestionPostCredit(Member member) {
+		return new CheckQuestionPostCreditResponse(member.hasMinimumCredit(BASIC_CREDIT));
 	}
 }

@@ -57,9 +57,8 @@ public class QuestionPostMapper {
 	}
 
 	public static RegisterQuestionPostResponse toRegisterQuestionPostResponse(
-		QuestionPost questionPost
+		QuestionPost questionPost, Member member
 	) {
-		Member member = questionPost.getMember();
 		return new RegisterQuestionPostResponse(
 			questionPost.getId(),
 			questionPost.getTitle(),
@@ -74,6 +73,7 @@ public class QuestionPostMapper {
 				member.getJobGroup().getLabel(),
 				member.getProfileImageNo()
 			),
+			member.getCredit(),
 			questionPost.getCreatedAt().toString()
 		);
 	}

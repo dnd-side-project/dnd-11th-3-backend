@@ -205,7 +205,7 @@ class AuthServiceTest {
 		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
 		given(tokenProvider.getExpiration(anyString(), any(Date.class))).willReturn(fiveMinutes);
 		given(redisUtil.getValues(anyString())).willReturn("refresh");
-		given(redisUtil.getValues(anyString())).willReturn("logout");
+		given(redisUtil.getValues(anyString())).willReturn("delete");
 
 		willDoNothing().given(redisUtil).setValues(anyString(), anyString(), any(Duration.class));
 
@@ -226,22 +226,18 @@ class AuthServiceTest {
 		mockRequest.setCookies(new Cookie("Authorization", "testtesttesttest"));
 
 		Member principal = MemberFixture.member();
-		Authentication authentication = new UsernamePasswordAuthenticationToken(principal, "test");
 
 		given(cookieUtil.getCookieValue(mockRequest)).willReturn("testtesttesttest");
 		given(cookieUtil.createCookie(anyString())).willReturn(new Cookie("Authorization", "reissueToken"));
-		given(tokenProvider.getAuthentication(anyString())).willReturn(authentication);
+		given(tokenProvider.getMemberAllowExpired(anyString())).willReturn(principal);
 		given(redisUtil.getValues(anyString())).willReturn("refreshToken");
 		given(tokenProvider.generateAccessToken(
 			any(Member.class),
 			any(CustomOauth2User.class),
 			any(Date.class)))
 			.willReturn("reissueToken");
-		given(tokenProvider.generateRefreshToken(
-			any(Member.class),
-			any(CustomOauth2User.class),
-			any(Date.class)))
-			.willReturn("reissueToken");
+		doNothing().when(tokenProvider)
+			.generateRefreshToken(any(Member.class), any(CustomOauth2User.class), any(Date.class));
 
 		// when
 		ReissueResponse response = authService.reissue(mockRequest, mockResponse);

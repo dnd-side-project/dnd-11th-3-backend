@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.domain.InquiryStatus;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
@@ -25,8 +27,9 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
 import com.dnd.gongmuin.chatroom.repository.ChatMessageRepository;
@@ -66,6 +69,9 @@ class ChatInquiryServiceTest {
 	private QuestionPostRepository questionPostRepository;
 
 	@Mock
+	private AnswerRepository answerRepository;
+
+	@Mock
 	private ApplicationEventPublisher eventPublisher;
 
 	@Mock
@@ -98,6 +104,8 @@ class ChatInquiryServiceTest {
 			.willReturn(Optional.of(questionPost));
 		given(memberRepository.findById(answerer.getId()))
 			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
 		given(chatInquiryRepository.save(any(ChatInquiry.class))).willReturn(chatInquiry);
 
 		CreateChatInquiryResponse response = chatInquiryService.createChatInquiry(request, inquirer);
@@ -129,11 +137,92 @@ class ChatInquiryServiceTest {
 			.willReturn(Optional.of(questionPost));
 		given(memberRepository.findById(answerer.getId()))
 			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
 
 		//when & then
 		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
 			.isInstanceOf(ValidationException.class)
 			.hasMessageContaining(MemberErrorCode.NOT_ENOUGH_CREDIT.getMessage());
+	}
+
+	@DisplayName("[질문 게시글에 답변을 하지 않은 회원에게 채팅 신청할 수 없다.]")
+	@Test
+	void createChatInquiry_fails2() {
+		//given
+		Member inquirer = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(inquirer);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(false);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, inquirer))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER.getMessage());
+	}
+
+	@DisplayName("[답변자는 스스로에게 채팅 요청을 할 수 없다.]")
+	@Test
+	void createChatInquiry_fails3() {
+		//given
+		Member questioner = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questioner);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, answerer)) //questioner가 아닌 anwerer 대입
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED.getMessage());
+	}
+
+	@DisplayName("[한 게시물에 대해 한 사용자에게 중복으로 채팅 요청을 할 수 없다.]")
+	@Test
+	void createChatInquiry_fails4() {
+		//given
+		Member questioner = MemberFixture.member(1L);
+		Member answerer = MemberFixture.member(2L);
+		QuestionPost questionPost = QuestionPostFixture.questionPost(questioner);
+		CreateChatInquiryRequest request = new CreateChatInquiryRequest(
+			questionPost.getId(),
+			answerer.getId(),
+			INQUIRY_MESSAGE
+		);
+		given(questionPostRepository.findById(questionPost.getId()))
+			.willReturn(Optional.of(questionPost));
+		given(memberRepository.findById(answerer.getId()))
+			.willReturn(Optional.of(answerer));
+		given(answerRepository.existsByQuestionPostIdAndMember(questionPost.getId(), answerer))
+			.willReturn(true);
+		given(chatInquiryRepository.existsByInquirerAndAnswererAndQuestionPost(questioner, answerer, questionPost))
+			.willReturn(true);
+
+		//when & then
+		assertThatThrownBy(() -> chatInquiryService.createChatInquiry(request, questioner))
+			.isInstanceOf(ValidationException.class)
+			.hasMessageContaining(ChatInquiryErrorCode.ALREADY_REQUESTED.getMessage());
 	}
 
 	@DisplayName("[채팅 요청 아이디로 채팅 요청 상세를 조회할 수 있다.]")
@@ -287,22 +376,27 @@ class ChatInquiryServiceTest {
 	@Test
 	void rejectChatAuto() {
 		// given
-		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = List.of(
-			new RejectedChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
-			new RejectedChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
+		final LocalDateTime now = LocalDateTime.now();
+
+		List<ExpiredChatInquiryDto> expiredChatInquiryDtos = List.of(
+			new ExpiredChatInquiryDto(1L, MemberFixture.member(1L), MemberFixture.member(2L)),
+			new ExpiredChatInquiryDto(2L, MemberFixture.member(3L), MemberFixture.member(4L))
 		);
-		List<Long> rejectedInquirerIds = rejectedChatInquiryDtos.stream()
+		List<Long> expiredChatInquiryIds = expiredChatInquiryDtos.stream()
+			.map(ExpiredChatInquiryDto::chatInquiryId)
+			.toList();
+		List<Long> rejectedInquirerIds = expiredChatInquiryDtos.stream()
 			.map(dto -> dto.inquirer().getId())
 			.toList();
 
-		given(chatInquiryRepository.getAutoRejectedChatInquiries()).willReturn(rejectedChatInquiryDtos);
+		given(chatInquiryRepository.getExpiredChatInquires()).willReturn(expiredChatInquiryDtos);
 
 		// when
-		chatInquiryService.rejectChatAuto();
+		chatInquiryService.autoRejectChatInquiry(now);
 
 		// then
-		verify(chatInquiryRepository).getAutoRejectedChatInquiries();
-		verify(chatInquiryRepository).updateChatInquiryStatusRejected();
+		verify(chatInquiryRepository).getExpiredChatInquires();
+		verify(chatInquiryRepository).updateChatInquiryStatusRejected(expiredChatInquiryIds, now);
 		verify(memberRepository).refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
 		verify(creditHistoryService).saveCreditHistoryInMemberIds(
 			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD

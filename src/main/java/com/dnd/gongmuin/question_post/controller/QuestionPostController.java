@@ -3,6 +3,7 @@ package com.dnd.gongmuin.question_post.controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,6 +17,8 @@ import com.dnd.gongmuin.member.domain.Member;
 import com.dnd.gongmuin.question_post.dto.request.QuestionPostSearchCondition;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.dto.response.CheckQuestionPostCreditResponse;
+import com.dnd.gongmuin.question_post.dto.response.DeleteQuestionPostResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostDetailResponse;
 import com.dnd.gongmuin.question_post.dto.response.QuestionPostSimpleResponse;
 import com.dnd.gongmuin.question_post.dto.response.RecQuestionPostResponse;
@@ -63,11 +66,12 @@ public class QuestionPostController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/search")
 	public ResponseEntity<PageResponse<QuestionPostSimpleResponse>> searchQuestionPost(
+		@AuthenticationPrincipal Member member,
 		@Valid @ModelAttribute QuestionPostSearchCondition condition,
 		Pageable pageable
 	) {
 		PageResponse<QuestionPostSimpleResponse> response = questionPostService.searchQuestionPost(
-			condition, pageable);
+			member, condition, pageable);
 		return ResponseEntity.ok(response);
 	}
 
@@ -92,6 +96,28 @@ public class QuestionPostController {
 	) {
 		UpdateQuestionPostResponse response
 			= questionPostService.updateQuestionPost(questionPostId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "질문글 삭제 API", description = "답변이 없을 시 질문자가 질문글을 삭제할 수 있다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@DeleteMapping("/api/question-posts/{questionPostId}")
+	public ResponseEntity<DeleteQuestionPostResponse> updateQuestionPosts(
+		@PathVariable("questionPostId") Long questionPostId,
+		@AuthenticationPrincipal Member member
+	) {
+		DeleteQuestionPostResponse response
+			= questionPostService.deleteQuestionPost(questionPostId, member);
+		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "질문글 작성 크레딧 검증 API", description = "질문글을 작성하기 전 최소한의 크레딧을 보유하고 있는지 검증한다.")
+	@ApiResponse(useReturnTypeSchema = true)
+	@GetMapping("/api/question-posts/credit")
+	public ResponseEntity<CheckQuestionPostCreditResponse> checkQuestionPostCredit(
+		@AuthenticationPrincipal Member member
+	) {
+		CheckQuestionPostCreditResponse response = questionPostService.checkQuestionPostCredit(member);
 		return ResponseEntity.ok(response);
 	}
 }

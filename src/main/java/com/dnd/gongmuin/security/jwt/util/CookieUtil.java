@@ -6,19 +6,21 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CookieUtil {
 
+	private final CookieConfig cookieConfig;
+
 	public Cookie createCookie(String token) {
-		Cookie cookie = new Cookie("Authorization", token);
-		cookie.setPath("/");
-		cookie.setMaxAge(1000 * 60 * 60);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setAttribute("SameSite", "None");
-		return cookie;
+		return cookieConfig.createCookie(token);
+	}
+
+	public void deleteCookie(HttpServletResponse response) {
+		cookieConfig.deleteCookie(response);
 	}
 
 	public String getCookieValue(HttpServletRequest request) {
@@ -31,16 +33,5 @@ public class CookieUtil {
 			}
 		}
 		return null;
-	}
-
-	public void deleteCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie("Authorization", null);
-		cookie.setPath("/");
-		cookie.setMaxAge(0);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		cookie.setAttribute("SameSite", "None");
-
-		response.addCookie(cookie);
 	}
 }

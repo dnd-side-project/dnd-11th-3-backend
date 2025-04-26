@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.chat_inquiry.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
 import com.dnd.gongmuin.chat_inquiry.domain.ChatInquiry;
 import com.dnd.gongmuin.chat_inquiry.dto.AcceptChatResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryDetailResponse;
@@ -16,8 +18,8 @@ import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryMapper;
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryRequest;
 import com.dnd.gongmuin.chat_inquiry.dto.CreateChatInquiryResponse;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.dto.RejectChatResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
 import com.dnd.gongmuin.chat_inquiry.exception.ChatInquiryErrorCode;
 import com.dnd.gongmuin.chat_inquiry.repository.ChatInquiryRepository;
 import com.dnd.gongmuin.chatroom.domain.ChatRoom;
@@ -54,21 +56,31 @@ public class ChatInquiryService {
 	private final CreditHistoryService creditHistoryService;
 	private final ApplicationEventPublisher eventPublisher;
 	private final ChatMessageRepository chatMessageRepository;
+	private final AnswerRepository answerRepository;
 
 	@Transactional
 	public CreateChatInquiryResponse createChatInquiry(CreateChatInquiryRequest request, Member inquirer) {
 		QuestionPost questionPost = getQuestionPostById(request.questionPostId());
 		Member answerer = getMemberById(request.answererId());
+		validateChatAnswerer(request.questionPostId(), inquirer.getId(), answerer);
+		validateIfInquiryExists(inquirer, answerer, questionPost);
 		ChatInquiry chatInquiry = chatInquiryRepository.save(
 			ChatInquiryMapper.toChatInquiry(questionPost, inquirer, answerer, request.inquiryMessage())
 		);
-		memberRepository.save(inquirer);
-		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
+
+		saveInquirerCreditHistory(inquirer);
+
 		eventPublisher.publishEvent(
 			new NotificationEvent(NotificationType.CHAT_REQUEST, chatInquiry.getId(), inquirer.getId(), answerer)
 		);
 
 		return ChatInquiryMapper.toCreateChatInquiryResponse(chatInquiry);
+	}
+
+	private void validateIfInquiryExists(Member inquirer, Member answerer, QuestionPost questionPost) {
+		if (chatInquiryRepository.existsByInquirerAndAnswererAndQuestionPost(inquirer, answerer, questionPost)) {
+			throw new ValidationException(ChatInquiryErrorCode.ALREADY_REQUESTED);
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -128,26 +140,59 @@ public class ChatInquiryService {
 	}
 
 	@Transactional
-	public void rejectChatAuto() {
-		List<RejectedChatInquiryDto> rejectedChatInquiryDtos = chatInquiryRepository.getAutoRejectedChatInquiries();
-		List<Long> rejectedInquirerIds = getRejectedInquirerIds(rejectedChatInquiryDtos);
-		chatInquiryRepository.updateChatInquiryStatusRejected();
-		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
-		creditHistoryService.saveCreditHistoryInMemberIds(
-			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
-		);
+	public void autoRejectChatInquiry(LocalDateTime now) {
+		List<ExpiredChatInquiryDto> expiredChatInquiryDtos = chatInquiryRepository.getExpiredChatInquires();
+		List<Long> expiredChatInquiryIds = getExpiredChatInquiryIds(expiredChatInquiryDtos);
 
-		autoRejectedChatInquiryNotification(rejectedChatInquiryDtos);
+		chatInquiryRepository.updateChatInquiryStatusRejected(expiredChatInquiryIds, now);
+		refundAutoRejectedInquiry(expiredChatInquiryDtos);
+		notifyAutoRejectedInquiry(expiredChatInquiryDtos);
 	}
 
-	private List<Long> getRejectedInquirerIds(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
-		return rejectedChatInquiryDtos.stream()
+	private void validateChatAnswerer(Long questionPostId, Long inquirerId, Member answerer) {
+		validateIfAnswererExists(questionPostId, answerer);
+		validateIfNotSelfInquiry(inquirerId, answerer);
+	}
+
+	private void validateIfAnswererExists(Long questionPostId, Member answerer) {
+		if (!answerRepository.existsByQuestionPostIdAndMember(questionPostId, answerer)) {
+			throw new ValidationException(ChatInquiryErrorCode.NOT_EXISTS_ANSWERER);
+		}
+	}
+
+	private void validateIfNotSelfInquiry(Long inquirerId, Member answerer) {
+		if (Objects.equals(answerer.getId(), inquirerId)) {
+			throw new ValidationException(ChatInquiryErrorCode.SELF_INQUIRY_NOT_ALLOWED);
+		}
+	}
+
+	private void saveInquirerCreditHistory(Member inquirer) {
+		memberRepository.save(inquirer);
+		creditHistoryService.saveCreditHistory(CreditType.CHAT_REQUEST, CHAT_REWARD, inquirer);
+	}
+
+	private List<Long> getExpiredChatInquiryIds(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		return expiredChatInquiryDtos.stream()
+			.map(ExpiredChatInquiryDto::chatInquiryId)
+			.toList();
+	}
+
+	private List<Long> getRejectedInquirerIds(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		return expiredChatInquiryDtos.stream()
 			.map(dto -> dto.inquirer().getId())
 			.toList();
 	}
 
-	private void autoRejectedChatInquiryNotification(List<RejectedChatInquiryDto> rejectedChatInquiryDtos) {
-		for (RejectedChatInquiryDto rejectChatInquiry : rejectedChatInquiryDtos) {
+	private void refundAutoRejectedInquiry(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		List<Long> rejectedInquirerIds = getRejectedInquirerIds(expiredChatInquiryDtos);
+		memberRepository.refundInMemberIds(rejectedInquirerIds, CHAT_REWARD);
+		creditHistoryService.saveCreditHistoryInMemberIds(
+			rejectedInquirerIds, CreditType.CHAT_REFUND, CHAT_REWARD
+		);
+	}
+
+	private void notifyAutoRejectedInquiry(List<ExpiredChatInquiryDto> expiredChatInquiryDtos) {
+		for (ExpiredChatInquiryDto rejectChatInquiry : expiredChatInquiryDtos) {
 			eventPublisher.publishEvent(    // 채팅 요청자 알림
 				new NotificationEvent(
 					NotificationType.AUTO_CHAT_REJECT,

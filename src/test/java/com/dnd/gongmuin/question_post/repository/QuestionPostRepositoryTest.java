@@ -81,8 +81,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
+			() -> assertThat(responses.get(0).getQuestionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).getQuestionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -110,8 +110,8 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		assertAll(
 			() -> assertThat(responses).hasSize(2),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost2.getId()),
-			() -> assertThat(responses.get(1).questionPostId()).isEqualTo(questionPost1.getId())
+			() -> assertThat(responses.get(0).getQuestionPostId()).isEqualTo(questionPost2.getId()),
+			() -> assertThat(responses.get(1).getQuestionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -139,7 +139,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		assertAll(
 			() -> assertThat(responses).hasSize(1),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost1.getId())
+			() -> assertThat(responses.get(0).getQuestionPostId()).isEqualTo(questionPost1.getId())
 		);
 	}
 
@@ -167,9 +167,9 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		//then
 		assertAll(
 			() -> assertThat(responses).hasSize(1),
-			() -> assertThat(responses.get(0).questionPostId()).isEqualTo(questionPost.getId()),
-			() -> assertThat(responses.get(0).savedCount()).isEqualTo(1),
-			() -> assertThat(responses.get(0).recommendCount()).isEqualTo(1)
+			() -> assertThat(responses.get(0).getQuestionPostId()).isEqualTo(questionPost.getId()),
+			() -> assertThat(responses.get(0).getSavedCount()).isEqualTo(1),
+			() -> assertThat(responses.get(0).getRecommendCount()).isEqualTo(1)
 		);
 	}
 
@@ -291,7 +291,7 @@ class QuestionPostRepositoryTest extends DataJpaTestSupport {
 		ReflectionTestUtils.setField(questionPost3, "createdAt", LocalDateTime.now().minusWeeks(2));
 
 		// when
-		questionPostRepository.updateQuestionPostStatusAnswerClosed();
+		questionPostRepository.updateQuestionPostStatusAnswerClosed(LocalDateTime.now());
 
 		em.flush();
 		em.clear();

@@ -30,7 +30,7 @@ public class AnswerController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/question-posts/{questionPostId}/answers")
 	public ResponseEntity<AnswerDetailResponse> registerAnswer(
-		@PathVariable Long questionPostId,
+		@PathVariable("questionPostId") Long questionPostId,
 		@Valid @RequestBody RegisterAnswerRequest request,
 		@AuthenticationPrincipal Member member
 	) {
@@ -42,7 +42,7 @@ public class AnswerController {
 	@ApiResponse(useReturnTypeSchema = true)
 	@GetMapping("/api/question-posts/{questionPostId}/answers")
 	public ResponseEntity<PageResponse<AnswerDetailResponse>> getAnswersByQuestionPostId(
-		@PathVariable Long questionPostId
+		@PathVariable("questionPostId") Long questionPostId
 	) {
 		PageResponse<AnswerDetailResponse> response = answerService.getAnswersByQuestionPostId(questionPostId);
 		return ResponseEntity.ok(response);
@@ -51,7 +51,7 @@ public class AnswerController {
 	@Operation(summary = "답변 채택 API", description = "질문자가 답변을 채택한다.")
 	@ApiResponse(useReturnTypeSchema = true)
 	@PostMapping("/api/question-posts/answers/{answerId}")
-	public ResponseEntity<AnswerDetailResponse> getAnswersByQuestionPostId(
+	public ResponseEntity<AnswerDetailResponse> chooseAnswer(
 		@PathVariable("answerId") Long answerId,
 		@AuthenticationPrincipal Member member
 	) {

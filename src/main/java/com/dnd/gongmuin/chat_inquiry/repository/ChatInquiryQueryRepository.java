@@ -1,20 +1,19 @@
 package com.dnd.gongmuin.chat_inquiry.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import com.dnd.gongmuin.chat_inquiry.dto.ChatInquiryResponse;
-import com.dnd.gongmuin.chat_inquiry.dto.RejectedChatInquiryDto;
+import com.dnd.gongmuin.chat_inquiry.dto.ExpiredChatInquiryDto;
 import com.dnd.gongmuin.member.domain.Member;
 
 public interface ChatInquiryQueryRepository {
 	Slice<ChatInquiryResponse> getChatInquiresByMember(Member member, Pageable pageable);
 
-	List<Long> getAutoRejectedInquirerIds();
+	void updateChatInquiryStatusRejected(List<Long> expiredChatInquiryIds, LocalDateTime now);
 
-	void updateChatInquiryStatusRejected();
-
-	List<RejectedChatInquiryDto> getAutoRejectedChatInquiries();
+	List<ExpiredChatInquiryDto> getExpiredChatInquires();
 }

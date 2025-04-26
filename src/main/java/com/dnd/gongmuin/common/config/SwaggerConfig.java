@@ -6,12 +6,16 @@ import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
 	info = @Info(
 		title = "GongmuIn API",
 		description = "공무인 API 명세서",
-		version = "v.1.0")
+		version = "v.1.0"),
+	servers = {
+		@Server(url = "https://dev.gongmuin.site", description = "Deploy Server URL"),
+		@Server(url = "http://localhost:8080", description = "Local Host URL")}
 )
 @Configuration
 public class SwaggerConfig {

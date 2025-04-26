@@ -1,5 +1,6 @@
 package com.dnd.gongmuin.question_post.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -23,5 +24,5 @@ public interface QuestionPostQueryRepository {
 
 	List<RefundQuestionPostDto> getRefundQuestionPostDtos();
 
-	void updateQuestionPostStatusAnswerClosed();
+	void updateQuestionPostStatusAnswerClosed(LocalDateTime now);
 }

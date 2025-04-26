@@ -58,13 +58,12 @@ public class TokenProvider {
 		return generateToken(findMember, authentication, ACCESS_TOKEN_EXPIRE_TIME, now);
 	}
 
-	public String generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
+	public void generateRefreshToken(Member findMember, CustomOauth2User authentication, Date now) {
 		String refreshToken = generateToken(findMember, authentication, REFRESH_TOKEN_EXPIRE_TIME, now);
 
 		// redis Refresh 저장
 		redisUtil.setValues("RT:" + authentication.getEmail(), refreshToken,
 			Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
-		return refreshToken;
 	}
 
 	private String generateToken(Member findMember, CustomOauth2User authentication, long tokenExpireTime, Date now) {
@@ -107,7 +106,11 @@ public class TokenProvider {
 		}
 
 		Claims claims = parseToken(token);
-		return claims.getExpiration().after(date);
+		if (!claims.getExpiration().after(date)) {
+			throw new CustomJwtException(JwtErrorCode.EXPIRED_TOKEN);
+		}
+
+		return true;
 	}
 
 	private Claims parseToken(String token) {
@@ -140,6 +143,14 @@ public class TokenProvider {
 	public boolean verifyBlackList(String accessToken) {
 		String value = redisUtil.getValues(accessToken);
 		return Arrays.asList(BLACKLIST).contains(value);
+	}
+
+	public Member getMemberAllowExpired(String token) {
+		Claims claims = parseToken(token);
+
+		String subject = claims.getSubject();
+		return memberRepository.findById(Long.valueOf(subject))
+			.orElseThrow(() -> new NotFoundException(MemberErrorCode.NOT_FOUND_MEMBER));
 	}
 
 }

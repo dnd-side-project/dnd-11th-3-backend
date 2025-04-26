@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import com.dnd.gongmuin.answer.repository.AnswerRepository;
+import com.dnd.gongmuin.common.fixture.AnswerFixture;
 import com.dnd.gongmuin.common.fixture.InteractionCountFixture;
 import com.dnd.gongmuin.common.fixture.InteractionFixture;
 import com.dnd.gongmuin.common.fixture.MemberFixture;
@@ -33,6 +35,7 @@ import com.dnd.gongmuin.post_interaction.service.InteractionService;
 import com.dnd.gongmuin.question_post.domain.QuestionPost;
 import com.dnd.gongmuin.question_post.dto.request.RegisterQuestionPostRequest;
 import com.dnd.gongmuin.question_post.dto.request.UpdateQuestionPostRequest;
+import com.dnd.gongmuin.question_post.exception.QuestionPostErrorCode;
 import com.dnd.gongmuin.question_post.repository.QuestionPostRepository;
 
 @DisplayName("[QuestionPost 통합 테스트]")
@@ -51,12 +54,16 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	private CreditHistoryRepository creditHistoryRepository;
 
 	@Autowired
+	private AnswerRepository answerRepository;
+
+	@Autowired
 	private InteractionService interactionService;
 
 	@AfterEach
 	void teardown() {
 		creditHistoryRepository.deleteAll();
 		memberRepository.deleteAll();
+		answerRepository.deleteAll();
 		questionPostRepository.deleteAll();
 		interactionRepository.deleteAll();
 		interactionCountRepository.deleteAll();
@@ -65,11 +72,13 @@ class QuestionPostControllerTest extends ApiTestSupport {
 	@DisplayName("[질문글을 등록할 수 있다.]")
 	@Test
 	void registerQuestionPost() throws Exception {
+		final int reward = 2_000;
+
 		RegisterQuestionPostRequest request = new RegisterQuestionPostRequest(
 			"제목",
 			"정정기간에 여석이 있을까요?",
 			List.of("image1.jpg", "image2.jpg"),
-			2000,
+			reward,
 			"공업"
 		);
 
@@ -86,7 +95,8 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.targetJobGroup").value(request.targetJobGroup()))
 			.andExpect(jsonPath("$.memberInfo.memberId").value(loginMember.getId()))
 			.andExpect(jsonPath("$.memberInfo.nickname").value(loginMember.getNickname()))
-			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel()));
+			.andExpect(jsonPath("$.memberInfo.memberJobGroup").value(loginMember.getJobGroup().getLabel()))
+			.andExpect(jsonPath("$.remainingCredit").value(loginMember.getCredit() - reward));
 	}
 
 	@DisplayName("[보유 크레딧이 부족하면 질문글을 등록할 수 없다.]")
@@ -188,7 +198,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[0].questionPostId").value(questionPost3.getId()));
 	}
 
-	@DisplayName("[질문글을 필터링 직군이 3개 넘어가면 예외가 발생한다.]")
+	@DisplayName("[질문글 필터링 직군이 3개 넘어가면 예외가 발생한다.]")
 	@Test
 	void searchQuestionPostByCategoriesFails() throws Exception {
 		QuestionPost questionPost1 = questionPostRepository.save(QuestionPostFixture.questionPost("기계", loginMember));
@@ -242,7 +252,7 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.content[2].questionPostId").value(questionPost2.getId()));
 	}
 
-	@DisplayName("[질문글 업데이트해 게시물 정보를 수정할 수 있다..]")
+	@DisplayName("[질문글 게시물 정보를 수정할 수 있다.]")
 	@Test
 	void updateQuestionPost() throws Exception {
 		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
@@ -329,6 +339,51 @@ class QuestionPostControllerTest extends ApiTestSupport {
 			.andExpect(jsonPath("$.imageUrls.length()")
 				.value(0))
 			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글을 삭제할 수 있다.]")
+	@Test
+	void deleteQuestionPost() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(QuestionPostFixture.questionPost(loginMember));
+
+		int creditBeforeDeletion = loginMember.getCredit();
+		int creditAfterDeletion = creditBeforeDeletion + questionPost.getReward();
+
+		mockMvc.perform(delete("/api/question-posts/{questionPostId}", questionPost.getId())
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.remainingCredit")
+				.value(creditAfterDeletion))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[답변이 있을 경우 질문글을 삭제할 수 없다.]")
+	@Test
+	void deleteQuestionPostFails() throws Exception {
+		QuestionPost questionPost = questionPostRepository.save(
+			QuestionPostFixture.questionPost(loginMember)
+		);
+		answerRepository.save(
+			AnswerFixture.answer(questionPost.getId(), loginMember)
+		);
+
+		mockMvc.perform(delete("/api/question-posts/{questionPostId}", questionPost.getId())
+				.cookie(accessToken))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message")
+				.value(QuestionPostErrorCode.CAN_NOT_DELETE_QUESTION_POST.getMessage()))
+			.andDo(MockMvcResultHandlers.print());
+	}
+
+	@DisplayName("[질문글 작성 전 충분한 크레딧을 가지고 있는지 검증한다.]")
+	@Test
+	void checkQuestionPostCredit() throws Exception {
+		// when  // then
+		mockMvc.perform(get("/api/question-posts/credit")
+				.cookie(accessToken))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("hasEnoughCredit").value(Boolean.TRUE));
+
 	}
 
 	private void interactPost(Long questionPostId, InteractionType type) {
